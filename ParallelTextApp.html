@@ -1,0 +1,2771 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ParallelTextApp</title>
+
+<style>
+        body {
+			font-family: Times New Roman;
+	    	font-size: 25px;
+        }
+
+        table {
+            width: 100%;
+			margin-top: -10px;
+    		margin-bottom: -10px;
+       	}
+
+		div.tooltiptable table,
+		div.tooltiptable tr,
+		div.tooltiptable td
+		{
+			font-family: Times New Roman;
+	    	font-size: 18px;
+			background-color: white;
+			padding: 2px;
+		}
+	
+	 	td {
+			vertical-align: text-top;
+			padding: 15px;
+	 	}
+
+		textarea {
+			vertical-align: text-top;
+			padding: 15px;
+			font-family: Times New Roman;
+	    	font-size: 25px;
+		}
+
+		input {
+			vertical-align: text-top;
+			padding: 15px;
+			font-family: Times New Roman;
+	    	font-size: 25px;
+		}
+
+	 	button {
+        		padding: 15px;
+				font-family: Times New Roman;
+	    		font-size: 25px;
+		}
+
+		#textareaPunctuation {
+	    		display: none;
+        }
+
+		#textareaCyrillic {
+	    	display: none;
+        }
+
+		#textareaModernGreek {
+	    	display: none;
+        }
+
+		#textareaHebrew {
+	    	display: none;
+        }
+
+		#textareaArabic {
+	    	display: none;
+        }
+
+		#textareaAncientGreek {
+	    	display: none;
+        }
+		
+
+</style>
+
+<script>
+
+	let stringAlphabetSelected = "";
+	let stringDictionaryOriginal = "";
+	let stringDictionaryTranslated = "";
+
+	let stringOrderedPartOriginal = [];
+	let stringUnorderedPartOriginal = "";
+	let stringOrderedPartTranslated = [];
+	let stringUnorderedPartTranslated = "";
+
+	let stringURLToOriginal = "";
+	let stringURLToTranslation = "";
+
+	let i;
+
+	var popup;
+	
+	function functionSentencewise(myTextarea) {
+
+		if ((myTextarea.indexOf(".") == -1) &&
+			(myTextarea.indexOf("?") == -1) &&
+			(myTextarea.indexOf("!") == -1) &&
+			(myTextarea.indexOf("¿") == -1) &&
+			(myTextarea.indexOf("¡") == -1) &&
+			(myTextarea.indexOf("؟") == -1) &&
+			(myTextarea.indexOf("!") == -1)) 
+			{
+				alert("Your text contains no sentence endings.\n" +
+				"A full stop has been added at the end of your text.\n" +
+				"Divide your text into sentences by providing sentence endings manually.");
+
+				myTextarea += ".";
+
+
+			}
+
+		let stringSentences = [];
+		let stringSentence = "";
+
+		let i = 0;
+		let j = 0;
+		while (i < myTextarea.length) {
+			if (myTextarea.substring(i, i + 1) != "." &&
+				myTextarea.substring(i, i + 1) != "?" &&
+				myTextarea.substring(i, i + 1) != "!" &&
+				myTextarea.substring(i, i + 1) != "¿" &&
+				myTextarea.substring(i, i + 1) != "¡" &&
+				myTextarea.substring(i, i + 1) != "؟" &&
+				myTextarea.substring(i, i + 1) != "!") {
+				stringSentence += myTextarea.substring(i, i + 1);
+			} else {
+				stringSentence += myTextarea.substring(i, i + 1);
+				i++;
+
+				var boolEndOfParagraph = false;
+				while(i < myTextarea.length && myTextarea.substring(i, i + 1) != " " && !boolEndOfParagraph) {
+
+						if (myTextarea.substring(i, i + 1) == "\n")
+						{
+							stringSentences[j] = stringSentence;
+							j++;
+							boolEndOfParagraph = true;
+							stringSentence = "<>";
+							i++;
+							while(myTextarea.substring(i, i + 1) == "\n")
+							{
+								i++;
+							}
+						}
+						else 
+						{
+							stringSentence += myTextarea.substring(i, i + 1);
+							i++;
+						}
+				}
+				
+				while(i < myTextarea.length && myTextarea.substring(i, i + 1) == " " && !boolEndOfParagraph) {
+
+					if (myTextarea.substring(i, i + 1) == "\n")
+						{
+							
+							stringSentences[j] = stringSentence;
+							j++;
+							boolEndOfParagraph = true;
+							stringSentence = "<>";
+							i++;
+							while(myTextarea.substring(i, i + 1) == "\n")
+							{
+								i++;
+							}
+							i++;
+							
+						}
+						else 
+						{
+							i++;
+						}
+
+				}
+								
+				stringSentences[j] = stringSentence;
+				stringSentence = "";
+				if (i <myTextarea.length &&
+					((myTextarea.indexOf(".", i) == -1) &&
+					(myTextarea.indexOf("?", i) == -1) &&
+					(myTextarea.indexOf("!", i) == -1) &&
+					(myTextarea.indexOf("¿", i) == -1) &&
+					(myTextarea.indexOf("¡", i) == -1) &&
+					(myTextarea.indexOf("؟", i) == -1) &&
+					(myTextarea.indexOf("!", i) == -1))) {
+					
+					j++;
+					stringSentences[j] = myTextarea.substring(i, myTextarea.length);
+					i = myTextarea.length;
+
+				}
+				j++;
+				i--;
+			}
+			i++;
+		} 
+		
+		i = 0;
+		let stringSentencewise = "";
+		while (i < j) {
+			stringSentencewise += stringSentences[i] + " \n\n";
+			i++;
+		}
+		stringSentencewise = stringSentencewise.substring(0, stringSentencewise.length - 2);
+
+		return stringSentencewise;
+
+	}
+
+	function functionConsultDictionaryOriginal(myDictionary) {
+
+		if(!document.getElementById("checkboxEnable").checked ) {
+
+			myTextarea = document.getElementById('textareaEditOriginal').value;
+
+			const position = document.getElementById('textareaEditOriginal').selectionStart;
+
+			if (!(myTextarea.indexOf("\n-\n") > -1 && position < myTextarea.indexOf("\n-\n") + 3))
+			{
+
+				const myPunctuation = document.getElementById('textareaPunctuation').value;
+
+				let begin = position;
+				let end = position;
+
+				if (position > 0 && position > myTextarea.indexOf("\n-\n")) {
+
+					while (begin > 0 && myTextarea[begin - 1] != " " && !myPunctuation.includes(myTextarea[begin - 1])) {
+						begin--;
+					}
+
+		   			while (end < myTextarea.length && myTextarea[end] != " " && !myPunctuation.includes(myTextarea[end])) {
+						end++;
+					}
+	
+					if(begin != end) {
+
+						document.getElementById('textareaEditOriginal').setSelectionRange(begin, end);
+						const stringSelectedText = document.getElementById('textareaEditOriginal').value.substring(begin, end);
+
+						var stringComplete = myDictionary + stringSelectedText;
+						window.open(stringComplete);
+
+					}
+	
+				}
+
+			} 
+			else
+			{
+
+				alert("You clicked on the transliterated part of the text.\n");
+
+			}
+
+		}
+
+	}
+
+	function functionConsultDictionaryTranslated(myDictionary) {
+
+		if(!document.getElementById("checkboxEnable").checked ) {
+
+			myTextarea = document.getElementById('textareaEditTranslated').value;
+
+			const position = document.getElementById('textareaEditTranslated').selectionStart;
+		
+			const myPunctuation = document.getElementById('textareaPunctuation').value;
+
+    		let begin = position;
+    		let end = position;
+
+			if (position > 0) {
+
+    				while (begin > 0 && myTextarea[begin - 1] != " " && !myPunctuation.includes(myTextarea[begin - 1])) {
+        				begin--;
+    				}
+		
+   				while (end < myTextarea.length && myTextarea[end] != " " && !myPunctuation.includes(myTextarea[end])) {
+        				end++;
+    				}
+    		
+				if(begin != end) {
+
+    				document.getElementById('textareaEditTranslated').setSelectionRange(begin, end);
+    				const stringSelectedText = document.getElementById('textareaEditTranslated').value.substring(begin, end);
+
+					var stringComplete = myDictionary + stringSelectedText;
+					window.open(stringComplete);
+
+				}
+			
+			}
+
+		}
+		
+	}
+
+	function functionConsultDictionaryCombine(myDictionaryOriginal, myDictionaryTranslated) {
+
+		if(!document.getElementById("checkboxEnable").checked ) {
+
+			myTextarea = document.getElementById('textareaCombine').value;
+
+			const position = document.getElementById('textareaCombine').selectionStart;
+
+			const myPunctuation = document.getElementById('textareaPunctuation').value;
+
+			let begin = position;
+			let end = position;
+
+			if (position > 0) {
+
+				let boolDisplayDictionary = true;
+				let intRelevantDigid = myTextarea.indexOf("\n\t", position);
+				
+				let myDictionary = "";
+				if (myTextarea.substring(intRelevantDigid + 1, intRelevantDigid + 3) == "\t\n")
+				{
+					myDictionary = myDictionaryTranslated;
+				}
+
+				if (myTextarea.substring(intRelevantDigid + 1, intRelevantDigid + 3) == "\t\t")
+				{
+					myDictionary = myDictionaryOriginal;
+				}
+
+				if (myTextarea.substring(intRelevantDigid + 1, intRelevantDigid + 4) == "\t\t\t")
+				{
+					myDictionary = "";
+				}
+
+				while (begin > 0 && myTextarea[begin - 1] != " " && !myPunctuation.includes(myTextarea[begin - 1])) {
+					begin--;
+				}
+
+		   		while (end < myTextarea.length && myTextarea[end] != " " && !myPunctuation.includes(myTextarea[end])) {
+					end++;
+				}
+	
+				if(begin != end) {
+				
+					if (myDictionary != "")
+					{
+
+						document.getElementById('textareaCombine').setSelectionRange(begin, end);
+						const stringSelectedText = document.getElementById('textareaCombine').value.substring(begin, end);
+
+						var stringComplete = myDictionary + stringSelectedText;
+						window.open(stringComplete);
+
+					}
+
+				}
+	
+			}
+
+		}
+
+	}
+
+	function Transliterate(stringAlphabetSelected, stringToTransliterate)
+	{
+
+		let stringTransliteratedString = "";
+
+    	if (stringAlphabetSelected == "Latin")
+       	{
+       		stringTransliteratedString = stringToTransliterate;
+    	}
+    	else
+    	{
+        
+			if (stringAlphabetSelected == "Cyrillic")  { stringAlphabet = document.getElementById("textareaCyrillic").value; }
+			if (stringAlphabetSelected == "ModernGreek")  { stringAlphabet = document.getElementById("textareaModernGreek").value; }
+			if (stringAlphabetSelected == "Hebrew")  { stringAlphabet = document.getElementById("textareaHebrew").value; }
+			if (stringAlphabetSelected == "Arabic")  { stringAlphabet = document.getElementById("textareaArabic").value; }
+			if (stringAlphabetSelected == "AncientGreek")  { stringAlphabet = document.getElementById("textareaAncientGreek").value; }
+			
+			let arrayAlphabet = [];
+			arrayAlphabet = stringAlphabet.split("\n");
+       		let listToken = [];
+       		let listPronunciation = [];
+       		i = 0;
+       		while (i < arrayAlphabet.length)
+       		{
+           		stringCharacter = [];
+           		stringCharacter = arrayAlphabet[i].split("\t");
+           		listToken.push(stringCharacter[0]);
+				listKeyboard.push(stringCharacter[1]);
+				listPronunciation.push(stringCharacter[2]);
+           		i++;
+   	 		}
+
+       		// initial dagesh
+       		if (stringAlphabetSelected == "Hebrew" && stringToTransliterate.length > 1)
+       		{
+           		if (stringToTransliterate.substring(0, 2) == "בּ") { stringTransliteratedString = "b"; i = 2; }
+           		if (stringToTransliterate.substring(0, 2) == "גּ") { stringTransliteratedString = "g"; i = 2; }
+           		if (stringToTransliterate.substring(0, 2) == "דּ") { stringTransliteratedString = "d"; i = 2; }
+           		if (stringToTransliterate.substring(0, 2) == "כּ") { stringTransliteratedString = "k"; i = 2; }
+           		if (stringToTransliterate.substring(0, 2) == "פּ") { stringTransliteratedString = "p"; i = 2; }
+           		if (stringToTransliterate.substring(0, 2) == "תּ") { stringTransliteratedString = "t"; i = 2; }
+       		}
+
+			let boolCharacterHasBeenFound = false;
+			i = 0;
+			let stringCharacterToFind = "";
+			
+			
+			while (i < stringToTransliterate.length)
+       		{
+				stringCharacterToFind = stringToTransliterate.substring(i, i + 1);
+				
+				let j = 0;
+				
+                while (j < listToken.length && !boolCharacterHasBeenFound)
+                {
+                  	if (stringCharacterToFind == listToken[j])
+                   	{
+
+						stringTransliteratedString += listPronunciation[j];
+
+						// remove isolated junctions in Arabic texts
+						if (stringAlphabetSelected == "Arabic")
+						{
+    						stringTransliteratedString = stringTransliteratedString.replace(/ـ/g, "");
+						}
+
+						// saddah in Arabic as a special case
+						if (stringAlphabetSelected == "Arabic" && stringTransliteratedString.slice(-1) == "+" && stringTransliteratedString.length > 2)
+						{
+
+							stringTransliteratedString = stringTransliteratedString.slice(0, -1);
+							var stringHelp = stringTransliteratedString;
+							stringTransliteratedString = stringHelp + stringHelp.slice(-1);
+
+						}
+
+						boolCharacterHasBeenFound = true;
+					}
+                   	j++;
+					
+                }
+				
+				if (boolCharacterHasBeenFound == false)
+            	{
+               		stringTransliteratedString += stringCharacterToFind;
+            	}
+              	           		
+           		i++;
+           		boolCharacterHasBeenFound = false;
+
+			}
+       			
+		}	
+	
+    	// swa or sukuun
+		if (stringAlphabetSelected == "Hebrew" || stringAlphabetSelected == "Arabic")
+		{
+    		stringTransliteratedString = stringTransliteratedString.replace(/:/g, "");
+		}
+
+		return stringTransliteratedString;
+
+	}
+		
+	function functionOnLoad() 
+	{
+
+		document.getElementById('tableNew').style.display = "none";
+		document.getElementById('tableOpen').style.display = "none";
+		document.getElementById('tableSave').style.display = "none";
+		document.getElementById('tableCombine').style.display = "none";
+		document.getElementById('tableConcordance').style.display = "none";
+		document.getElementById('tableEdit').style.display = "none";
+		document.getElementById('tableHTMLAddenda').style.display = "none";
+		document.getElementById('tableHTMLResult').style.display = "none";
+
+		document.getElementById("buttonAlphabet").style.visibility = "hidden";
+		
+	}
+
+	function functionNew() 
+	{
+
+		document.getElementById('tableNew').style.display = "block";
+		document.getElementById('tableOpen').style.display = "none";
+		document.getElementById('tableSave').style.display = "none";
+		document.getElementById('tableCombine').style.display = "none";
+		document.getElementById('tableConcordance').style.display = "none";
+		document.getElementById('tableEdit').style.display = "none";
+		document.getElementById('tableHTMLAddenda').style.display = "none";
+		document.getElementById('tableHTMLResult').style.display = "none";
+
+	}
+
+	function functionConfirmNew()
+	{
+
+		if (document.getElementById('textareaNewOriginal').value == "" || document.getElementById('textareaNewTranslated').value == "")
+		{
+			alert("You forgot to enter one or even two text(s).");
+		}
+		else
+		{
+			if ((document.getElementById('radioButtonOtherOriginal').checked && document.getElementById('textareaOtherOriginal').value == "") ||
+			(document.getElementById('radioButtonOtherTranslated').checked && document.getElementById('textareaOtherTranslated').value == ""))
+			{
+
+				alert ("You selected 'Other' but forgot to enter a dictionary search string.\n" +
+				"Look up an arbitrary word in the dictionary you want to apply \n" +
+				"and paste the search string from your browser in the textbox \n" +
+				"(without the word you chose to search for).");
+
+			}
+			else
+			{
+
+				document.getElementById('textareaEditOriginal').value = functionSentencewise(document.getElementById('textareaNewOriginal').value);
+				document.getElementById('textareaEditTranslated').value = functionSentencewise(document.getElementById('textareaNewTranslated').value);
+
+				stringURLToOriginal = document.getElementById("textareaURLToOriginal").value;
+				stringURLToTranslation = document.getElementById("textareaURLToTranslation").value;
+
+				if (confirm("Do you want newline indicators ('<>')'to be removed?\n\n" +
+				"This is advisable if these indicators \n" +
+				"do not indicate meaningful paragraphs,\n" +
+				"like in dialogues, poetry, song texts or stage plays.\n\n" +
+				"If you choose to keep newline indicators ('<>') presented\n" +
+				"make sure to apply corresponding newline indicators\n"+
+				"in the translated text to retain consistency.\n"))
+				{
+					document.getElementById('textareaEditOriginal').value = document.getElementById('textareaEditOriginal').value.replace(/\n\n<>/g, "");
+					document.getElementById('textareaEditTranslated').value = document.getElementById('textareaEditTranslated').value.replace(/\n\n<>/g, "");
+				}
+
+				if (document.getElementById("radioButtonEnglishOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal = "https://www.ldoceonline.com/dictionary/";} 
+				if (document.getElementById("radioButtonEnglishWebsterOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal = "https://www.merriam-webster.com/dictionary/";} 
+				if (document.getElementById("radioButtonFrenchOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal = "https://www.bing.com/translator/?from=fr&to=en&text=";} 
+				if (document.getElementById("radioButtonFrenchRobertOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal = "https://dictionnaire.lerobert.com/definition/";} 
+				if (document.getElementById("radioButtonGermanOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal =  "https://www.bing.com/translator/?from=de&to=en&text=";} 
+				if (document.getElementById("radioButtonGermanDudenOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal = "https://www.duden.de/suchen/dudenonline/";} 
+				if (document.getElementById("radioButtonItalianOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal =  "https://www.bing.com/translator/?from=it&to=en&text=";} 
+				if (document.getElementById("radioButtonModernGreekOriginal").checked) {stringAlphabetSelected = "ModernGreek"; stringDictionaryOriginal = "https://www.bing.com/translator/?from=el&to=en&text=";} 
+				if (document.getElementById("radioButtonCyrillicOriginal").checked) {stringAlphabetSelected = "Cyrillic"; stringDictionaryOriginal = "https://www.bing.com/translator/?from=ru&to=en&text=";} 
+				if (document.getElementById("radioButtonCyrillicPROMTOriginal").checked) {stringAlphabetSelected = "Cyrillic"; stringDictionaryOriginal = "https://www.online-translator.com/translation/russian-english/";} 
+				if (document.getElementById("radioButtonHebrewOriginal").checked) {stringAlphabetSelected = "Hebrew"; stringDictionaryOriginal = "https://www.bing.com/translator/?from=he&to=en&text=";} 
+				if (document.getElementById("radioButtonArabicOriginal").checked) {stringAlphabetSelected = "Arabic"; stringDictionaryOriginal = "https://www.bing.com/translator/?from=ar&to=en&text=";} 
+				if (document.getElementById("radioButtonLatinOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal = "http://www.perseus.tufts.edu/hopper/morph?la=la&l=";} 
+				if (document.getElementById("radioButtonAncientGreekOriginal").checked) {stringAlphabetSelected = "AncientGreek"; stringDictionaryOriginal = "http://www.perseus.tufts.edu/hopper/morph?la=greek&l=";} 
+				if (document.getElementById("radioButtonOtherOriginal").checked) {stringAlphabetSelected = "Latin"; stringDictionaryOriginal = document.getElementById("textareaOtherOriginal").value ;} 
+
+				if (document.getElementById("radioButtonEnglishTranslated").checked) {stringDictionaryTranslated = "https://www.ldoceonline.com/dictionary/";} 
+				if (document.getElementById("radioButtonEnglishWebsterTranslated").checked) {stringDictionaryTranslated = "https://www.merriam-webster.com/dictionary/";} 
+				if (document.getElementById("radioButtonFrenchTranslated").checked) {stringDictionaryTranslated = "https://www.bing.com/translator/?from=fr&to=en&text=";} 
+				if (document.getElementById("radioButtonFrenchRobertTranslated").checked) {stringDictionaryTranslated = "https://dictionnaire.lerobert.com/definition/";} 
+				if (document.getElementById("radioButtonGermanTranslated").checked) {stringDictionaryTranslated =  "https://www.bing.com/translator/?from=de&to=en&text=";} 
+				if (document.getElementById("radioButtonGermanDudenTranslated").checked) {stringDictionaryTranslated = "https://www.duden.de/suchen/dudenonline/";} 
+				if (document.getElementById("radioButtonItalianTranslated").checked) {stringDictionaryTranslated =  "https://www.bing.com/translator/?from=it&to=en&text=";} 
+				if (document.getElementById("radioButtonModernGreekTranslated").checked) {stringDictionaryTranslated = "https://www.bing.com/translator/?from=el&to=en&text=";} 
+				if (document.getElementById("radioButtonCyrillicTranslated").checked) {stringDictionaryTranslated = "https://www.bing.com/translator/?from=ru&to=en&text=";} 
+				if (document.getElementById("radioButtonCyrillicPROMTTranslated").checked) {stringDictionaryTranslated = "https://www.online-translator.com/translation/russian-english/";} 
+				if (document.getElementById("radioButtonHebrewTranslated").checked) {stringDictionaryTranslated = "https://www.bing.com/translator/?from=he&to=en&text=";} 
+				if (document.getElementById("radioButtonArabicTranslated").checked) {stringDictionaryTranslated = "https://www.bing.com/translator/?from=ar&to=en&text=";} 
+				if (document.getElementById("radioButtonOtherTranslated").checked) {stringDictionaryTranslated = document.getElementById("textareaOtherTranslated").value ;} 
+
+				stringOrderedPartOriginal = [];
+				stringOrderedPartTranslated = [];
+
+				if (stringAlphabetSelected != "Latin")
+				{
+
+					if (stringAlphabetSelected == "Cyrillic")  { stringAlphabet = document.getElementById("textareaCyrillic").value; }
+					if (stringAlphabetSelected == "ModernGreek")  { stringAlphabet = document.getElementById("textareaModernGreek").value; }
+					if (stringAlphabetSelected == "Hebrew")  { stringAlphabet = document.getElementById("textareaHebrew").value; }
+					if (stringAlphabetSelected == "Arabic")  { stringAlphabet = document.getElementById("textareaArabic").value; }
+					if (stringAlphabetSelected == "AncientGreek")  { stringAlphabet = document.getElementById("textareaAncientGreek").value; }
+						
+					let arrayAlphabet = [];
+					arrayAlphabet = stringAlphabet.split("\n");
+			
+					listToken = [];
+					listKeyboard = [];
+       				listPronunciation = [];
+       				i = 0;
+					while (i < arrayAlphabet.length)
+       				{
+						var stringCharacter = [];
+        				stringCharacter = arrayAlphabet[i].split("\t");
+						listToken.push(stringCharacter[0]);
+						listKeyboard.push(stringCharacter[1]);
+						listPronunciation.push(stringCharacter[2]);
+        				i++;
+   	 				}
+			
+					// set tooltip
+					stringToolTipTextToPresent = "";
+
+					const el = document.getElementById("tooltip"); 
+					if (el !== null) 
+					{
+						el.remove();
+					}
+				
+    				i = 0;
+    		
+					let intNumberOfLines = 0;
+
+	        		if (stringAlphabetSelected == "ModernGreek") { intNumberOfLines = 24; }
+    	    		if (stringAlphabetSelected == "Cyrillic") { intNumberOfLines = 33; }
+        			if (stringAlphabetSelected == "Hebrew") { intNumberOfLines = 28; }
+        			if (stringAlphabetSelected == "Arabic") { intNumberOfLines = 28; }
+        			if (stringAlphabetSelected == "AncientGreek") { intNumberOfLines = 24; }
+
+        			let l = listToken.length;
+        			l = Math.floor((l - 1) / intNumberOfLines) + 1;
+        			let intNumberOfColumns = l;
+
+					stringToolTipTextToPresent = "<div class='tooltiptable' id='tooltip' style='top:20px; left: 50px; width: 1200px; height: 600px; background = 'white';'>";
+			
+					stringToolTipTextToPresent += "<table style='border: 1px solid black;'><tr><td colspan='" + (3 * intNumberOfColumns) + "'>Transliteration table for " + stringAlphabetSelected + ": </td></tr>";
+        			i = 0;
+        			j = 0;
+				
+        			while (i < intNumberOfLines)
+        			{
+
+						stringToolTipTextToPresent += "<tr>"
+
+						while (j < intNumberOfColumns) 
+   		   				{
+       	       				if (intNumberOfLines * j + i < listToken.length - 1)
+           				{
+               				stringToolTipTextToPresent += "<td WIDTH='25'>" + listToken[intNumberOfLines * j + i] + "</td><td WIDTH='10'> : </td><td WIDTH='50'>" + listPronunciation[intNumberOfLines * j + i] + "</td>";
+           				}
+           				else
+           				{
+           		 			stringToolTipTextToPresent += "<td></td><td></td><td></td>";
+           				}
+           				j++;
+           			}
+           			i++;
+       	 			j = 0;
+           			stringToolTipTextToPresent += "</tr>";
+       			}
+
+					stringToolTipTextToPresent += "</table></div>";
+
+					// Omzetten naar echt element 
+					const temp = document.createElement("div"); 
+					temp.innerHTML = stringToolTipTextToPresent; 
+					popup = temp.firstElementChild; // Toevoegen aan de pagina 
+					document.body.appendChild(popup);
+					popup.style.position = "fixed";
+							
+					document.getElementById("tooltip").style.display = "none";
+
+				}
+			
+				document.getElementById('tableNew').style.display = "none";
+				document.getElementById('tableOpen').style.display = "none";
+				document.getElementById('tableSave').style.display = "none";
+				document.getElementById('tableCombine').style.display = "none";
+				document.getElementById('tableConcordance').style.display = "none";
+				document.getElementById('tableEdit').style.display = "block";
+				document.getElementById('tableHTMLAddenda').style.display = "none";
+				document.getElementById('tableHTMLResult').style.display = "none";
+
+				document.getElementById('textAuthor').value = "";
+				document.getElementById('textTitleOriginal').value = "";
+				document.getElementById('textTitleTranslation').value = "";
+				document.getElementById("checkboxEnumerate").checked = false;
+				document.getElementById("checkboxSequential").checked = false;
+				document.getElementById("checkboxPlainText").checked = false;
+				document.getElementById("checkboxTransliterateHTML").checked = false;
+				document.getElementById("checkboxAddURL").checked = false;
+				
+				document.getElementById("checkboxTransliterate").checked = false;
+				document.getElementById("checkboxEnable").checked = false;
+
+				document.getElementById('textareaNewOriginal').value = "";
+				document.getElementById('textareaNewTranslated').value = "";
+				document.getElementById("radioButtonEnglishOriginal").checked = true;
+				document.getElementById("radioButtonEnglishTranslated").checked = true;
+				document.getElementById('textareaURLToOriginal').value = "";
+				document.getElementById('textareaURLToTranslation').value = "";
+								
+				if (stringAlphabetSelected == "Latin")
+				{
+					document.getElementById("buttonAlphabet").style.visibility = "hidden";
+					document.getElementById("tdTransliterate").style.visibility = "hidden";
+					document.getElementById("tdTransliterateHTML").style.visibility = "hidden";
+				}
+				else
+				{
+					document.getElementById("buttonAlphabet").style.visibility = "visible";
+					document.getElementById("tdTransliterate").style.visibility = "visible";
+					document.getElementById("tdTransliterateHTML").style.visibility = "visible";
+				}
+
+				document.getElementById("labelPassed").innerHTML = "Passed: 0%";
+
+				window.scrollTo({ top: 0, behavior: 'auto' });
+
+				alert("You can start editing in the upcoming window.\n\n" +
+					"Click \'Proceed\' to advance one sentence and\n" +
+					"click '\Undo\' to return to the last processed sentence.\n" +
+					"Make sure all sentences are separated by a blank line.\n\n" +
+					"Select \'Enable text editing\' if you want to implement text alterations.\n" +
+					"Otherwise clicking on a word opens the respective dictionary you chose.\n\n");
+
+			}
+		}
+	}
+
+	function functionSave()
+	{
+
+		if(document.getElementById('textareaEditOriginal').value == "")
+		{
+
+			alert("Open an existing file first or start a new project.");
+
+		}
+		else
+		{
+
+			var stringHelp = "";
+			i = 0;
+			if (stringOrderedPartOriginal.length > 0)
+			{
+
+				while (i < stringOrderedPartOriginal.length)
+    			{
+        			stringHelp += stringOrderedPartOriginal[i] + "\n\n";
+        			i++;
+    			}
+    			var k = stringHelp.length - 2;
+    			stringHelp = stringHelp.substring(0, k);
+
+				if (document.getElementById("textareaEditOriginal").value == "[End of file encountered.]")
+				{
+					stringUnorderedPartOriginal = "[End of file encountered.]";
+				}
+
+				// remove a possible transliteration
+				if(stringUnorderedPartOriginal.indexOf("\n-\n") > -1)
+				{
+					let arrayDeleteTransliteration = [];
+					arrayDeleteTransliteration = stringUnorderedPartOriginal.split("\n-\n");
+					stringUnorderedPartOriginal = arrayDeleteTransliteration[1];
+				}
+
+    	   		stringHelp += "[!split??]" + stringUnorderedPartOriginal + "[!split??]" + stringAlphabetSelected + "[!split??]" + stringDictionaryOriginal + "[!split??]" + stringURLToOriginal;
+			}
+			else
+			{
+
+				// remove a possible transliteration
+				if(stringUnorderedPartOriginal.indexOf("\n-\n") > -1)
+				{
+					let arrayDeleteTransliteration = [];
+					arrayDeleteTransliteration = stringUnorderedPartOriginal.split("\n-\n");
+					stringUnorderedPartOriginal = arrayDeleteTransliteration[1];
+				}
+
+    			stringHelp += "[Not yet one sentence processed][!split??]" + document.getElementById("textareaEditOriginal").value + "[!split??]" + stringAlphabetSelected + "[!split??]" + stringDictionaryOriginal + "[!split??]" + stringURLToOriginal;
+
+			}
+
+			var toSaveText1 = stringHelp;
+
+			stringHelp = "";
+			i = 0;
+			if (stringOrderedPartTranslated.length > 0)
+			{
+    			while (i < stringOrderedPartTranslated.length)
+    			{
+        			stringHelp += stringOrderedPartTranslated[i] + "\n\n";
+        			i++;
+    			}
+    			var k = stringHelp.length - 2;
+    			stringHelp = stringHelp.substring(0, k);
+
+				if (document.getElementById("textareaEditTranslated").value == "[End of file encountered.]")
+				{
+					stringUnorderedPartTranslated = "[End of file encountered.]";
+				}
+
+    			stringHelp += "[!split??]" + stringUnorderedPartTranslated + "[!split??]" + stringAlphabetSelected + "[!split??]" + stringDictionaryTranslated + "[!split??]" + stringURLToTranslation;
+
+			}
+			else
+			{
+
+    			stringHelp += "[Not yet one sentence processed][!split??]" + document.getElementById("textareaEditTranslated").value + "[!split??]" + stringAlphabetSelected + "[!split??]" + stringDictionaryTranslated + "[!split??]" + stringURLToTranslation;
+
+			}
+
+			var toSaveText2 = stringHelp;
+
+			document.getElementById('textareaSave').value = toSaveText1 + "{!split??}" + toSaveText2;
+
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableOpen').style.display = "none";
+			document.getElementById('tableSave').style.display = "block";
+			document.getElementById('tableCombine').style.display = "none";
+			document.getElementById('tableConcordance').style.display = "none";
+			document.getElementById('tableEdit').style.display = "none";
+			document.getElementById('tableHTMLAddenda').style.display = "none";
+			document.getElementById('tableHTMLResult').style.display = "none";
+
+		}
+
+	}
+
+	function functionOpen()
+	{
+
+		document.getElementById('tableNew').style.display = "none";
+		document.getElementById('tableOpen').style.display = "block";
+		document.getElementById('tableSave').style.display = "none";
+		document.getElementById('tableCombine').style.display = "none";
+		document.getElementById('tableConcordance').style.display = "none";
+		document.getElementById('tableEdit').style.display = "none";
+		document.getElementById('tableHTMLAddenda').style.display = "none";
+		document.getElementById('tableHTMLResult').style.display = "none";
+
+	}
+
+	function functionConfirmOpen() {
+
+		let stringTextToOpen = document.getElementById('textareaOpen').value;
+
+		let arrayTextToOpen = [];
+		arrayTextToOpen = stringTextToOpen.split("{!split??}");
+		
+		let arrayOriginal = arrayTextToOpen[0];
+		let arrayTranslated = arrayTextToOpen[1];
+
+		let helpArray1 = [];
+		helpArray1 = arrayOriginal.split("[!split??]")
+		
+		stringOrderedPartOriginal = [];
+		if (helpArray1[0] == "[Not yet one sentence processed]")
+		{
+
+    		stringUnorderedPartOriginal = helpArray1[1];
+			stringAlphabetSelected = helpArray1[2];
+    		stringDictionaryOriginal = helpArray1[3];
+			stringURLToOriginal = helpArray1[4];
+
+		}
+		else
+		{
+
+    		stringOrderedPartOriginal = helpArray1[0].split("\n\n");
+    		stringUnorderedPartOriginal = helpArray1[1];
+			stringAlphabetSelected = helpArray1[2];
+			stringDictionaryOriginal = helpArray1[3];
+			stringURLToOriginal = helpArray1[4];
+
+		}
+		
+		var helpArray2 = [];
+		helpArray2 = arrayTranslated.split("[!split??]")
+
+		stringOrderedPartTranslated = [];
+		if (helpArray2[0] == "[Not yet one sentence processed]")
+		{
+
+			stringUnorderedPartTranslated = helpArray2[1];
+			stringAlphabetSelected = helpArray2[2];
+			stringDictionaryTranslated = helpArray2[3];
+			stringURLToTranslation = helpArray2[4];
+
+		}
+		else
+		{
+
+    		stringOrderedPartTranslated = helpArray2[0].split("\n\n");
+			stringUnorderedPartTranslated = helpArray2[1];
+			stringAlphabetSelected = helpArray2[2];
+    		stringDictionaryTranslated = helpArray2[3];
+			stringURLToTranslation = helpArray2[4];
+
+		}
+
+		document.getElementById('textareaEditTranslated').value = stringUnorderedPartTranslated;
+		document.getElementById('textareaEditOriginal').value = stringUnorderedPartOriginal;
+
+		if (stringUnorderedPartOriginal == "[End of file encountered.]")
+		{
+			stringUnorderedPartOriginal = "";
+			document.getElementById("textareaEditOriginal").value = "[End of file encountered.]";
+		}
+
+		if (stringUnorderedPartTranslated == "[End of file encountered.]")
+		{
+			stringUnorderedPartTranslated = "";
+			document.getElementById("textareaEditTranslated").value = "[End of file encountered.]";
+		}
+
+		if (stringAlphabetSelected != "Latin")
+		{
+
+			if (stringAlphabetSelected == "Cyrillic")  { stringAlphabet = document.getElementById("textareaCyrillic").value; }
+			if (stringAlphabetSelected == "ModernGreek")  { stringAlphabet = document.getElementById("textareaModernGreek").value; }
+			if (stringAlphabetSelected == "Hebrew")  { stringAlphabet = document.getElementById("textareaHebrew").value; }
+			if (stringAlphabetSelected == "Arabic")  { stringAlphabet = document.getElementById("textareaArabic").value; }
+			if (stringAlphabetSelected == "AncientGreek")  { stringAlphabet = document.getElementById("textareaAncientGreek").value; }
+						
+			let arrayAlphabet = [];
+			arrayAlphabet = stringAlphabet.split("\n");
+			
+			listToken = [];
+			listKeyboard = [];
+       		listPronunciation = [];
+       		i = 0;
+			while (i < arrayAlphabet.length)
+       		{
+				var stringCharacter = [];
+        		stringCharacter = arrayAlphabet[i].split("\t");
+				listToken.push(stringCharacter[0]);
+				listKeyboard.push(stringCharacter[1]);
+				listPronunciation.push(stringCharacter[2]);
+        		i++;
+   	 		}
+			
+			// set tooltip
+			stringToolTipTextToPresent = "";
+
+			const el = document.getElementById("tooltip"); 
+			if (el !== null) 
+			{
+				el.remove();
+			}
+				
+    		i = 0;
+    		
+			let intNumberOfLines = 0;
+
+	        if (stringAlphabetSelected == "ModernGreek") { intNumberOfLines = 24; }
+    	    if (stringAlphabetSelected == "Cyrillic") { intNumberOfLines = 33; }
+        	if (stringAlphabetSelected == "Hebrew") { intNumberOfLines = 28; }
+        	if (stringAlphabetSelected == "Arabic") { intNumberOfLines = 28; }
+        	if (stringAlphabetSelected == "AncientGreek") { intNumberOfLines = 24; }
+
+        	let l = listToken.length;
+        	l = Math.floor((l - 1) / intNumberOfLines) + 1;
+        	let intNumberOfColumns = l;
+
+			stringToolTipTextToPresent = "<div class='tooltiptable' id='tooltip' style='top:20px; left: 50px; width: 1200px; height: 600px; background = 'white';'>";
+			
+			stringToolTipTextToPresent += "<table style='border: 1px solid black;'><tr><td colspan='" + (3 * intNumberOfColumns) + "'>Transliteration table for " + stringAlphabetSelected + ": </td></tr>";
+        	i = 0;
+        	j = 0;
+				
+        	while (i < intNumberOfLines)
+        	{
+
+				stringToolTipTextToPresent += "<tr>"
+
+				while (j < intNumberOfColumns) 
+   		   		{
+       	       		if (intNumberOfLines * j + i < listToken.length - 1)
+           			{
+               			stringToolTipTextToPresent += "<td WIDTH='25'>" + listToken[intNumberOfLines * j + i] + "</td><td WIDTH='10'> : </td><td WIDTH='50'>" + listPronunciation[intNumberOfLines * j + i] + "</td>";
+           			}
+           			else
+           			{
+           		 		stringToolTipTextToPresent += "<td></td><td></td><td></td>";
+           			}
+           			j++;
+           		}
+           		i++;
+       	 		j = 0;
+           		stringToolTipTextToPresent += "</tr>";
+       		}
+
+			stringToolTipTextToPresent += "</table></div>";
+
+			// Omzetten naar echt element 
+			const temp = document.createElement("div"); 
+			temp.innerHTML = stringToolTipTextToPresent; 
+			popup = temp.firstElementChild; // Toevoegen aan de pagina 
+			document.body.appendChild(popup);
+			popup.style.position = "fixed";
+							
+			document.getElementById("tooltip").style.display = "none";
+
+		}
+
+		document.getElementById('tableNew').style.display = "none";
+		document.getElementById('tableOpen').style.display = "none";
+		document.getElementById('tableSave').style.display = "none";
+		document.getElementById('tableCombine').style.display = "none";
+		document.getElementById('tableConcordance').style.display = "none";
+		document.getElementById('tableEdit').style.display = "block";
+		document.getElementById('tableHTMLAddenda').style.display = "none";
+		document.getElementById('tableHTMLResult').style.display = "none";
+
+		document.getElementById('textareaOpen').value = "";
+
+		document.getElementById('textAuthor').value = "";
+		document.getElementById('textTitleOriginal').value = "";
+		document.getElementById('textTitleTranslation').value = "";
+		document.getElementById("checkboxEnumerate").checked = false;
+		document.getElementById("checkboxSequential").checked = false;
+		document.getElementById("checkboxPlainText").checked = false;
+		document.getElementById("checkboxAddURL").checked = false;
+		document.getElementById("checkboxTransliterateHTML").checked = false;
+
+		document.getElementById("checkboxTransliterate").checked = false;
+		document.getElementById("checkboxEnable").checked = false;
+
+		if (stringAlphabetSelected == "Latin")
+		{
+			document.getElementById("buttonAlphabet").style.visibility = "hidden";
+			document.getElementById("tdTransliterate").style.visibility = "hidden";
+			document.getElementById("tdTransliterateHTML").style.visibility = "hidden";
+		}
+		else
+		{
+			document.getElementById("buttonAlphabet").style.visibility = "visible";
+			document.getElementById("tdTransliterate").style.visibility = "visible";
+			document.getElementById("tdTransliterateHTML").style.visibility = "visible";
+		}
+
+		document.getElementById("labelPassed").innerHTML = ""
+
+	}
+
+	function functionProceed()
+	{
+
+		stringUnorderedPartOriginal = document.getElementById("textareaEditOriginal").value;
+		stringUnorderedPartTranslated = document.getElementById("textareaEditTranslated").value;
+
+		if(document.getElementById("textareaEditOriginal").value != "[End of file encountered.]" && document.getElementById("textareaEditTranslated").value != "[End of file encountered.]")
+		{ 
+
+			// remove a possible transliteration
+			if(stringUnorderedPartOriginal.indexOf("\n-\n") > -1)
+			{
+				let arrayDeleteTransliteration = [];
+				arrayDeleteTransliteration = stringUnorderedPartOriginal.split("\n-\n");
+				stringUnorderedPartOriginal = arrayDeleteTransliteration[1];
+			}
+
+			stringUnorderedPartOriginal = functionRemoveObsoleteDigids(stringUnorderedPartOriginal);
+			stringUnorderedPartTranslated = functionRemoveObsoleteDigids(stringUnorderedPartTranslated);
+
+			if ((stringUnorderedPartOriginal.indexOf("\n\n") != -1) && (stringUnorderedPartTranslated.indexOf("\n\n") != -1))
+			{
+
+				let m = stringUnorderedPartOriginal.indexOf("\n\n");
+				let stringToAddTostringOrderedPart = stringUnorderedPartOriginal.substring(0, m);
+
+				stringOrderedPartOriginal.push(stringToAddTostringOrderedPart);
+
+				// add a possible new transliteration
+				let stringToTransliterate = "";
+				stringUnorderedPartOriginal = stringUnorderedPartOriginal.substring(m + 2);
+				if(document.getElementById("checkboxTransliterate").checked) {
+					if(stringUnorderedPartOriginal.indexOf("\n\n") > -1)
+					{
+						m = stringUnorderedPartOriginal.indexOf("\n\n");
+						stringToTransliterate = stringUnorderedPartOriginal.substring(0, m);
+						stringUnorderedPartOriginal = Transliterate(stringAlphabetSelected, stringToTransliterate) + "\n-\n" + stringUnorderedPartOriginal;
+					}
+					else
+					{
+						// in the case of the last sentence when there is no remaining double newline
+						stringUnorderedPartOriginal = Transliterate(stringAlphabetSelected, stringUnorderedPartOriginal) + "\n-\n" + stringUnorderedPartOriginal;
+					}
+				}
+
+				m = stringUnorderedPartTranslated.indexOf("\n\n");
+
+				stringToAddTostringOrderedPart = stringUnorderedPartTranslated.substring(0, m);
+				
+				stringOrderedPartTranslated.push(stringToAddTostringOrderedPart);
+				stringUnorderedPartTranslated = stringUnorderedPartTranslated.substring(m + 2);
+			
+				document.getElementById("textareaEditTranslated").value = stringUnorderedPartTranslated;
+				document.getElementById("textareaEditOriginal").value = stringUnorderedPartOriginal;
+
+				document.getElementById("textareaEditTranslated").scrollTop = 0;
+				document.getElementById("textareaEditOriginal").scrollTop = 0;
+
+			}
+			else
+			{
+
+				while(stringUnorderedPartOriginal.indexOf("\n\n") != -1) { stringUnorderedPartOriginal = stringUnorderedPartOriginal.replace(/\n\n/g, '\n'); }
+				stringOrderedPartOriginal.push(stringUnorderedPartOriginal);
+				stringUnorderedPartOriginal = "";
+				document.getElementById("textareaEditOriginal").value = "[End of file encountered.]";
+
+				while(stringUnorderedPartTranslated.indexOf("\n\n") != -1) { stringUnorderedPartTranslated = stringUnorderedPartTranslated.replace(/\n\n/g, '\n'); }
+				stringOrderedPartTranslated.push(stringUnorderedPartTranslated);
+				stringUnorderedPartTranslated = "";
+				document.getElementById("textareaEditTranslated").value = "[End of file encountered.]";
+
+				document.getElementById("labelPassed").innerHTML = "Passed: 100%"
+
+			}
+
+			var m = 0;
+			var intTotal = 0;
+			while (m < stringOrderedPartOriginal.length)
+			{
+				var stringHelp = stringOrderedPartOriginal[m];
+				var intToAddToTotal = stringHelp.length;
+				intTotal += intToAddToTotal;
+				m++;
+			}
+			var roundPassed = intTotal / (intTotal + stringUnorderedPartOriginal.length);
+			roundPassed = Math.round(roundPassed * 10000)/100;
+			var intSize = intTotal + stringUnorderedPartOriginal.length;
+			document.getElementById("labelPassed").innerHTML = "Passed: " + roundPassed + "%; number of ordered sentences: " + stringOrderedPartOriginal.length + "; size: " + intSize + " digids.";
+		
+		}
+
+	}
+
+	function functionRemoveObsoleteDigids(stringVarToModify)
+	{
+
+		stringVarToModify = stringVarToModify.replace("\r", "");
+
+    	var k;
+    	var l;
+
+    	// remove trailing sequence characters and blanks
+    	while (stringVarToModify.length > 0 &&
+			((stringVarToModify.substring(0, 1) == "\n") ||
+           	(stringVarToModify.substring(0, 1) == "\b") ||
+           	(stringVarToModify.substring(0, 1) == "\t") ||
+           	(stringVarToModify.substring(0, 1) == " ")))
+        {
+           	stringVarToModify = stringVarToModify.substring(1);
+        }
+        	
+
+    	var boolFinalDigidIsChar = false;
+    	i = stringVarToModify.length - 1;
+    	while (i > 0 && !boolFinalDigidIsChar)
+    	{
+        	if ((stringVarToModify.substring(i, i + 1) == "\n") ||
+            	(stringVarToModify.substring(i, i + 1) == "\b") ||
+            	(stringVarToModify.substring(i, i + 1) == "\t") ||
+            	(stringVarToModify.substring(i, i + 1) == " "))
+        	{
+            	stringVarToModify = stringVarToModify.substring(0, i);
+           		i--;
+        	}
+        	else
+        	{
+            	boolFinalDigidIsChar = true;
+        	}
+    	}
+
+		// remove mere backspaces, tabs and blanks between newline characters     
+    	k = stringVarToModify.indexOf("\n");
+    	l = stringVarToModify.indexOf("\n", k + 1);
+		
+    	while (l > -1 && l < stringVarToModify.length - 1)
+    	{
+
+        	var stringToVerify = stringVarToModify.substring(k + 1, l);
+			
+        	if (stringToVerify != "")
+        	{
+            	boolIsMereBlanksAndTabs = true;
+            	i = 0;
+            	while (i < stringToVerify.length && boolIsMereBlanksAndTabs)
+            	{
+                	if ((stringToVerify.substring(i, i + 1) == "\b") ||
+                    	(stringToVerify.substring(i, i + 1) == "\t") ||
+                    	(stringToVerify.substring(i, i + 1) == " "))
+                	{
+
+                	}
+                	else
+                	{
+                    	boolIsMereBlanksAndTabs = false;
+                	}
+                	i++;
+
+            	}
+            	if (boolIsMereBlanksAndTabs)
+            	{
+                	stringVarToModify = stringVarToModify.substring(0, k + 1) + stringVarToModify.substring(l);
+                }
+        	}
+
+        	k = l;
+        	l = stringVarToModify.indexOf("\n", k + 1);
+
+    	}
+
+		// reduce series of more than two newline characters to two newline characters                   
+    	var stringHelpString = "";
+    	i = 0;
+    	while (i < stringVarToModify.length)
+    	{
+        	stringHelpString += "\n";
+        	i++;
+    	}
+    	j = stringHelpString.length;
+    	while (j > 2)
+    	{
+        	while (stringVarToModify.indexOf(stringHelpString) > -1)
+        	{
+            	k = stringVarToModify.indexOf(stringHelpString);
+           	 	l = stringHelpString.length;
+            	stringVarToModify = stringVarToModify.substring(0, k) + stringVarToModify.substring(k + l - 2);
+        	}
+        	stringHelpString = stringHelpString.substring(2);
+        	j = stringHelpString.length;
+    	}
+
+    	var arrayVarToModify = [];
+		arrayVarToModify = stringVarToModify.split("\n\n");
+
+		i = 0;
+		while (i < arrayVarToModify.length)
+		{
+
+			// remove leading sequence characters before arrayVarToModify[i]
+			while (arrayVarToModify[i].length> 0 &&
+				(arrayVarToModify[i].substring(0, 1) == "\n") ||
+       			(arrayVarToModify[i].substring(0, 1) == "\b") ||
+       			(arrayVarToModify[i].substring(0, 1) == "\t") ||
+        		(arrayVarToModify[i].substring(0, 1) == " "))
+    		{
+        			arrayVarToModify[i] = arrayVarToModify[i].substring(1);
+        	}
+    		
+			// remove trailing sequence characters after arrayVarToModify[i]
+			while (arrayVarToModify[i].length - 1> 0 && 
+				(arrayVarToModify[i].substring(arrayVarToModify[i].length - 1, arrayVarToModify[i].length) == "\n") ||
+        		(arrayVarToModify[i].substring(arrayVarToModify[i].length - 1, arrayVarToModify[i].length) == "\b") ||
+        		(arrayVarToModify[i].substring(arrayVarToModify[i].length - 1, arrayVarToModify[i].length) == "\t") ||
+        		(arrayVarToModify[i].substring(arrayVarToModify[i].length - 1, arrayVarToModify[i].length) == " "))
+    		{
+        			arrayVarToModify[i] = arrayVarToModify[i].substring(0, arrayVarToModify[i].length - 1);
+			}
+			
+			i++;
+
+		}
+		
+		var stringHelp = "";
+		i = 0;
+		while (i < arrayVarToModify.length)
+		{
+			
+			stringHelp += arrayVarToModify[i] + "\n\n";
+			i++;
+			
+		}
+
+		return stringVarToModify = stringHelp.substring(0, stringHelp.length - 2);
+
+	}
+
+	function functionUndo()
+	{
+
+		if (stringOrderedPartOriginal.length > 0)
+		{
+			
+			// remove a possible transliteration
+			if (stringUnorderedPartOriginal.indexOf("\n-\n") > -1)
+			{
+				let m = stringUnorderedPartOriginal.indexOf("\n-\n");
+				stringUnorderedPartOriginal = stringUnorderedPartOriginal.substring(m + 3);
+			}
+			
+			if(document.getElementById("textareaEditOriginal").value == "[End of file encountered.]" && document.getElementById("textareaEditTranslated").value == "[End of file encountered.]")
+			{
+				stringUnorderedPartOriginal = stringOrderedPartOriginal[stringOrderedPartOriginal.length - 1];
+				stringUnorderedPartTranslated = stringOrderedPartTranslated[stringOrderedPartTranslated.length - 1];
+
+				if(document.getElementById("checkboxTransliterate").checked)
+				{
+					stringUnorderedPartOriginal = Transliterate(stringAlphabetSelected, stringUnorderedPartOriginal) + "\n-\n" + stringUnorderedPartOriginal;
+				}
+
+			}
+			else
+			{
+
+				stringUnorderedPartOriginal = stringOrderedPartOriginal[stringOrderedPartOriginal.length - 1] + " \n\n" + stringUnorderedPartOriginal;
+				stringUnorderedPartTranslated = stringOrderedPartTranslated[stringOrderedPartTranslated.length - 1] + " \n\n" + stringUnorderedPartTranslated;
+				
+				if(document.getElementById("checkboxTransliterate").checked)
+				{
+					stringUnorderedPartOriginal = Transliterate(stringAlphabetSelected, stringOrderedPartOriginal[stringOrderedPartOriginal.length - 1]) + "\n-\n" + stringUnorderedPartOriginal;
+				}
+
+			}
+
+			document.getElementById("textareaEditTranslated").value = stringUnorderedPartTranslated;
+			document.getElementById("textareaEditOriginal").value = stringUnorderedPartOriginal;
+
+			stringOrderedPartOriginal.pop();
+			stringOrderedPartTranslated.pop();
+
+			var m = 0;
+			var intTotal = 0;
+			while (m < stringOrderedPartOriginal.length)
+			{
+				var stringHelp = stringOrderedPartOriginal[m];
+				var intToAddToTotal = stringHelp.length;
+				intTotal += intToAddToTotal;
+				m++;
+			}
+			var roundPassed = intTotal / (intTotal + stringUnorderedPartOriginal.length);
+			roundPassed = Math.round(roundPassed * 10000)/100;
+			var intSize = intTotal + stringUnorderedPartOriginal.length;
+			document.getElementById("labelPassed").innerHTML = "Passed: " + roundPassed + "%; number of ordered sentences: " + stringOrderedPartOriginal.length + "; size: " + intSize + " digids.";
+			
+		}
+		else
+		{
+
+			alert("Beginning of file encountered");
+			document.getElementById("labelPassed").innerHTML = "Passed: 0%"
+		
+		}
+
+	}
+
+	function functionCheckBoxTransliterateChanged() 
+	{
+
+		if (stringAlphabetSelected != "Latin")
+		{
+
+			if (document.getElementById("textareaEditOriginal").value != "[End of file encountered.]")
+			{
+
+				stringUnorderedPartOriginal = document.getElementById('textareaEditOriginal').value;
+
+				if (stringUnorderedPartOriginal.indexOf("\n-\n") == -1)
+				{
+
+					// remove at the beginning of the textbox
+					while (stringUnorderedPartOriginal.substring(0, 1) == "\n" || stringUnorderedPartOriginal.substring(0, 1) == " ") 
+					{
+						stringUnorderedPartOriginal = stringUnorderedPartOriginal.substring(1);
+					}
+
+					if(stringUnorderedPartOriginal.indexOf("\n\n") > -1)
+					{
+				
+						let m = stringUnorderedPartOriginal.indexOf("\n\n");
+						let stringToTransliterate = stringUnorderedPartOriginal.substring(0, m);
+						stringUnorderedPartOriginal = Transliterate(stringAlphabetSelected, stringToTransliterate) + "\n-\n" + stringUnorderedPartOriginal;
+			
+					}
+					else
+					{
+						// in the case of the last sentence when there is no remaining double newline
+						stringUnorderedPartOriginal = Transliterate(stringAlphabetSelected, stringUnorderedPartOriginal) + "\n-\n" + stringUnorderedPartOriginal;
+					}
+
+					document.getElementById("textareaEditOriginal").value = stringUnorderedPartOriginal;
+
+				}
+				else
+				{
+
+					// remove a possible transliteration
+					if (stringUnorderedPartOriginal.indexOf("\n-\n") > -1)
+					{
+						let m = stringUnorderedPartOriginal.indexOf("\n-\n");
+						stringUnorderedPartOriginal = stringUnorderedPartOriginal.substring(m + 3);
+					}
+
+					// remove at the beginning of the textbox
+					while (stringUnorderedPartOriginal.substring(0, 1) == "\n" || stringUnorderedPartOriginal.substring(0, 1) == " ") 
+					{
+						stringUnorderedPartOriginal = stringUnOrderedPartOriginal.substring(1);
+					}
+
+					document.getElementById("textareaEditOriginal").value = stringUnorderedPartOriginal;
+
+				}
+
+			}
+
+		}
+		else
+		{
+			alert("Your file applies the Latin alphabet.\nSo transliteration is not applicable.");
+			document.getElementById("checkboxTransliterate").checked = false;
+		}
+
+	}
+
+	function functionCombine()
+	{
+
+		if(document.getElementById('textareaEditOriginal').value == "")
+		{
+
+			alert("Open an existing file first or start a new project.");
+
+		}
+		else
+		{
+
+			let m = 0;
+			var stringToCombine = "";
+			while (m < stringOrderedPartOriginal.length)
+			{
+			
+				stringToCombine += stringOrderedPartTranslated[m] + "\n\t\n";
+				stringToCombine += stringOrderedPartOriginal[m] + "\n\t\t\n";
+				if (document.getElementById("checkboxTransliterate").checked)
+				{
+					stringToCombine += Transliterate(stringAlphabetSelected, stringOrderedPartOriginal[m]) + "\n\t\t\t\n";
+				}
+				m++;
+
+			}
+
+			stringToCombine = stringToCombine.substring(0, stringToCombine.length - 1);
+
+			document.getElementById("textareaCombine").value = stringToCombine;
+
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableOpen').style.display = "none";
+			document.getElementById('tableSave').style.display = "none";
+			document.getElementById('tableCombine').style.display = "block";
+			document.getElementById('tableConcordance').style.display = "none";
+			document.getElementById('tableEdit').style.display = "none";
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableHTMLAddenda').style.display = "none";
+			document.getElementById('tableHTMLResult').style.display = "none";
+
+		}
+
+	}
+
+	function functionConcordance()
+	{
+
+		if(document.getElementById('textareaEditOriginal').value == "")
+		{
+
+			alert("Open an existing file first or start a new project.");
+
+		}
+		else
+		{
+
+			let m = 0;
+			var stringToConcord = "";
+			while (m < stringOrderedPartOriginal.length)
+			{
+			
+				stringToConcord += stringOrderedPartOriginal[m] + " ";
+				m++;
+
+			}
+			
+			if(stringUnorderedPartOriginal != "[End of file encountered.]")
+			{
+				stringToConcord += document.getElementById('textareaEditOriginal').value
+    			// stringToConcord += stringUnorderedPartOriginal;
+			}
+
+			const myPunctuation = document.getElementById('textareaPunctuation').value;
+
+			i = 0;
+			while (i < myPunctuation.length)
+			{
+				j = 0;
+				while(j < stringToConcord.length)
+				{
+					if (stringToConcord.substring(j, j + 1) == myPunctuation[i])
+					{
+						var stringHelp = stringToConcord.substring(0, j) + stringToConcord.substring(j + 1);
+						stringToConcord = stringHelp;
+					}
+					j++;
+				}
+    			i++;
+			}
+
+			stringToConcord = stringToConcord.replace(".", "");
+			stringToConcord = stringToConcord.replace("\n", " ");
+			stringToConcord = stringToConcord.replace("\t", " ");
+			stringToConcord = stringToConcord.replace("\r", "");
+			stringToConcord = stringToConcord.replace(" — ", " ");
+
+
+			if (stringDictionaryOriginal != "https://www.bing.com/translator/?from=de&to=en&text=" && stringDictionaryTranslated != "https://www.duden.de/suchen/dudenonline/")
+			{
+    			stringToConcord = stringToConcord.toLowerCase();
+			}
+
+			var arrayToConcord = stringToConcord.split(" ");
+			
+			var arrayConcordance = [];
+			
+			i = 0;
+			var j = 0;
+			var notFound;
+			while (i < arrayToConcord.length)
+			{
+
+    			j = 0;
+    			notFound = true;
+    			while ((j < arrayConcordance.length) && notFound)
+    			{
+
+        			if (arrayConcordance[j] != arrayToConcord[i])
+        			{
+            			j++;
+        			}
+        			else
+        			{
+            			notFound = false;
+            		}
+
+    			}
+
+    			if (notFound)
+    			{
+        			arrayConcordance.push(arrayToConcord[i]);
+    			}
+
+    		i++;
+
+			}
+			
+			let stringsToRemove = ["", "end", "of", "file", "encountered"];
+			let arrayNew = arrayConcordance.filter(item => !stringsToRemove.includes(item));
+			arrayConcordance = arrayNew;
+			arrayConcordance.sort();
+
+			var stringConcordance = "Your text contains " + arrayConcordance.length + " forms:\n\n";
+			i = 0;
+			while (i < arrayConcordance.length)
+			{
+				stringConcordance += arrayConcordance[i] + "\n\n";
+				i++;
+			}
+
+			document.getElementById("textareaConcordance").value = stringConcordance;
+
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableOpen').style.display = "none";
+			document.getElementById('tableSave').style.display = "none";
+			document.getElementById('tableCombine').style.display = "none";
+			document.getElementById('tableConcordance').style.display = "block";
+			document.getElementById('tableEdit').style.display = "none";
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableHTMLAddenda').style.display = "none";
+			document.getElementById('tableHTMLResult').style.display = "none";
+
+		}
+
+	}
+
+	function functionHTML()
+	{
+
+		if(document.getElementById('textareaEditOriginal').value == "")
+		{
+
+			alert("Open an existing file first or start a new project.");
+
+		}
+		else
+		{
+
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableOpen').style.display = "none";
+			document.getElementById('tableSave').style.display = "none";
+			document.getElementById('tableCombine').style.display = "none";
+			document.getElementById('tableConcordance').style.display = "none";
+			document.getElementById('tableEdit').style.display = "none";
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableHTMLAddenda').style.display = "block";
+			document.getElementById('tableHTMLResult').style.display = "none";
+
+		}
+
+	}
+
+	function functionConfirmHTML()
+	{
+
+		if(document.getElementById('textareaEditOriginal').value == "")
+		{
+
+			alert("Open an existing file first or start a new project.");
+
+		}
+		else
+		{
+
+			const myPunctuation = document.getElementById('textareaPunctuation').value;
+
+			let stringHTML = "<html>\n<head>\n<meta charset='utf-8'>\n<title>ParallelTextApp</title>\n<style>\n";
+    		stringHTML += "a:link {color: black; background-color: transparent; text-decoration: none;}\n";
+    		stringHTML += "a:visited {color: black; background-color: transparent; text-decoration: none;}\n";
+    		stringHTML += "a:hover { color: black; background-color: transparent; text-decoration: none;}\n";
+    		stringHTML += "a:active { color: black; background-color: transparent; text-decoration: none;}\n";
+    		stringHTML += "body {font-family: Times New Roman; font-size: 30px;}\n";
+			stringHTML += "table {width: 100%;}\n";
+			stringHTML += "td {vertical-align: text-top; font-size: 30px; padding: 15px;}\n";
+			stringHTML += "#counter {font-size: 10px; padding: 5px;}\n";
+			stringHTML += "#header {font-size: 50px; padding: 15px;}\n";
+			stringHTML += "</style>\n</head>\n<body><table>";
+
+			let boolDigidIsPunctuation;
+			let j;
+			let n = 0;
+			let counter = 0;
+			let stringWord = "";
+
+			if (document.getElementById("textAuthor").value != "")
+			{
+				stringHTML += "<tr><td><hr></td></tr><tr><td id='header'>" + document.getElementById("textAuthor").value + "</td></tr>";
+			}
+
+			if (document.getElementById("textTitleOriginal").value != "")
+			{
+				stringHTML += "<tr><td id='header'>" + document.getElementById("textTitleOriginal").value + "</td></tr>";
+			}
+			
+			if (document.getElementById("textTitleTranslation").value != "")
+			{
+				stringHTML += "<tr><td id='header'>&nbsp;&nbsp;" + document.getElementById("textTitleTranslation").value + "</td></tr>";
+			}
+
+			stringHTML += "<tr><td><hr></td></tr>";
+
+			if (stringURLToOriginal != "")
+			{
+				stringHTML += "<tr><td><a href='" + stringURLToOriginal + "' target='_blank'>Hyperlink to the original text on the internet.</a></td></tr>";
+			}
+
+			if (stringURLToTranslation != "")
+			{
+				stringHTML += "<tr><td><a href='" + stringURLToTranslation + "' target='_blank'>Hyperlink to the translated text on the internet.</a></td></tr><tr><td><hr></td></tr>";
+			}
+
+			stringHTML += "</table><table>";
+			
+			while (n < stringOrderedPartOriginal.length)
+			{
+
+    			if (counter % 10 == 0 && document.getElementById("checkboxEnumerate").checked)
+    			{
+					let m;
+            		if (counter == 0)
+            		{
+                		m = 1;
+            		}
+            		else
+            		{
+               			m = (counter / 10) + 1;
+            		}
+
+					if (document.getElementById("checkboxSequential").checked)
+					{
+            			stringHTML += "<tr><td><hr></td></tr>";
+            			stringHTML += "<tr><td id='counter'>&nbsp;&nbsp;" +  m + "</td></tr>";
+            			stringHTML += "<tr><td><hr></td></tr>";
+					}
+					else
+					{
+            			stringHTML += "<tr><td colspan='2'><hr></td></tr>";
+            			stringHTML += "<tr><td id='counter' colspan='2'>&nbsp;&nbsp;" +  m + "</td></tr>";
+            			stringHTML += "<tr><td colspan='2'><hr></td></tr>";
+					}
+
+        		}
+
+    			let stringToAnalyse1 = stringOrderedPartTranslated[n];
+    
+        		let stringToAddToHTML1 = "";
+				
+        		j = 0;
+        		stringToAnalyse1 = stringToAnalyse1 + "[";
+       			stringWord = "";
+        		while (j < stringToAnalyse1.length)
+        		{
+
+            		boolDigidIsPunctuation = myPunctuation.includes(stringToAnalyse1.substring(j, j + 1));
+					
+					if (stringToAnalyse1.substring(j, j + 1) == " ")
+					{
+						boolDigidIsPunctuation = true;
+					}
+
+            		if (!boolDigidIsPunctuation)
+            		{
+                		stringWord += stringToAnalyse1.substring(j, j + 1);
+            		}
+            		else
+            		{
+                		if (stringWord != "")
+                		{
+                    		stringToAddToHTML1 += "<span class='word1'>" + stringWord + "</span>" + stringToAnalyse1.substring(j, j + 1);
+                    		stringWord = "";
+                		}
+                		else
+                		{
+                    		stringToAddToHTML1 += stringToAnalyse1.substring(j, j + 1);
+                		}
+            		}
+            	j++;
+        		}
+
+        		stringToAddToHTML1 = stringToAddToHTML1.substring(0, stringToAddToHTML1.length - 1);
+
+				if (document.getElementById("checkboxPlainText").checked)
+				{
+					if (document.getElementById("checkboxSequential").checked)
+					{
+						stringHTML += "<tr><td>" + stringOrderedPartTranslated[n] + "</td>";
+					}
+					else
+					{
+						stringHTML += "<tr><td style='width: 50%;'>" + stringOrderedPartTranslated[n] + "</td>";
+					}
+				}
+				else
+				{
+					if (document.getElementById("checkboxSequential").checked)
+					{
+						stringHTML += "<tr><td>" + stringToAddToHTML1 + "</td>";
+					}
+					else
+					{
+						stringHTML += "<tr><td style='width: 50%;'>" + stringToAddToHTML1 + "</td>";
+					}
+				}
+
+				if (document.getElementById("checkboxSequential").checked)
+				{
+					stringHTML += "</tr><tr>";
+				}
+
+        		let stringToAnalyse2;
+    			let stringToAddToHTML2 = "";
+
+    			j = 0;
+    			stringToAnalyse2 = stringOrderedPartOriginal[n] + "[";
+    			stringWord = "";
+    			while (j < stringToAnalyse2.length)
+    			{
+
+        			boolDigidIsPunctuation = false;
+					boolDigidIsPunctuation = myPunctuation.includes(stringToAnalyse2.substring(j, j + 1));
+
+					if (stringToAnalyse2.substring(j, j + 1) == " ")
+					{
+						boolDigidIsPunctuation = true;
+					}
+
+        			if (!boolDigidIsPunctuation)
+        			{
+                		stringWord += stringToAnalyse2.substring(j, j + 1);
+        			}
+        			else
+        			{
+            			if (stringWord != "")
+           			 	{
+                			stringToAddToHTML2 += "<span class='word2'>" + stringWord + "</span>" + stringToAnalyse2.substring(j, j + 1);
+                			stringWord = "";
+            			}
+            			else
+            			{
+                			stringToAddToHTML2 += stringToAnalyse2.substring(j, j + 1);
+            			}
+        			}
+        			j++;
+    			}
+
+    			stringToAddToHTML2 = stringToAddToHTML2.substring(0, stringToAddToHTML2.length - 1);
+
+				if (document.getElementById("checkboxPlainText").checked)
+				{
+					if (document.getElementById("checkboxTransliterateHTML").checked)
+            		{
+						
+                		stringHTML += "<td>" + stringOrderedPartOriginal[n] + "<br><br>" + Transliterate(stringAlphabetSelected, stringOrderedPartOriginal[n]) + "</td></tr>";
+            		}
+            		else
+            		{
+						stringHTML += "<td>" + stringOrderedPartOriginal[n] + "</td></tr>";
+            		}
+				}
+				else
+				{
+            		if (document.getElementById("checkboxTransliterate").checked)
+            		{
+                		stringHTML += "<td>" + stringToAddToHTML2 + "<br><br>" + Transliterate(stringAlphabetSelected, stringOrderedPartOriginal[n]) + "</td></tr>";
+            		}
+            		else
+            		{
+                		stringHTML += "<td>" + stringToAddToHTML2 + "</td></tr>";
+            		}
+				}
+
+            	counter++;
+            	
+				n++;
+
+    		}
+
+    		stringHTML += "</table>";
+			stringHTML += "<script>";
+			stringHTML += "document.querySelectorAll('.word1, .word2').forEach(span => {";
+
+			stringHTML += "span.addEventListener('click', function() {";
+			stringHTML += "const word = this.textContent.trim();";
+			stringHTML += "let url;";
+
+			stringHTML += "if (this.classList.contains('word1'))";
+			stringHTML += "{";
+			stringHTML += "url = \"" + stringDictionaryTranslated + "\" + word;";
+			stringHTML += "}";
+			stringHTML += "else if (this.classList.contains('word2'))";
+			stringHTML += "{";
+			stringHTML += "url = \"" + stringDictionaryOriginal + "\" + word;";
+			stringHTML += "}";
+
+			stringHTML += "if (url)";
+			stringHTML += "{";
+			stringHTML += "window.open(url, '_blank');";
+			stringHTML += "}";
+
+			stringHTML += "});";
+
+			stringHTML += "});";
+
+			stringHTML += "<\/script>";
+						
+			stringHTML += "</body></html>";
+
+			document.getElementById("textareaHTMLResult").value = stringHTML;
+
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableOpen').style.display = "none";
+			document.getElementById('tableSave').style.display = "none";
+			document.getElementById('tableCombine').style.display = "none";
+			document.getElementById('tableConcordance').style.display = "none";
+			document.getElementById('tableEdit').style.display = "none";
+			document.getElementById('tableNew').style.display = "none";
+			document.getElementById('tableHTMLAddenda').style.display = "none";
+			document.getElementById('tableHTMLResult').style.display = "block";
+
+		}
+
+	}
+	
+	function functionReturnToEdit()
+	{
+
+		document.getElementById('tableNew').style.display = "none";
+		document.getElementById('tableOpen').style.display = "none";
+		document.getElementById('tableSave').style.display = "none";
+		document.getElementById('tableCombine').style.display = "none";
+		document.getElementById('tableConcordance').style.display = "none";
+		document.getElementById('tableEdit').style.display = "block";
+		document.getElementById('tableHTMLAddenda').style.display = "none";
+		document.getElementById('tableHTMLResult').style.display = "none";
+
+		document.getElementById("checkboxEnumerate").checked = false;
+		document.getElementById("checkboxSequential").checked = false;
+		document.getElementById("checkboxPlainText").checked = false;
+		document.getElementById("checkboxTransliterateHTML").checked = false;
+
+	}
+
+</script>
+
+</head>
+
+<body onload="functionOnLoad();">
+
+<table id="tableMain">
+<tr>
+	<td><button onclick="functionNew();">New</button>&nbsp;&nbsp;
+	<button onclick="functionOpen()";>Open</button>&nbsp;&nbsp;
+	<button id="buttonSave" onclick="functionSave();";>Save</button>&nbsp;&nbsp;
+	<button	id="buttonCombine" onclick="functionCombine()";>Combine</button>&nbsp;&nbsp;
+	<button	id="buttonHTML" onclick="functionHTML();">HTML</button>&nbsp;&nbsp;
+	<button	id="buttonConcordance" onclick="functionConcordance();">Concordance</button></td>
+	<td style="text-align: right;"><button id="buttonAlphabet" onmouseenter="document.getElementById('tooltip').style.display='block';" onmouseleave="document.getElementById('tooltip').style.display='none';">Alphabet</button></td>
+	
+	</tr>
+</table>
+
+<table id="tableNew">
+
+<tr>
+	<td>
+	<br>
+	Step 1: choose the dictionary to apply to your original text.<br>
+	<br>
+	</td>
+</tr>
+
+<tr><td><input type="radio" id="radioButtonEnglishOriginal" value="" name="radiobuttonsDictionary" checked>English (Longman)</td></tr>
+<tr><td><input type="radio" id="radioButtonEnglishWebsterOriginal" value="" name="radiobuttonsDictionary" >English (Webster)</td></tr>
+<tr><td><input type="radio" id="radioButtonFrenchOriginal" value="" name="radiobuttonsDictionary">French (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonFrenchRobertOriginal" value="" name="radiobuttonsDictionary">French (Le Robert)</td></tr>
+<tr><td><input type="radio" id="radioButtonGermanOriginal" value="" name="radiobuttonsDictionary">German (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonGermanDudenOriginal" value="" name="radiobuttonsDictionary">German (Duden)</td></tr>
+<tr><td><input type="radio" id="radioButtonItalianOriginal" value="" name="radiobuttonsDictionary">Italian (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonModernGreekOriginal" value="" name="radiobuttonsDictionary" >Modern Greek (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonCyrillicOriginal" value="" name="radiobuttonsDictionary">Cyrillic (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonCyrillicPROMTOriginal" value="" name="radiobuttonsDictionary" >Cyrillic (PROMT)</td></tr>
+<tr><td><input type="radio" id="radioButtonHebrewOriginal" value="" name="radiobuttonsDictionary">Hebrew (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonArabicOriginal" value="" name="radiobuttonsDictionary">Arabic (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonLatinOriginal" value="" name="radiobuttonsDictionary" >Latin (Perseus)</td></tr>
+<tr><td><input type="radio" id="radioButtonAncientGreekOriginal" value="" name="radiobuttonsDictionary">Ancient Greek (Perseus)</td></tr>
+<tr><td><input type="radio" id="radioButtonOtherOriginal" value="" name="radiobuttonsDictionary">Other (e. g. 'https://www.merriam-webster.com/dictionary/')</td></tr>
+<tr><td><textarea id="textareaOtherOriginal" cols="50" rows="1"></textarea></td></tr>
+<tr>
+	<td>
+	<br>	
+	Step 2: paste your original text (e. g. the complete book) in the textbox below.<br>
+	<br>
+	</td>
+</tr>
+<tr>
+		<td><textarea id="textareaNewOriginal" cols="50" rows="10" spellcheck="false" onclick=""></textarea></td>
+</tr>
+<tr>
+	<td>
+	<br>	
+	Step 3 (optional): paste the URL to your original text in the textbox below.<br>
+	<br>
+	</td>
+</tr>
+<tr>
+	<td><textarea id="textareaURLToOriginal" cols="50" rows="1" spellcheck="false" onclick=""></textarea></td>
+</tr>
+<tr>
+	<td>
+	<br>
+	Step 4: choose the dictionary to apply to your translated text.<br>
+	<br>
+	</td>
+</tr>
+
+<tr><td><input type="radio" id="radioButtonEnglishTranslated" value="" name="radiobuttonsDictionary1" checked>English (Longman)</td></tr>
+<tr><td><input type="radio" id="radioButtonEnglishWebsterTranslated" value="" name="radiobuttonsDictionary1" >English (Webster)</td></tr>
+<tr><td><input type="radio" id="radioButtonFrenchTranslated" value="" name="radiobuttonsDictionary1">French (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonFrenchRobertTranslated" value="" name="radiobuttonsDictionary1">French (Le Robert)</td></tr>
+<tr><td><input type="radio" id="radioButtonGermanTranslated" value="" name="radiobuttonsDictionary1">German (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonGermanDudenTranslated" value="" name="radiobuttonsDictionary1">German (Duden)</td></tr>
+<tr><td><input type="radio" id="radioButtonItalianTranslated" value="" name="radiobuttonsDictionary1">Italian (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonModernGreekTranslated" value="" name="radiobuttonsDictionary1" >Modern Greek (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonCyrillicTranslated" value="" name="radiobuttonsDictionary1">Cyrillic (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonCyrillicPROMTTranslated" value="" name="radiobuttonsDictionary1" >Cyrillic (PROMT)</td></tr>
+<tr><td><input type="radio" id="radioButtonHebrewTranslated" value="" name="radiobuttonsDictionary1">Hebrew (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonArabicTranslated" value="" name="radiobuttonsDictionary1">Arabic (Bing)</td></tr>
+<tr><td><input type="radio" id="radioButtonOtherTranslated" value="" name="radiobuttonsDictionary1">Other (e. g. 'https://www.merriam-webster.com/dictionary/')</td></tr>
+<tr><td><textarea id="textareaOtherTranslated" cols="50" rows="1"></textarea></td></tr>
+
+<tr>
+	<td>
+	<br>
+	Step 5: Paste your translated text (e. g. the complete book) in the textbox below.<br>
+	<br>
+	</td>
+</tr>
+<tr>
+		<td><textarea id="textareaNewTranslated" cols="50" rows="10" spellcheck="false"></textarea></td>
+</tr>
+<tr>
+	<td>
+	<br>	
+	Step 6 (optional): paste the URL to your translated text in the textbox below.<br>
+	<br>
+	</td>
+</tr>
+<tr>
+	<td><textarea id="textareaURLToTranslation" cols="50" rows="1" spellcheck="false" onclick=""></textarea></td>
+</tr>
+<tr>
+	<br>
+	<td><button onclick="functionConfirmNew();">Confirm</button></td>
+	<br>
+</tr>
+
+</table>
+
+<table id="tableOpen">
+	<tr><td>Paste the file you saved last time in the textbox below.</td></tr>
+	<tr><td><textarea id="textareaOpen" cols="50" rows="10" spellcheck="false"></textarea></td></tr>
+	<tr><td><button	onclick="functionConfirmOpen();">Confirm</button></td></tr>
+</table>
+
+<table id="tableSave">
+	<tr><td>Rightclick 'Select all' and copy the content of the textbox below in a textfile to use next time.</td></tr>
+	<tr><td><textarea id="textareaSave" cols="50" rows="10" spellcheck="false"></textarea></td></tr>
+	<tr><td><button	style="width: 30%;" onclick="functionReturnToEdit()";>Edit</button></td></tr>
+</table>
+
+<table id="tableCombine">
+	<tr><td><textarea id="textareaCombine" cols="50" rows="13" spellcheck="false" onclick="functionConsultDictionaryCombine(stringDictionaryOriginal, stringDictionaryTranslated);"></textarea></td></tr>
+	<tr><td><button	style="width: 30%;" onclick="functionReturnToEdit()";>Edit</button></td></tr>
+</table>
+
+<table id="tableConcordance">
+	<tr><td><textarea id="textareaConcordance" cols="50" rows="13" spellcheck="false"></textarea></td></tr>
+	<tr><td><button	style="width: 30%;" onclick="functionReturnToEdit()";>Edit</button></td></tr>
+</table>
+
+<table id="tableHTMLAddenda">
+	<tr><td colspan="2"><input type="checkbox" id="checkboxEnumerate"> Enumerate every ten sentences</td></tr>
+	<tr><td colspan="2"><input type="checkbox" id="checkboxSequential"> Sequential presentation (instead of adjacent)</td></tr>
+	<tr><td colspan="2"><input type="checkbox" id="checkboxPlainText"> Present as plain text (excluding hyperlinks to dictionaries)</td></tr>
+	<tr><td colspan="2"><input type="checkbox" id="checkboxAddURL"> Present a reference to the texts on the internet (if available)</td></tr>
+	<tr><td id="tdTransliterateHTML" colspan="2"><input type="checkbox" id="checkboxTransliterateHTML"> Add a transliteration (if applicable)</td></tr>
+	<tr><td style="width: 350px;">Author (optional):</td><td><input type="text" id="textAuthor" size="40" style="font-size: 30px; padding: 5px;"></td></tr>
+	<tr><td style="width: 350px;">Title original (optional):</td><td><input type="text" id="textTitleOriginal" size="40" style="font-size: 30px; padding: 5px;"></td></tr>
+	<tr><td style="width: 350px;">Title translation (optional):</td><td><input type="text" id="textTitleTranslation" size="40" style="font-size: 30px; padding: 5px;"></td></tr>
+	<tr><td><button onclick="functionConfirmHTML()">Confirm</button></td></tr>
+</table>
+
+<table id="tableHTMLResult">
+	<tr><td colspan="2">Rightclick 'Select all' and copy the content of the textbox below in a textfile.<br>
+		Select 'File>Save as' and name it 'Your file.html' (with extension '.html' instead of '.txt').<br>
+		and save it as 'All files'.<br>
+		Thus you will have the HTML-version of the text you processed so far.</td></tr>
+	<tr><td colspan="2"><textarea id="textareaHTMLResult" cols="50" rows="10" spellcheck="false"></textarea></td></tr>
+	<tr><td><button	style="width: 30%;" onclick="functionReturnToEdit()";>Edit</button></td></tr>
+</table>
+
+<table id="tableEdit">
+	<tr>
+		<td><textarea id="textareaEditTranslated" cols="50" rows="15" spellcheck="false" onclick="functionConsultDictionaryTranslated(stringDictionaryTranslated)";></textarea></td>
+		<td><textarea id="textareaEditOriginal" cols="50" rows="15" spellcheck="false" onclick="functionConsultDictionaryOriginal(stringDictionaryOriginal);"></textarea></td>
+	</tr>
+	<tr>
+		<td><button onclick="functionProceed();">Proceed</button></td>
+		<td><button onclick="functionUndo();">Undo</button></td>
+	</tr>
+	<tr>
+		<td style="font-size: 20px;"><label id="labelPassed"></label></td>
+	</tr>
+	<tr colspan="2">
+		<td style="font-size: 20px;">
+			<input type="checkbox" id="checkboxEnable"> Enable text editing
+		</td>
+	</tr>
+	<tr>
+		<td id="tdTransliterate" style="font-size: 20px;">
+			<input type="checkbox" id="checkboxTransliterate" onchange="functionCheckBoxTransliterateChanged();"> Transliterate
+		</td>
+	</tr>
+</table>
+
+<table>
+<tr><td><textarea id="textareaPunctuation" rows="30" spellcheck="false">
+.	
+1	
+2	
+3	
+4	
+5	
+6	
+7	
+8	
+9	
+0	
+$	
+%	
+&	
+*	
+(	
+)	
++	
+=	
+[	
+]	
+{	
+}	
+<	
+>	
+/	
+:	
+;	
+,	
+«	
+»	
+“	
+·	
+'	
+"	
+۔	
+،	
+:	
+؛	
+؟	
+!	
+“	
+”	
+¿	
+¡	
+
+</textarea></td></tr>
+</table>
+
+<table>
+<tr><td><textarea id="textareaCyrillic" rows="30" spellcheck="false">
+А	A	A	1040	0410	 	CYRILLIC CAPITAL LETTER A
+Б	B	B	1041	0411	 	CYRILLIC CAPITAL LETTER BE
+В	V	V	1042	0412	 	CYRILLIC CAPITAL LETTER VE
+Г	G	G	1043	0413	 	CYRILLIC CAPITAL LETTER GHE
+Д	D	D	1044	0414	 	CYRILLIC CAPITAL LETTER DE
+Е	Je	Je	1045	0415	 	CYRILLIC CAPITAL LETTER IE
+Ë	Jo	Jo	dummy
+Ж	Z1	Zh	1046	0416	 	CYRILLIC CAPITAL LETTER ZHE
+З	Z2	Z	1047	0417	 	CYRILLIC CAPITAL LETTER ZE
+И	Ji	Ji	1048	0418	 	CYRILLIC CAPITAL LETTER I
+Й	JJ	JJ	1049	0419	 	CYRILLIC CAPITAL LETTER SHORT I
+К	K	K	1050	041A	 	CYRILLIC CAPITAL LETTER KA
+Л	L	L	1051	041B	 	CYRILLIC CAPITAL LETTER EL
+М	M	M	1052	041C	 	CYRILLIC CAPITAL LETTER EM
+Н	N	N	1053	041D	 	CYRILLIC CAPITAL LETTER EN
+О	O	O	1054	041E	 	CYRILLIC CAPITAL LETTER O
+П	P	P	1055	041F	 	CYRILLIC CAPITAL LETTER PE
+Р	R	R	1056	0420	 	CYRILLIC CAPITAL LETTER ER
+С	S1	S	1057	0421	 	CYRILLIC CAPITAL LETTER ES
+Т	T1	T	1058	0422	 	CYRILLIC CAPITAL LETTER TE
+У	U	U	1059	0423	 	CYRILLIC CAPITAL LETTER U
+Ф	F	F	1060	0424	 	CYRILLIC CAPITAL LETTER EF
+Х	X	Kh	1061	0425	 	CYRILLIC CAPITAL LETTER HA
+Ц	T2	Ts	1062	0426	 	CYRILLIC CAPITAL LETTER TSE
+Ч	T3	Ch	1063	0427	 	CYRILLIC CAPITAL LETTER CHE
+Ш	S2	Sh	1064	0428	 	CYRILLIC CAPITAL LETTER SHA
+Щ	S3	Shch	1065	0429	 	CYRILLIC CAPITAL LETTER SHCHA
+Ъ	>"	"	1066	042A	 	CYRILLIC CAPITAL LETTER HARD SIGN
+Ы	I	I	1067	042B	 	CYRILLIC CAPITAL LETTER YERU
+Ь	>'	'	1068	042C	 	CYRILLIC CAPITAL LETTER SOFT SIGN
+Э	E	E	1069	042D	 	CYRILLIC CAPITAL LETTER E
+Ю	Ju	Ju	1070	042E	 	CYRILLIC CAPITAL LETTER YU
+Я	Ja	Ja	1071	042F	 	CYRILLIC CAPITAL LETTER YA
+а	a	a	1072	0430	 	CYRILLIC SMALL LETTER A
+б	b	b	1073	0431	 	CYRILLIC SMALL LETTER BE
+в	v	v	1074	0432	 	CYRILLIC SMALL LETTER VE
+г	g	g	1075	0433	 	CYRILLIC SMALL LETTER GHE
+д	d	d	1076	0434	 	CYRILLIC SMALL LETTER DE
+е	je	je	1077	0435	 	CYRILLIC SMALL LETTER IE
+ё	jo	jo	dummy
+ж	z1	zh	1078	0436	 	CYRILLIC SMALL LETTER ZHE
+з	z2	z	1079	0437	 	CYRILLIC SMALL LETTER ZE
+и	ji	ji	1080	0438	 	CYRILLIC SMALL LETTER I
+й	jj	jj	1081	0439	 	CYRILLIC SMALL LETTER SHORT I
+к	k	k	1082	043A	 	CYRILLIC SMALL LETTER KA
+л	l	l	1083	043B	 	CYRILLIC SMALL LETTER EL
+м	m	m	1084	043C	 	CYRILLIC SMALL LETTER EM
+н	n	n	1085	043D	 	CYRILLIC SMALL LETTER EN
+о	o	o	1086	043E	 	CYRILLIC SMALL LETTER O
+п	p	p	1087	043F	 	CYRILLIC SMALL LETTER PE
+р	r	r	1088	0440	 	CYRILLIC SMALL LETTER ER
+с	s1	s	1089	0441	 	CYRILLIC SMALL LETTER ES
+т	t1	t	1090	0442	 	CYRILLIC SMALL LETTER TE
+у	u	u	1091	0443	 	CYRILLIC SMALL LETTER U
+ф	f	f	1092	0444	 	CYRILLIC SMALL LETTER EF
+х	x	kh	1093	0445	 	CYRILLIC SMALL LETTER HA
+ц	t2	ts	1094	0446	 	CYRILLIC SMALL LETTER TSE
+ч	t3	tsj	1095	0447	 	CYRILLIC SMALL LETTER CHE
+ш	s2	sj	1096	0448	 	CYRILLIC SMALL LETTER SHA
+щ	s3	shch	1097	0449	 	CYRILLIC SMALL LETTER SHCHA
+ъ	"	"	1098	044A	 	CYRILLIC SMALL LETTER HARD SIGN
+ы	i	i	1099	044B	 	CYRILLIC SMALL LETTER YERU
+ь	'	'	1100	044C	 	CYRILLIC SMALL LETTER SOFT SIGN
+э	e	é	1101	044D	 	CYRILLIC SMALL LETTER E
+ю	ju	ju	1102	044E	 	CYRILLIC SMALL LETTER YU
+я	ja	ja	1103	044F	 	CYRILLIC SMALL LETTER YA
+А́	Á	Á	dummy
+О́	Ó	Ó	dummy
+Э́	É	É	dummy
+Ы́	Í	Í	dummy
+У́	Ú	Ú	dummy
+Я́	Já	Já	dummy
+Ë́	Jó	Jó	dummy
+Е́	Jé	Jé	dummy
+И́	Jí	Jí	dummy
+Ю́	Jú	Jú	dummy
+а́	á	á	dummy
+о́	ó	ó	dummy
+э́	é	é	dummy
+ы́	í	í	dummy
+у́	ú	ú	dummy
+я́	já	já	dummy
+ё́	jó	jó	dummy
+е́	jé	jé	dummy
+и́	jí	jí	dummy
+ю́	jú	jú	dummy
+«	<<	«	dummy
+»	>>	»	dummy
+—	--	—	dummy
+**	**	**	dummy
+ą	>a	o	don
+ć	>c	ch	cheese
+ę	>e	è	ten
+ł	>l	ll	full/w
+ń	>n	n	onion
+ó	>o	oe	cool
+ś	>s	sh	sheet
+ź	>z1	s	Rhodesia
+ż	>z2	s	pleasure
+́	~	'	dummy
+</textarea></td></tr>
+</table>
+
+<table>
+	<tr><td><textarea id="textareaModernGreek" rows="30" spellcheck="false">
+Α	A	A	913	0391	&Alpha;	GREEK CAPITAL LETTER ALPHA
+Β	B	B	914	0392	&Beta;	GREEK CAPITAL LETTER BETA
+Γ	G	G	915	0393	&Gamma;	GREEK CAPITAL LETTER GAMMA
+Δ	D	D	916	0394	&Delta;	GREEK CAPITAL LETTER DELTA
+Ε	E	E	917	0395	&Epsilon;	GREEK CAPITAL LETTER EPSILON
+Ζ	Z	Z	918	0396	&Zeta;	GREEK CAPITAL LETTER ZETA
+Η	H	H	919	0397	&Eta;	GREEK CAPITAL LETTER ETA
+Θ	Q	Th	920	0398	&Theta;	GREEK CAPITAL LETTER THETA
+Ι	I	I	921	0399	&Iota;	GREEK CAPITAL LETTER IOTA
+Κ	K	K	922	039A	&Kappa;	GREEK CAPITAL LETTER KAPPA
+Λ	L	L	923	039B	&Lambda;	GREEK CAPITAL LETTER LAMBDA
+Μ	M	M	924	039C	&Mu;	GREEK CAPITAL LETTER MU
+Ν	N	N	925	039D	&Nu;	GREEK CAPITAL LETTER NU
+Ξ	J	Ks	926	039E	&Xi;	GREEK CAPITAL LETTER XI
+Ο	O	O	927	039F	&Omicron;	GREEK CAPITAL LETTER OMICRON
+Π	P	P	928	03A0	&Pi;	GREEK CAPITAL LETTER PI
+Ρ	R	R	929	03A1	&Rho;	GREEK CAPITAL LETTER RHO
+Σ	S	S	931	03A3	&Sigma;	GREEK CAPITAL LETTER SIGMA
+Τ	T	T	932	03A4	&Tau;	GREEK CAPITAL LETTER TAU
+Υ	U	U	933	03A5	&Upsilon;	GREEK CAPITAL LETTER UPSILON
+Φ	F	Ph	934	03A6	&Phi;	GREEK CAPITAL LETTER PHI
+Χ	X	Ch	935	03A7	&Chi;	GREEK CAPITAL LETTER CHI
+Ψ	Y	Ps	936	03A8	&Psi;	GREEK CAPITAL LETTER PSI
+Ω	W	Oo	937	03A9	&Omega;	GREEK CAPITAL LETTER OMEGA
+α	a	a	945	03B1	&alpha;	GREEK SMALL LETTER ALPHA
+β	b	b	946	03B2	&beta;	GREEK SMALL LETTER BETA
+γ	g	g	947	03B3	&gamma;	GREEK SMALL LETTER GAMMA
+δ	d	d	948	03B4	&delta;	GREEK SMALL LETTER DELTA
+ε	e	e	949	03B5	&epsilon;	GREEK SMALL LETTER EPSILON
+ζ	z	z	950	03B6	&zeta;	GREEK SMALL LETTER ZETA
+η	h	è	951	03B7	&eta;	GREEK SMALL LETTER ETA
+θ	q	th	952	03B8	&theta;	GREEK SMALL LETTER THETA
+ι	i	i	953	03B9	&iota;	GREEK SMALL LETTER IOTA
+κ	k	k	954	03BA	&kappa;	GREEK SMALL LETTER KAPPA
+λ	l	l	955	03BB	&lambda;	GREEK SMALL LETTER LAMBDA
+μ	m	m	956	03BC	&mu;	GREEK SMALL LETTER MU
+ν	n	n	957	03BD	&nu;	GREEK SMALL LETTER NU
+ξ	j	ks	958	03BE	&xi;	GREEK SMALL LETTER XI
+ο	o	o	959	03BF	&omicron;	GREEK SMALL LETTER OMICRON
+π	p	p	960	03C0	&pi;	GREEK SMALL LETTER PI
+ρ	r	r	961	03C1	&rho;	GREEK SMALL LETTER RHO
+σ	s	s	963	03C3	&sigma;	GREEK SMALL LETTER SIGMA
+τ	t	t	964	03C4	&tau;	GREEK SMALL LETTER TAU
+υ	u	u	965	03C5	&upsilon;	GREEK SMALL LETTER UPSILON
+φ	f	ph	966	03C6	&phi;	GREEK SMALL LETTER PHI
+χ	x	ch	967	03C7	&chi;	GREEK SMALL LETTER CHI
+ψ	y	ps	968	03C8	&psi;	GREEK SMALL LETTER PSI
+ω	w	oo	969	03C9	&omega;	GREEK SMALL LETTER OMEGA
+ς	c	c	962	03C2	&sigmaf;	GREEK SMALL LETTER FINAL SIGMA
+Ά	Á	Á	a
+Έ	É	É	e/
+Ή	È'	È'	h/
+Ί	Í	Í	i/
+Ό	Ó	Ó	o/
+Ύ	Ú	Ú	u/
+Ώ	Óo	Óo	w/
+ά	á	á	a/
+έ	é	é	e/
+ή	è'	è'	h/
+ί	í	í	i/
+ό	ó	ó	o/
+ύ	ú	ú	u/
+ώ	óo	óo	w/
+	</textarea></td></tr>
+</table>
+
+<table>
+	<tr><td><textarea id="textareaHebrew" rows="30" spellcheck="false">
+א	'	'	dummy
+ב	b	v	dummy
+ג	g	w	dummy
+ד	d	th	dummy
+ה	he	h	dummy
+ו	w	w	dummy
+ז	z	z	dummy
+ח	ht	h	dummy
+ט	tt	t	dummy
+י	j	y	dummy
+כ	k	ch	dummy
+ך	fk	ch	dummy
+ל	l	l	dummy
+מ	m	m	dummy
+ם	fm	m	dummy
+נ	n	n	dummy
+ן	fn	n	dummy
+ס	sa	sa	dummy
+ע	"	"	dummy
+פ	p	f	dummy
+ף	fp	f	dummy
+צ	y	ts	dummy
+ץ	fy	ts	dummy
+ק	q	q	dummy
+ר	r	r	dummy
+שׁ	ss	s	dummy
+שׂ	sj	sj	dummy
+ת	ta	th	dummy
+אּ	>''	''	dummy
+בּ	>b	bb	dummy
+גּ	>g	gg	dummy
+דּ	>d	dd	dummy
+הּ	>he	hh	dummy
+וּ	>w	ww	dummy
+זּ	>z	zz	dummy
+טּ	>tt	tt	dummy
+יּ	>j	jj	dummy
+כּ	>k	kk	dummy
+ךּ	>fk	kk	dummy
+לּ	>l	ll	dummy
+מּ	>m	mm	dummy
+נּ	>n	nn	dummy
+סּ	>s	ss	dummy
+פּ	>p	pp	dummy
+ףּ	>fp	pp	dummy
+ץּ	>fy	tsts	dummy
+קּ	>q	qq	dummy
+רּ	>r	rr	dummy
+שּׁ	>ss	ss	dummy
+שּׂ	>sj	sjsj	dummy
+תּ	>ta	tt	dummy
+ֹ	o	oo	holem
+ְ	sw	:	swa
+ַ	a	a	patah
+ָ	ä	ao	qamès
+ֵ	e	ee	sere
+ֶ	è	è	sgol
+ֻ	u	oe	qibbus
+ֳ	ó	ó	dummy
+ֲ	á	á	dummy
+ֱ	â	â	dummy
+ִ	i	ie	hirèq
+ּ	*	*	dagesh
+ בּ	>>b	 b	dagesh lene b
+ גּ	>>g	 g	dagesh lene g
+ דּ	>>d	 d	dagesh lene d
+ כּ	>>k	 k	dagesh lene k
+ פּ	>>p	 p	dagesh lene p
+ תּ	>>t	 t	dagesh lene t
+	</textarea></td></tr>
+</table>
+
+<table>
+	<tr><td><textarea id="textareaArabic" rows="30" spellcheck="false">
+ا	a1	'	a
+ـا	a2	'	a
+ـا	a3	'	a
+ا	a4	'	a
+بـ	b1	b	b	habit
+ـبـ	b2	b	b
+ـب	b3	b	b
+ب	b4	b	b
+تـ	t1	t	t	stop (ts = t-short)
+ـتـ	t2	t	t
+ـت	t3	t	t
+ت	t4	t	t
+ثـ	th1	th	th	thick
+ـثـ	th2	th	th
+ـث	th3	th	th
+ث	th4	th	th
+جـ	j1	j	j	judge, great, jour
+ـجـ	j2	j	j
+ـج	j3	j	j
+ج	j4	j	j
+حـ	H1	H	H	whispering of the throat
+ـحـ	H2	H	H
+ـح	H3	H	H
+ح	H4	H	H
+خـ	kh1	kh	kh	loch, mujer
+ـخـ	kh2	kh	kh
+ـخ	kh3	kh	kh
+خ	kh4	kh	kh
+د	d1	d	d	leader
+ـد	d2	d	d
+ـد	d3	d	d
+د	d4	d	d
+ذ	dh1	dh	dh	either
+ـذ	dh2	dh	dh
+ـذ	dh3	dh	dh
+ذ	dh4	dh	dh
+ر	r1	r	r	parlare (rs = r-short)
+ـر	r2	r	r
+ـر	r3	r	r
+ر	r4	r	r
+ز	z1	z	z	gazelle (zs = z-short)
+ـز	z2	z	z
+ـز	z3	z	z
+ز	z4	z	z
+سـ	s1	s	s	state (ss = s-short)
+ـسـ	s2	s	s
+ـس	s3	s	s
+س	s4	s	s
+شـ	sh1	sh	sh	shave, push
+ـشـ	sh2	sh	sh
+ـش	sh3	sh	sh
+ش	sh4	sh	sh
+صـ	S1	S	S	emphatic, son		state, shave
+ـصـ	S2	S	S
+ـص	S3	S	S
+ص	S4	S	S
+ضـ	D1	D	D	emphatic, thus		leader, either
+ـضـ	D2	D	D
+ـض	D3	D	D
+ض	D4	D	D
+طـ	T1	T	T	emphatic, tall		stop
+ـطـ	T2	T	T
+ـط	T3	T	T
+ط	T4	T	T
+ظـ	DH1	DH	DH	d	emphatic, either/thus	either
+ـظـ	DH2	DH	DH
+ـظ	DH3	DH	DH
+ظ	DH4	DH	DH
+عـ	R1	R	R	ʕ	root of the tongue, c
+ـعـ	R2	R	R
+ـع	R3	R	R
+ع	R4	R	R
+غـ	gh1	gh	r 	Paris, rouge (rr = r-rolling)
+ـغـ	gh2	gh	r
+ـغ	gh3	gh	r
+غ	gh4	gh	r
+فـ	f1	f	f	fast
+ـفـ	f2	f	f
+ـف	f3	f	f
+ف	f4	f	f
+قـ	c1	ʕ	c	ʕ, back of the tongue
+ـقـ	c2	ʕ	c
+ـق	c3	ʕ	c
+ق	c4	ʕ	c
+كـ	k1	k	k	skate
+ـكـ	k2	k	k
+ـك	k3	k	k
+ك	k4	k	k
+لـ	l1	l	l	let
+ـلـ	l2	l	l
+ـل	l3	l	l
+ل	l4	l	l
+مـ	m1	m	m	moon
+ـمـ	m2	m	m
+ـم	m3	m	m
+م	m4	m	m
+نـ	n1	n	n	nine
+ـنـ	n2	n	n
+ـن	n3	n	n
+ن	n4	n	n
+هـ	h1	h	h	head
+ـهـ	h2	h	h
+ـه	h3	h	h
+ه	h4	h	h
+و	w1	w	w	well
+ـو	w2	w	w
+ـو	w3	w	w
+و	w4	w	w
+يـ	y1	y	y	yes
+ـيـ	y2	y	y
+ـي	y3	y	y
+ي	y4	y	y
+ى	amo	a	alif maqsuura, aa, at the end of a word, ya without dots	
+ﻰ	amf	a	alif maqsuura, final form
+ُ	uu	u	dammah 	u	waw 	hamza above alif, comma above consonant (o = ordinary)
+ِ	ii	i	kasrah 	i 	ya 	hamza under alif, below consonant
+َ	aa	a	fathah  	a 	alif 	hamza above alif, above consonant
+ٌ	un	un	nunnation un double dammah
+ٍ	in	in	nunnation in double kasrah
+ً	an	an	nunnation an double fathah + alif
+ُـو	uf	uu	uu final form
+ِـي	if	ii	ii final form
+َـا	af	aa	aa final form
+ْ	sk	:	sukuun	circle absence of vowel
+ّ	sd	+	saddah = doubling of consonant
+ٰ	ad	aa	dagger 'alif, aa, vertical stroke above the consonant
+آ	ah	'aa	maddah, aa, superscript line, alif + hamza + alif lengthening a to aa
+ٱ	aw	-	alif waslah
+لا	lab	l'	lam alif begin
+لاَ	lao	l'	lam alif general (o = ordinary)
+أ	haa	"	hamza above alif
+إ	hua	"	hamza under alif
+ء	hal	"	hamza alone (al = alone)
+ٴ	had	"	hamza diacritic
+ؤ	hw	"	waw hamza
+ئ	hy	"	ya hamza
+ة	tm1	at	ta marbuutah t haa + two dots above it
+ـة	tm2	at	at
+ـة	tm3	at	at
+ة	tm4	at	at
+،	>c	,	Arabic comma
+؟	>q	?	Arabic question mark
+!	>e	!	Arabic exclamation mark
+	</textarea></td></tr>
+</table>
+
+<table>
+<tr><td><textarea id="textareaAncientGreek" rows="30" spellcheck="false">
+Α	A	A	913	0391	&Alpha;	GREEK CAPITAL LETTER ALPHA
+Β	B	B	914	0392	&Beta;	GREEK CAPITAL LETTER BETA
+Γ	G	G	915	0393	&Gamma;	GREEK CAPITAL LETTER GAMMA
+Δ	D	D	916	0394	&Delta;	GREEK CAPITAL LETTER DELTA
+Ε	E	E	917	0395	&Epsilon;	GREEK CAPITAL LETTER EPSILON
+Ζ	Z	Z	918	0396	&Zeta;	GREEK CAPITAL LETTER ZETA
+Η	H	H	919	0397	&Eta;	GREEK CAPITAL LETTER ETA
+Θ	Q	Th	920	0398	&Theta;	GREEK CAPITAL LETTER THETA
+Ι	I	I	921	0399	&Iota;	GREEK CAPITAL LETTER IOTA
+Κ	K	K	922	039A	&Kappa;	GREEK CAPITAL LETTER KAPPA
+Λ	L	L	923	039B	&Lambda;	GREEK CAPITAL LETTER LAMBDA
+Μ	M	M	924	039C	&Mu;	GREEK CAPITAL LETTER MU
+Ν	N	N	925	039D	&Nu;	GREEK CAPITAL LETTER NU
+Ξ	J	Ks	926	039E	&Xi;	GREEK CAPITAL LETTER XI
+Ο	O	O	927	039F	&Omicron;	GREEK CAPITAL LETTER OMICRON
+Π	P	P	928	03A0	&Pi;	GREEK CAPITAL LETTER PI
+Ρ	R	R	929	03A1	&Rho;	GREEK CAPITAL LETTER RHO
+Σ	S	S	931	03A3	&Sigma;	GREEK CAPITAL LETTER SIGMA
+Τ	T	T	932	03A4	&Tau;	GREEK CAPITAL LETTER TAU
+Υ	U	U	933	03A5	&Upsilon;	GREEK CAPITAL LETTER UPSILON
+Φ	F	Ph	934	03A6	&Phi;	GREEK CAPITAL LETTER PHI
+Χ	X	Ch	935	03A7	&Chi;	GREEK CAPITAL LETTER CHI
+Ψ	Y	Ps	936	03A8	&Psi;	GREEK CAPITAL LETTER PSI
+Ω	W	Oo	937	03A9	&Omega;	GREEK CAPITAL LETTER OMEGA
+α	a	a	945	03B1	&alpha;	GREEK SMALL LETTER ALPHA
+β	b	b	946	03B2	&beta;	GREEK SMALL LETTER BETA
+γ	g	g	947	03B3	&gamma;	GREEK SMALL LETTER GAMMA
+δ	d	d	948	03B4	&delta;	GREEK SMALL LETTER DELTA
+ε	e	e	949	03B5	&epsilon;	GREEK SMALL LETTER EPSILON
+ζ	z	z	950	03B6	&zeta;	GREEK SMALL LETTER ZETA
+η	h	è	951	03B7	&eta;	GREEK SMALL LETTER ETA
+θ	q	th	952	03B8	&theta;	GREEK SMALL LETTER THETA
+ι	i	i	953	03B9	&iota;	GREEK SMALL LETTER IOTA
+κ	k	k	954	03BA	&kappa;	GREEK SMALL LETTER KAPPA
+λ	l	l	955	03BB	&lambda;	GREEK SMALL LETTER LAMBDA
+μ	m	m	956	03BC	&mu;	GREEK SMALL LETTER MU
+ν	n	n	957	03BD	&nu;	GREEK SMALL LETTER NU
+ξ	j	ks	958	03BE	&xi;	GREEK SMALL LETTER XI
+ο	o	o	959	03BF	&omicron;	GREEK SMALL LETTER OMICRON
+π	p	p	960	03C0	&pi;	GREEK SMALL LETTER PI
+ρ	r	r	961	03C1	&rho;	GREEK SMALL LETTER RHO
+σ	s	s	963	03C3	&sigma;	GREEK SMALL LETTER SIGMA
+τ	t	t	964	03C4	&tau;	GREEK SMALL LETTER TAU
+υ	u	u	965	03C5	&upsilon;	GREEK SMALL LETTER UPSILON
+φ	f	ph	966	03C6	&phi;	GREEK SMALL LETTER PHI
+χ	x	ch	967	03C7	&chi;	GREEK SMALL LETTER CHI
+ψ	y	ps	968	03C8	&psi;	GREEK SMALL LETTER PSI
+ω	w	oo	969	03C9	&omega;	GREEK SMALL LETTER OMEGA
+ς	c	c	962	03C2	&sigmaf;	GREEK SMALL LETTER FINAL SIGMA1a	á	á	a/	
+1a	>à	à	a\
+1a	>â	â	a=
+1a	>sa	a	a(
+1a	>ha	ha	a)
+1a	>sá	á	a)/
+1a	>há	há	a(/
+1a	>sà	à	a)\
+1a	>hà	hà	a(\
+1a	>sâ	â	a)=
+1a	>hâ	hâ	a(=
+1a	>ai	ai	a|
+1a	>ái	ái	a)/|
+1a	>ài	ài	a)=|
+1a	>âi	âi	âi
+2a	>é	é	e/
+2a	>è	è	e\
+2a	>ê	ê	e=
+2a	>se	e	e(
+2a	>he	he	e)
+2a	>sé	é	e)/
+2a	>hé	hé	e(/
+2a	>sè	è	e)\
+2a	>hè	hè	e(\
+2a	>sê	ê	e)=
+2a	>hê	hê	e(=
+3a	>è'	è'	h/
+3a	>è`	è`	h\
+3a	>è^	è^	h=
+3a	>sè	è	h(
+3a	>hè	hè	h)
+3a	>sè'	è'	h)/
+3a	>hè'	hè'	h(/
+3a	>sè`	è`	h)\
+3a	>hè`	hè`	h(\
+3a	>sè^	è^	h)=
+3a	>hè^	hè^	h(=
+3a	>èi	èi	h|
+3a	>è'i	è'i	h)/|
+3a	>è`i	è`i	h)=|
+3a	>è^i	è^i	dummy
+4a	>í	í	i/
+4a	>ì	ì	i\
+4a	>î	î	i=
+4a	>si	i	i(
+4a	>hi	hi	i)
+4a	>sí	í	i)/
+4a	>hí	hí	i(/
+4a	>sì	ì	i)\
+4a	>hì	hì	i(\
+4a	>sî	î	i)=
+4a	>hî	hî	i(=
+5a	>ó	ó	o/
+5a	>ò	ò	o\
+5a	>ô	ô	o=
+5a	>so	o	o(
+5a	>ho	ho	o)
+5a	>só	ó	o)/
+5a	>hó	hó	o(/
+5a	>sò	ò	o)\
+5a	>hò	hò	o(\
+5a	>sô	ô	o)=
+5a	>hô	hô	o(=
+6a	>ú	ú	u/
+6a	>ù	ù	u\
+6a	>û	û	u=
+6a	>su	u	u(
+6a	>hu	hu	u)
+6a	>sú	ú	u)/
+6a	>hú	hú	u(/
+6a	>sù	ù	u)\
+6a	>hù	hù	u(\
+6a	>sû	û	u)=
+6a	>hû	hû	u(=
+7a	>óo	óo	w/
+7a	>òo	òo	w\
+7a	>ôo	ôo	w=
+7a	>soo	oo	w(
+7a	>hoo	hoo	w)
+7a	>sóo	óo	w)/
+7a	>hóo	hóo	w(/
+7a	>sòo	òo	w)\
+7a	>hòo	hòo	w(\
+7a	>sôo	ôo	w)=
+7a	>hôo	hôo	w(=
+7a	>ooi	ooi	w|
+7a	>óoi	óoi	w)/|
+7a	>òoi	òoi	w)=|
+7a	>ôoi	ôoi	dummy
+1a	>Á	Á	a/	
+1a	>À	À	a\
+1a	>Â	Â	a=
+1a	>sA	A	a(
+1a	>hA	Ha	a)
+1a	>sÁ	Á	a)/
+1a	>hÁ	Há	a(/
+1a	>sÀ	À	a)\
+1a	>hÀ	Hà	a(\
+1a	>sÂ	Â	a)=
+1a	>hÂ	Hâ	a(=
+1a	>Ai	Ai	a|
+1a	>Ái	Ái	a)/|
+1a	>Ài	Ài	a)=|
+1a	>Âi	Âi	Âi
+2a	>É	É	e/
+2a	>È	È	e\
+2a	>Ê	Ê	e=
+2a	>sE	E	e(
+2a	>hE	He	e)
+2a	>sÉ	É	e)/
+2a	>hÉ	Hé	e(/
+2a	>sÈ	È	e)\
+2a	>hÈ	Hè	e(\
+2a	>sÊ	Ê	e)=
+2a	>hÊ	Hê	e(=
+3a	>È'	È'	h/
+3a	>È`	È`	h\
+3a	>È^	È^	h=
+3a	>sÈ	È	h(
+3a	>hÈ	Hè	h)
+3a	>sÈ'	È'	h)/
+3a	>hÈ'	Hè'	h(/
+3a	>sÈ`	È`	h)\
+3a	>hÈ`	Hè`	h(\
+3a	>sÈ^	È^	h)=
+3a	>hÈ^	Hè^	h(=
+3a	>Èi	Èi	h|
+3a	>È'i	È'i	h)/|
+3a	>È`i	È`i	h)=|
+3a	>È^i	È^i	È^i
+4a	>Í	Í	i/
+4a	>Ì	Ì	i\
+4a	>Î	Î	i=
+4a	>sI	I	i(
+4a	>hI	Hi	i)
+4a	>sÍ	Í	i)/
+4a	>hÍ	Hí	i(/
+4a	>sÌ	Ì	i)\
+4a	>hÌ	Hì	i(\
+4a	>sÎ	Î	i)=
+4a	>hÎ	Hî	i(=
+5a	>Ó	Ó	o/
+5a	>Ò	Ò	o\
+5a	>Ô	Ô	o=
+5a	>sO	O	o(
+5a	>hO	Ho	o)
+5a	>sÓ	Ó	o)/
+5a	>hÓ	Hó	o(/
+5a	>sÒ	Ò	o)\
+5a	>hÒ	Hò	o(\
+5a	>sÔ	Ô	o)=
+5a	>hÔ	Hô	o(=
+6a	>Ú	Ú	u/
+6a	>Ù	Ù	u\
+6a	>Û	Û	u=
+6a	>sU	U	u(
+6a	>hU	Hu	u)
+6a	>sÚ	Ú	u)/
+6a	>hÚ	Hú	u(/
+6a	>sÙ	Ù	u)\
+6a	>hÙ	Hù	u(\
+6a	>sÛ	Û	u)=
+6a	>hÛ	Hû	u(=
+7a	>Óo	Óo	w/
+7a	>Òo	Òo	w\
+7a	>Ôo	Ôo	w=
+7a	>sOo	Oo	w(
+7a	>hOo	Hoo	w)
+7a	>sÓo	Óo	w)/
+7a	>hÓo	Hóo	w(/
+7a	>sÒo	Òo	w)\
+7a	>hÒo	Hòo	w(\
+7a	>sÔo	Ôo	w)=
+7a	>hÔo	Hôo	w(=
+7a	>Ooi	Ooi	W|
+7a	>Óoi	Ôoi	w)/|
+7a	>Òoi	Òoi	w)=|
+7a	>Ôoi	Ôoi	Ôoi
+hai	>hai	hai	dummy
+hei	>heî	heî	dummy
+is	>is	is	iota subscriptum
+hoi	>hoi	hoi	dummy
+hoi	>hoî	hoî	dummy
+hou	>hou'	hou'	dummy
+hou	>hoû	hoû	dummy
+heu	>hèú	hèú	dummy
+hui	>hui	hui	dummy
+d	>d	d'	dummy
+r	>r	r'	dummy
+t	>t'	t'	dummy
+~	^	^	circumflex
+ʼ	"		smooth breathing
+̔	>"	h	rough breating
+</textarea></td></tr>
+</table>
+
+</body>

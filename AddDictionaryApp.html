@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>AddDictionaryApp</title>
+
+<style>
+        	
+			body {
+				font-family: Times New Roman;
+	    		font-size: 30px;
+        	}
+
+        	table {
+            
+        	}
+	
+	 	td {
+			vertical-align: text-top;
+			padding: 15px;
+	 	}
+
+		textarea {
+			vertical-align: text-top;
+			padding: 15px;
+			font-family: Times New Roman;
+	    	font-size: 30px;
+			width: 800px;
+		}
+
+		input {
+			vertical-align: text-top;
+			padding: 15px;
+			font-family: Times New Roman;
+	    	font-size: 30px;
+		}
+		
+
+	 	button {
+        		padding: 15px;
+				font-family: Times New Roman;
+	    		font-size: 30px;
+		}
+
+		#textareaPunctuation {
+	    		display: none;
+        	}
+
+</style>
+
+<script>
+
+	var stringDictionary = "";
+
+	var stringToProcessTowardsHTML = "";
+
+	function functionOnLoad()
+	{
+
+		functionCloseAllTables();
+
+		stringDictionary = "https://www.ldoceonline.com/dictionary/";
+
+	}
+
+	function functionCloseAllTables()
+	{
+
+		document.getElementById("tableText").style.display = "none";
+		document.getElementById("tableDictionary").style.display = "none";
+		document.getElementById("tableSentencewise").style.display = "none";
+		document.getElementById("tableHTMLAddenda").style.display = "none";
+		document.getElementById("tableHTMLResult").style.display = "none";
+
+	}
+
+	function functionText()
+	{
+
+		functionCloseAllTables();
+		document.getElementById("tableText").style.display = "block";
+		
+	}
+
+	function functionDictionary()
+	{
+
+		functionCloseAllTables();
+		document.getElementById("tableDictionary").style.display = "block";
+		
+	}
+
+	function functionConfirmDictionary() {
+
+		if (document.getElementById("radioButtonOther").checked && document.getElementById("textareaOther").value == "") {
+
+			alert ("You selected 'Other' but forgot to enter a dictionary search string.\n" +
+				"Look up an arbitrary word in the dictionary you want to apply \n" +
+				"and paste the search string from your browser in the textbox \n" +
+				"(without the word you chose to search for).");
+
+		}
+		else
+		{
+
+			stringDictionary = "";
+			if (document.getElementById("radioButtonEnglish").checked) {stringDictionary = "https://www.ldoceonline.com/dictionary/";} 
+			if (document.getElementById("radioButtonEnglishWebster").checked) {stringDictionary = "https://www.merriam-webster.com/dictionary/";} 
+			if (document.getElementById("radioButtonFrench").checked) {stringDictionary = "https://www.bing.com/translator/?from=fr&to=en&text=";} 
+			if (document.getElementById("radioButtonFrenchRobert").checked) {stringDictionary = "https://dictionnaire.lerobert.com/definition/";} 
+			if (document.getElementById("radioButtonGerman").checked) {stringDictionary =  "https://www.bing.com/translator/?from=de&to=en&text=";} 
+			if (document.getElementById("radioButtonGermanDuden").checked) {stringDictionary = "https://www.duden.de/suchen/dudenonline/";} 
+			if (document.getElementById("radioButtonItalian").checked) {stringDictionary =  "https://www.bing.com/translator/?from=it&to=en&text=";} 
+			if (document.getElementById("radioButtonModernGreek").checked) {stringDictionary = "https://www.bing.com/translator/?from=el&to=en&text=";} 
+			if (document.getElementById("radioButtonCyrillic").checked) {stringDictionary = "https://www.bing.com/translator/?from=ru&to=en&text=";} 
+			if (document.getElementById("radioButtonCyrillicPROMT").checked) {stringDictionary = "https://www.online-translator.com/translation/russian-english/";} 
+			if (document.getElementById("radioButtonHebrew").checked) {stringDictionary = "https://www.bing.com/translator/?from=he&to=en&text=";} 
+			if (document.getElementById("radioButtonArabic").checked) {stringDictionary = "https://www.bing.com/translator/?from=ar&to=en&text=";} 
+			if (document.getElementById("radioButtonLatin").checked) {stringDictionary = "http://www.perseus.tufts.edu/hopper/morph?la=la&l=";} 
+			if (document.getElementById("radioButtonAncientGreek").checked) {stringDictionary = "http://www.perseus.tufts.edu/hopper/morph?la=greek&l=";} 
+			if (document.getElementById("radioButtonOther").checked) {stringDictionary = document.getElementById("textareaOther").value ;} 
+
+			functionCloseAllTables();
+			document.getElementById("tableText").style.display = "block";
+
+		}
+
+	}
+
+	function functionEraseText() {
+
+		functionCloseAllTables();
+		document.getElementById("tableText").style.display = "block";
+
+		document.getElementById("checkboxEnableText").checked = false;
+		document.getElementById("checkboxEnableSentencewise").checked = false;
+		document.getElementById("textareaText").value = "";
+		document.getElementById("textareaSentencewise").value = "";
+		document.getElementById("textAuthor").value = "";
+		document.getElementById("textTitle").value = "";
+
+		stringDictionary = "https://www.ldoceonline.com/dictionary/";
+
+	}
+
+	function functionSentencewise(myTextarea) {
+
+		if(document.getElementById('textareaText').value == "")
+		{
+
+			alert("Make sure you have entered a text to process.");
+
+		}
+		else
+		{
+
+			if ((myTextarea.indexOf(".") == -1) &&
+			(myTextarea.indexOf("?") == -1) &&
+			(myTextarea.indexOf("!") == -1) &&
+			(myTextarea.indexOf("¿") == -1) &&
+			(myTextarea.indexOf("¡") == -1) &&
+			(myTextarea.indexOf("؟") == -1) &&
+			(myTextarea.indexOf("!") == -1)) 
+			{
+				
+				myTextarea += ".";
+
+			}
+
+			let stringSentences = [];
+			let stringSentence = "";
+
+			let i = 0;
+			let j = 0;
+			while (i < myTextarea.length) {
+				if (myTextarea.substring(i, i + 1) != "." &&
+					myTextarea.substring(i, i + 1) != "?" &&
+					myTextarea.substring(i, i + 1) != "!" &&
+					myTextarea.substring(i, i + 1) != "¿" &&
+					myTextarea.substring(i, i + 1) != "¡" &&
+					myTextarea.substring(i, i + 1) != "؟" &&
+					myTextarea.substring(i, i + 1) != "!") {
+					stringSentence += myTextarea.substring(i, i + 1);
+				} else {
+					stringSentence += myTextarea.substring(i, i + 1);
+					i++;
+
+					var boolEndOfParagraph = false;
+					while(i < myTextarea.length && myTextarea.substring(i, i + 1) != " " && !boolEndOfParagraph) {
+
+							if (myTextarea.substring(i, i + 1) == "\n")
+							{
+								stringSentences[j] = stringSentence;
+								j++;
+								boolEndOfParagraph = true;
+								stringSentence = "<>";
+								i++;
+								while(myTextarea.substring(i, i + 1) == "\n")
+								{
+									i++;
+								}
+							}
+							else 
+							{
+								stringSentence += myTextarea.substring(i, i + 1);
+								i++;
+							}
+				}	
+				
+					while(i < myTextarea.length && myTextarea.substring(i, i + 1) == " " && !boolEndOfParagraph) {
+
+						if (myTextarea.substring(i, i + 1) == "\n")
+							{
+							
+								stringSentences[j] = stringSentence;
+								j++;
+								boolEndOfParagraph = true;
+								stringSentence = "<>";
+								i++;
+								while(myTextarea.substring(i, i + 1) == "\n")
+								{
+									i++;
+								}
+								i++;
+							
+							}
+							else 
+							{
+								i++;
+							}
+
+					}
+								
+					stringSentences[j] = stringSentence;
+					stringSentence = "";
+					if (i <myTextarea.length &&
+						((myTextarea.indexOf(".", i) == -1) &&
+						(myTextarea.indexOf("?", i) == -1) &&
+						(myTextarea.indexOf("!", i) == -1) &&
+						(myTextarea.indexOf("¿", i) == -1) &&
+						(myTextarea.indexOf("¡", i) == -1) &&
+						(myTextarea.indexOf("؟", i) == -1) &&
+						(myTextarea.indexOf("!", i) == -1))) {
+					
+						j++;
+						stringSentences[j] = myTextarea.substring(i, myTextarea.length);
+						i = myTextarea.length;
+
+					}
+					j++;
+					i--;
+				}
+				i++;
+			} 
+		
+			i = 0;
+			let stringSentencewise = "";
+			while (i < j) {
+				stringSentencewise += stringSentences[i] + "\n\n";
+				i++;
+			}
+			stringSentencewise = stringSentencewise.substring(0, stringSentencewise.length - 2);
+
+			if (confirm("Do you want newline indicators ('<>')'to be removed?\n" +
+				"This is advisable if these indicators do not denote meaningful units,\n" +
+				"like in dialogues, poetry, song texts or stage plays."))
+			{
+				stringSentencewise = stringSentencewise.replace(/\n\n<>/g, "");
+			}
+		
+			functionCloseAllTables();
+			document.getElementById("textareaSentencewise").value = stringSentencewise;
+			document.getElementById("tableSentencewise").style.display = "block";
+
+		}
+
+	}
+
+	function functionConsultDictionaryText() {
+
+		if(!document.getElementById("checkboxEnableText").checked ) {
+
+			const myTextarea = document.getElementById('textareaText').value;
+			const position = document.getElementById('textareaText').selectionStart;
+		
+			const myPunctuation = document.getElementById('textareaPunctuation').value;
+
+    			let begin = position;
+    			let end = position;
+
+			if (position > 0) {
+
+    				while (begin > 0 && myTextarea[begin - 1] != " " && !myPunctuation.includes(myTextarea[begin - 1])) {
+        				begin--;
+    				}
+		
+   				while (end < myTextarea.length && myTextarea[end] != " " && !myPunctuation.includes(myTextarea[end])) {
+        				end++;
+    				}
+    		
+				if(begin != end) {
+
+    					document.getElementById('textareaText').setSelectionRange(begin, end);
+    					const stringSelectedText = document.getElementById('textareaText').value.substring(begin, end);
+					var stringComplete = stringDictionary + stringSelectedText;
+		
+					window.open(stringComplete);
+
+				}
+			
+			}
+
+		}
+		
+	}
+
+	function functionConsultDictionarySentencewise() {
+
+		if(!document.getElementById("checkboxEnableSentencewise").checked ) {
+
+			const myTextarea = document.getElementById('textareaSentencewise').value;
+			const position = document.getElementById('textareaSentencewise').selectionStart;
+
+			const myPunctuation = document.getElementById('textareaPunctuation').value;
+
+			let begin = position;
+			let end = position;
+
+			if (position > 0) {
+
+				while (begin > 0 && myTextarea[begin - 1] != " " && !myPunctuation.includes(myTextarea[begin - 1])) {
+					begin--;
+				}
+
+		   		while (end < myTextarea.length && myTextarea[end] != " " && !myPunctuation.includes(myTextarea[end])) {
+					end++;
+				}
+	
+				if(begin != end) {
+
+					document.getElementById('textareaSentencewise').setSelectionRange(begin, end);
+					const stringSelectedText = document.getElementById('textareaSentencewise').value.substring(begin, end);
+					var stringComplete = stringDictionary + stringSelectedText;
+
+					window.open(stringComplete);
+
+				}
+	
+			}
+
+		}
+
+	}
+
+	function functionHTMLText()
+	{
+
+		if(document.getElementById('textareaText').value == "")
+		{
+
+			alert("Make sure you have entered a text to process.");
+
+		}
+		else
+		{
+
+			functionCloseAllTables();
+			document.getElementById("tableHTMLAddenda").style.display = "block";
+
+			stringToProcessTowardsHTML = document.getElementById("textareaText").value;
+
+		}
+
+	}
+
+	function functionHTMLSentencewise()
+	{
+
+		if(document.getElementById('textareaText').value == "")
+		{
+
+			alert("Make sure you have entered a text to process.");
+
+		}
+		else
+		{
+
+			functionCloseAllTables();
+			document.getElementById("tableHTMLAddenda").style.display = "block";
+
+			stringToProcessTowardsHTML = document.getElementById("textareaSentencewise").value;
+
+		}
+
+	}
+
+	function functionConfirmHTML(stringTextToProcess)
+	{
+
+		if(document.getElementById('textareaText').value == "" || stringDictionary == "")
+		{
+
+			alert("Make sure you have selected a dictionary and entered a text to process.");
+
+		}
+		else
+		{
+
+			const myPunctuation = document.getElementById('textareaPunctuation').value;
+
+			let stringHTML = "<html><head><meta charset='utf-8'><title>AddDictionaryApp</title ><style>";
+    		stringHTML += "a:link {color: black; background-color: transparent; text-decoration: none;}";
+    		stringHTML += "a:visited {color: black; background-color: transparent; text-decoration: none;}";
+    		stringHTML += "a:hover { color: black; background-color: transparent; text-decoration: none;}";
+    		stringHTML += "a:active { color: black; background-color: transparent; text-decoration: none;}";
+    		stringHTML += "body {font-family: Times New Roman; font-size: 30px;}";
+			stringHTML += "td {vertical-align: text-top; font-size: 30px; padding: 15px; width: 100%;}";
+			stringHTML += "#counter {font-size: 10px; padding: 5px;}";
+			stringHTML += "#header {font-size: 50px; padding: 15px;}";
+			stringHTML += "</style></head><body><table>";
+
+			if (document.getElementById("textAuthor").value != "" && document.getElementById("textTitle").value != "")
+			{
+
+				stringHTML += "<tr><td><hr></td></tr><tr><td id='header'>" + document.getElementById("textAuthor").value + " - <br>"  + document.getElementById("textTitle").value + "</td></tr>";
+
+			}
+			else
+			{
+
+				if (document.getElementById("textAuthor").value != "")
+				{
+					stringHTML += "<hr><tr><td id='header'>" + document.getElementById("textAuthor").value + "</td></tr>";
+				}
+
+				if (document.getElementById("textTitle").value != "")
+				{
+					stringHTML += "<tr><td id='header'>" + document.getElementById("textTitle").value + "</td></tr>";
+				}
+
+			}
+
+			stringHTML += "<tr><td><hr></td></tr>";
+
+			stringHTML += "<tr><td>";
+
+
+			let boolDigidIsPunctuation;
+			let j;
+			i = 0;
+			let counter = 0;
+			let stringWord = "";
+
+			j = 0;
+        	stringTextToProcess = stringTextToProcess + "[";
+       		stringWord = "";
+        	while (j < stringTextToProcess.length)
+        	{
+
+				if (stringTextToProcess.substring(j, j + 1) == "\n")
+				{
+
+					stringHTML += "<br>";
+
+				}
+				else
+				{
+
+            		boolDigidIsPunctuation = myPunctuation.includes(stringTextToProcess.substring(j, j + 1));
+					
+					if (stringTextToProcess.substring(j, j + 1) == " ")
+					{
+						boolDigidIsPunctuation = true;
+					}
+
+            		if (!boolDigidIsPunctuation)
+            		{
+               			stringWord += stringTextToProcess.substring(j, j + 1);
+            		}
+            		else
+            		{
+               			if (stringWord != "")
+               			{
+                   			stringHTML += "<span class='word'>" + stringWord + "</span>" + stringTextToProcess.substring(j, j + 1);
+                   			stringWord = "";
+               			}
+               			else
+               			{
+                   			stringHTML += stringTextToProcess.substring(j, j + 1);
+               			}
+            		}
+
+				}
+
+            j++;
+
+        	}
+
+        	stringHTML = stringHTML.substring(0, stringHTML.length - 1);
+
+    		stringHTML += "</td></tr></table>";
+			
+			stringHTML += "<script>";
+			stringHTML += "document.querySelectorAll('.word').forEach(span => {";
+			stringHTML += "span.addEventListener('click', function() {";
+			stringHTML += "const word = this.textContent.trim();";
+			stringHTML += "const url = \"" + stringDictionary + "\" + word;";
+			stringHTML += "window.open(url, '_blank');";
+			stringHTML += "});";
+			stringHTML += "});";
+			stringHTML += "<\/script>";
+						
+			stringHTML += "</body></html>";
+
+			functionCloseAllTables();
+
+			document.getElementById("textareaHTMLResult").value = stringHTML;
+			document.getElementById('tableHTMLResult').style.display = "block";
+
+		}
+
+	}
+
+</script>
+
+</head>
+
+<body onload="functionOnLoad();">
+
+<table>
+	<tr>
+		<td><button onclick="functionText()">Text</button></td>
+		<td><button onclick="functionDictionary()">Dictionary</button></td>
+		<td><button onclick="functionEraseText()">Erase text</button></td>
+		<td><button id="buttonSentences" onclick="functionSentencewise(document.getElementById('textareaText').value);">Sentence-wise</button></td>
+	</tr>
+</table>
+
+<table id="tableDictionary">
+<tr><td>Choose your dictionary:</td></tr>
+<tr>
+	<td><input type="radio" id="radioButtonEnglish" value="" name="radiobuttonsDictionary" checked>English (Longman)</td>
+	<td><input type="radio" id="radioButtonModernGreek" value="" name="radiobuttonsDictionary" >Modern Greek (Bing)</td>
+</tr>
+<tr>
+	<td><input type="radio" id="radioButtonEnglishWebster" value="" name="radiobuttonsDictionary" >English (Webster)</td>
+	<td><input type="radio" id="radioButtonCyrillic" value="" name="radiobuttonsDictionary">Cyrillic (Bing)</td>
+</tr>
+<tr>
+	<td><input type="radio" id="radioButtonFrench" value="" name="radiobuttonsDictionary">French (Bing)</td>
+	<td><input type="radio" id="radioButtonCyrillicPROMT" value="" name="radiobuttonsDictionary" >Cyrillic (PROMT)</td>
+</tr>
+<tr>
+	<td><input type="radio" id="radioButtonFrenchRobert" value="" name="radiobuttonsDictionary">French (Le Robert)</td>
+	<td><input type="radio" id="radioButtonHebrew" value="" name="radiobuttonsDictionary">Hebrew (Bing)</td>
+</tr>
+<tr>
+	<td><input type="radio" id="radioButtonGerman" value="" name="radiobuttonsDictionary">German (Bing)</td>
+	<td><input type="radio" id="radioButtonArabic" value="" name="radiobuttonsDictionary">Arabic (Bing)</td>
+</tr>
+<tr>
+	<td><input type="radio" id="radioButtonGermanDuden" value="" name="radiobuttonsDictionary">German (Duden)</td>
+	<td><input type="radio" id="radioButtonLatin" value="" name="radiobuttonsDictionary" >Latin (Perseus)</td>
+</tr>
+<tr>
+	<td><input type="radio" id="radioButtonItalian" value="" name="radiobuttonsDictionary">Italian (Bing)</td>
+	<td><input type="radio" id="radioButtonAncientGreek" value="" name="radiobuttonsDictionary">Ancient Greek (Perseus)</td>
+</tr>
+<tr><td><input type="radio" id="radioButtonOther" value="" name="radiobuttonsDictionary">Other (e. g. 'https://www.merriam-webster.com/dictionary/')</td></tr>
+<tr><td><textarea id="textareaOther" rows="1" cols="50"></textarea></td></tr>
+<tr><td><button onclick="functionConfirmDictionary();">Confirm</button></tr></td>
+</table>
+<br>
+
+<table id="tableText">
+<tr><td>Enter the text you want to process in the textbox below.</td></tr>
+<tr><td><textarea id="textareaText" rows="13" cols="30" spellcheck="false" onclick="functionConsultDictionaryText()"></textarea></td></tr>
+<tr>
+	<td style="font-size: 20px;"><input type="checkbox" id="checkboxEnableText"> Enable cut, copy and enter</td>
+</tr>
+<tr><td><button onclick="functionHTMLText()">HTML</button></td></tr>
+</table>
+
+<table id="tableSentencewise">
+	<tr><td><textarea id="textareaSentencewise" rows="13" cols="30" spellcheck="false" onclick="functionConsultDictionarySentencewise()"></textarea></td></tr>
+	<tr>
+		<td style="font-size: 20px;"><input type="checkbox" id="checkboxEnableSentencewise"> Enable cut, copy and enter</td>
+	</tr>
+<tr><td><button onclick="functionHTMLSentencewise()">HTML</button></td></tr>
+</table>
+
+<table id="tableHTMLAddenda">
+	<tr><td style="width: 350px;">Author (optional):</td><td><input type="text" id="textAuthor" size="50" style="font-size: 30px; padding: 5px;"></td></tr>
+	<tr><td style="width: 350px;">Title (optional):</td><td><input type="text" id="textTitle" size="50" style="font-size: 30px; padding: 5px;"></td></tr>
+	<tr><td><button onclick="functionConfirmHTML(stringToProcessTowardsHTML)">Confirm</button></td></tr>
+</table>
+
+<table id="tableHTMLResult">
+	<tr><td colspan="2">Rightclick 'Select all' and copy the content of the textbox below in a textfile.<br>
+		Select 'File>Save as' and name it 'Your file.html' (with extension '.html' instead of '.txt').<br>
+		and save it as 'All files'.<br>
+		Thus you will have the HTML-version of the text you chose.</td></tr>
+	<tr><td colspan="2"><textarea id="textareaHTMLResult" cols="50" rows="10" spellcheck="false"></textarea></td></tr>
+</table>
+
+<table>
+<tr><td><textarea id="textareaPunctuation" rows="30" spellcheck="false">
+.	
+1	
+2	
+3	
+4	
+5	
+6	
+7	
+8	
+9	
+0	
+$	
+%	
+&	
+*	
+(	
+)	
++	
+=	
+[	
+]	
+{	
+}	
+<	
+>	
+/	
+:	
+;	
+,	
+«	
+»	
+“	
+·	
+'	
+"	
+۔	
+،	
+:	
+؛	
+؟	
+!	
+“	
+”	
+¿	
+¡	
+
+</textarea></td></tr>
+</table>
+
+</body>
+</html>

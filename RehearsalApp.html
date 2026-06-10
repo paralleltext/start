@@ -1,0 +1,3991 @@
+<!DOCTYPE html>
+<html>
+<head>
+    	<meta charset="utf-8" />
+    	<title>RehearsalApp</title>
+
+	<style>
+
+        body {
+           	font-family: Times New Roman;
+	    	font-size: 30px;
+        }
+
+        table {
+			width: 100%;
+        }
+				
+		div.tooltiptable table,
+		div.tooltiptable tr,
+		div.tooltiptable td
+		{
+			font-family: Times New Roman;
+	    	font-size: 18px;
+			background-color: white;
+			padding: 2px;
+		}
+		
+		#respondTable {
+			
+		}
+
+	 	td {
+			vertical-align: text-top;
+			padding: 15px;
+	 	}
+
+		#activeLaptop, #randomLaptop, #activeMobile, #randomMobile {
+			font-size: 30px;
+			padding: 10px;
+		}
+
+	 	button {
+        	font-size: 30px;
+			font-family: Times New Roman;
+	    	padding: 15px;
+		}
+
+		#selectLessons {
+			font-size: 30px;
+	    	width: 175px;
+        }
+
+        textarea {
+			padding: 15px;
+			font-size: 30px;
+			font-family: Times New Roman;
+	    }
+
+		input {
+			padding: 15px;
+			font-size: 30px;
+			font-family: Times New Roman;
+	    }
+
+		#buttonBackground {
+	    	
+		}
+
+        #nextButton {
+        	width: 225px;
+	    	height: 225px;
+		}
+
+        #rightButton {
+        	width: 225px;
+	    	height: 225px;
+		}
+
+        #wrongButton {
+        	width: 225px;
+	    	height: 225px;
+		}
+
+        /* unvisited link */
+		a:link {
+  	
+		}
+
+		/* visited link */
+		a:visited {
+  			
+		}
+
+		/* mouse over link */
+		a:hover {
+  			
+		}
+
+		/* selected link */
+		a:active {
+  			
+		}
+
+		#textareaCyrillic {
+	    	display: none;
+        }
+
+		#textareaModernGreek {
+	    	display: none;
+        }
+
+		#textareaHebrew {
+	    	display: none;
+        }
+
+		#textareaArabic {
+	    	display: none;
+        }
+
+		#textareaAncientGreek {
+	    	display: none;
+        }
+
+		#textareaPunctuation {
+	    		display: none;
+        }
+
+    	</style>
+
+
+    	<script>
+
+        	var categoryArray = [];
+        	var questionArray = [];
+        	var answerArray = [];
+        	var categoryQuiz = [];
+        	var questionQuiz = [];
+        	var answerQuiz = [];
+			var helpSort1 = [];
+			var helpSort2 = [];
+        	var categoryMistakes = [];
+        	var questionMistakes = [];
+        	var answerMistakes = [];
+
+			var arrayForeign = [];
+			var arrayNative = [];
+
+			var typeOfFile;
+			var stringAlphabetSelected;
+
+			let boolModificationsOriginateFromASelection = false;
+			let arrayLessonsToModify = [];
+
+			let stringToolTipTextToPresent = "";
+
+			let listToken = [];
+			let listKeyboard = [];
+			let listPronunciation = [];
+			let intMaximumDigids;
+			let boolTryToFindToken = false;
+
+			var stringKeyboard ="";
+			var stringToken = "";
+			var boolNotFound = true;
+			var intPreviousPosition = -1;
+			var intPreviousStringLength = -1;
+						
+        	var numberOfItemsInQuiz;
+        	var quizArrayCounter;
+        	var rightAnswerCounter;
+        	var wrongAnswerCounter;
+        	var displaySelectionString;
+        	var completeQuizString;
+        	var displayMistakesString;
+			var firstItemToPresent;
+			var secondItemToPresent;
+
+			var typeOfFile;
+
+        	var i;
+        	var j;
+        	var k;
+
+			var popup;
+
+		function functionOnLoad()
+		{
+
+			functionCloseAllTables();
+
+			document.getElementById("buttonAlphabet").style.display = "none";
+		
+		}
+
+		function functionCloseAllTables()
+		{
+
+			document.getElementById("tableNew").style.display = "none";
+			document.getElementById("tableOpen").style.display = "none";
+			document.getElementById("tableSave").style.display = "none";
+			document.getElementById("tableAdd").style.display = "none";
+			document.getElementById("tableTransliterate").style.display = "none";
+			document.getElementById("selectionTable-Mobile").style.display = "none";
+			document.getElementById("selectionTable-Laptop").style.display = "none";
+			document.getElementById("tableModify").style.display = "none";
+			document.getElementById("tableInputQuiz").style.display = "none";
+
+			document.getElementById("quizTable").style.display = "none";
+			document.getElementById("completeQuiz").style.display = "none";
+			document.getElementById("displayItems").style.display = "none";
+
+		}
+		
+		function functionLoadAlphabet()
+		{
+
+			if (stringAlphabetSelected != "Latin")
+			{
+
+				if (stringAlphabetSelected == "Cyrillic")  { stringAlphabet = document.getElementById("textareaCyrillic").value; }
+				if (stringAlphabetSelected == "ModernGreek")  { stringAlphabet = document.getElementById("textareaModernGreek").value; }
+				if (stringAlphabetSelected == "Hebrew")  { stringAlphabet = document.getElementById("textareaHebrew").value; }
+				if (stringAlphabetSelected == "Arabic")  { stringAlphabet = document.getElementById("textareaArabic").value; }
+				if (stringAlphabetSelected == "AncientGreek")  { stringAlphabet = document.getElementById("textareaAncientGreek").value; }
+						
+				let arrayAlphabet = [];
+				arrayAlphabet = stringAlphabet.split("\n");
+			
+				listToken = [];
+				listKeyboard = [];
+       			listPronunciation = [];
+       			i = 0;
+				intMaximumDigids = 0;
+       			while (i < arrayAlphabet.length)
+       			{
+					var stringCharacter = [];
+           			stringCharacter = arrayAlphabet[i].split("\t");
+					listToken.push(stringCharacter[0]);
+					listKeyboard.push(stringCharacter[1]);
+					listPronunciation.push(stringCharacter[2]);
+           			i++;
+   	 			}
+				
+				/*
+				i = 0;
+				while (i < listKeyboard.length)
+				{
+					const stringHelp = listKeyboard[i];
+					if (stringHelp.length > intMaximumDigids) {
+						intMaximumDigids = stringHelp.length;
+					}
+					i++;
+				}
+				*/
+				
+				// set tooltip
+				stringToolTipTextToPresent = "";
+
+				const el = document.getElementById("tooltip"); 
+				if (el !== null) 
+				{
+					el.remove();
+				}
+				
+    			i = 0;
+    			if (stringAlphabetSelected !="Latin")
+        		{
+
+					if (stringAlphabetSelected == "ModernGreek")  { stringAlphabet = document.getElementById("textareaModernGreek").value; }
+					if (stringAlphabetSelected == "Cyrillic")  { stringAlphabet = document.getElementById("textareaCyrillic").value; }
+					if (stringAlphabetSelected == "Hebrew")  { stringAlphabet = document.getElementById("textareaHebrew").value; }
+					if (stringAlphabetSelected == "Arabic")  { stringAlphabet = document.getElementById("textareaArabic").value; }
+					if (stringAlphabetSelected == "AncientGreek")  { stringAlphabet = document.getElementById("textareaAncientGreek").value; }
+
+					let intNumberOfLines = 0;
+
+	        		if (stringAlphabetSelected == "ModernGreek") { intNumberOfLines = 24; }
+    	    		if (stringAlphabetSelected == "Cyrillic") { intNumberOfLines = 33; }
+        			if (stringAlphabetSelected == "Hebrew") { intNumberOfLines = 28; }
+        			if (stringAlphabetSelected == "Arabic") { intNumberOfLines = 28; }
+        			if (stringAlphabetSelected == "AncientGreek") { intNumberOfLines = 24; }
+
+        			let l = listToken.length;
+        			l = Math.floor((l - 1) / intNumberOfLines) + 1;
+        			let intNumberOfColumns = l;
+
+					stringToolTipTextToPresent = "<div class='tooltiptable' id='tooltip' style='top:10px; left: 50px; width: 1200px; height: 600px; background = 'white';'>";
+					
+					stringToolTipTextToPresent += "<table style='border: 1px solid black;'><tr><td colspan='" + (3 * intNumberOfColumns) + "'>Keyboard combinations for " + stringAlphabetSelected + ": </td></tr>";
+        			i = 0;
+        			j = 0;
+				
+        			while (i < intNumberOfLines)
+        			{
+
+						stringToolTipTextToPresent += "<tr>"
+
+        	    		while (j < intNumberOfColumns) 
+       		     		{
+        	        		if (intNumberOfLines * j + i < listToken.length - 1)
+                			{
+                    			stringToolTipTextToPresent += "<td WIDTH='25'>" + listToken[intNumberOfLines * j + i] + "</td><td WIDTH='10'> : </td><td WIDTH='50'>" + listKeyboard[intNumberOfLines * j + i] + "</td>";
+                			}
+                			else
+                			{
+                   		 		stringToolTipTextToPresent += "<td></td><td></td><td></td>";
+                			}
+                			j++;
+            			}
+            			i++;
+           		 		j = 0;
+            			stringToolTipTextToPresent += "</tr>";
+        			}
+    			}
+
+				stringToolTipTextToPresent += "</table></div>";
+
+				// Omzetten naar echt element 
+				const temp = document.createElement("div"); 
+				temp.innerHTML = stringToolTipTextToPresent; 
+				popup = temp.firstElementChild; // Toevoegen aan de pagina 
+				document.body.appendChild(popup);
+				popup.style.position = "fixed";
+							
+				document.getElementById("tooltip").style.display = "none";
+				document.getElementById("buttonAlphabet").style.display = "block";
+
+			}
+		
+		}
+
+		function functionNew()
+		{
+
+			document.getElementById("textareaOpen").value="";
+			document.getElementById("textareaSave").value="";
+			document.getElementById("textareaForeign").value="";
+			document.getElementById("textareaNative").value="";
+			document.getElementById("textareaModify").value="";
+
+			arrayLessonsToModify = [];
+			boolModificationsOriginateFromASelection = false;
+			document.getElementById("checkboxRetain").checked = false;
+			document.getElementById("dropdownLessonNumber").value = 1;
+
+			functionCloseAllTables();
+
+			document.getElementById("tableNew").style.display = "block";
+			
+		}
+
+		function functionConfirmNew()
+		{
+
+			if (document.getElementById("radioButtonLatin").checked) { stringAlphabetSelected = "Latin"; }
+			if (document.getElementById("radioButtonCyrillic").checked) { stringAlphabetSelected = "Cyrillic"; }
+			if (document.getElementById("radioButtonModernGreek").checked) { stringAlphabetSelected = "ModernGreek"; }
+			if (document.getElementById("radioButtonHebrew").checked) { stringAlphabetSelected = "Hebrew"; }
+			if (document.getElementById("radioButtonArabic").checked) { stringAlphabetSelected = "Arabic"; }
+			if (document.getElementById("radioButtonAncientGreek").checked) { stringAlphabetSelected = "AncientGreek"; }
+
+			if (document.getElementById("radioButtontypeOfFileVocabulary").checked) { typeOfFile = "Singleline"; }
+			if (document.getElementById("radioButtontypeOfFileGrammar").checked) { typeOfFile = "Multiline"; }
+
+			functionLoadAlphabet();
+
+			functionCloseAllTables();
+			
+			document.getElementById("tableAdd").style.display = "block";
+
+			if (stringAlphabetSelected == "Latin")
+			{
+
+				alert("You can start entering items in the upcoming screen.\n" + 
+				"Make sure all items are separated by at least one blank line.\n" +
+				"Entering is easiest if you use Bing translate\n" +
+				"to let it translate all items for you collectively beforehand.\n" + 
+				"Thus you will only have to correct for differences.");
+
+			}
+			else
+			{
+
+				alert("You can start entering items in the upcoming screen.\n" + 
+				"Make sure all items are separated by at least one blank line.\n" +
+				"Entering is easiest if you use Bing translate\n" +
+				"to let it translate all items for you collectively beforehand.\n" + 
+				"Thus you will only have to correct for differences.\n" + 
+				"Entering '[' will give you access to the coding for your selected \n" +
+				"alphabet as specified when hovering the button 'Alphabet'.\n" +
+				"Entering ']' makes you return to your normal keyboard.");
+
+			}
+				
+		}
+
+		function functionOpen()
+		{
+			
+			document.getElementById("textareaOpen").value = "";
+			document.getElementById("textareaSave").value = "";
+			document.getElementById("textareaForeign").value = "";
+			document.getElementById("textareaNative").value = "";
+			document.getElementById("textareaModify").value = "";
+
+			arrayLessonsToModify = [];
+			boolModificationsOriginateFromASelection = false;
+			document.getElementById("checkboxRetain").checked = false;
+			document.getElementById("dropdownLessonNumber").value = 1;
+
+			functionCloseAllTables();
+
+			document.getElementById("tableOpen").style.display = "block";
+			
+		}
+
+		function functionAdd()
+		{	
+
+			if (categoryArray != "")
+			{
+
+				functionCloseAllTables();
+
+				document.getElementById("tableAdd").style.display = "block";
+				
+			}
+			else
+			{
+
+				alert("Open an existing file first.\nOr start a new project.\nMake also sure you entered at least one item to your file.");
+
+			}
+
+		}
+
+		function functionTextChanged(textareaSource)
+		{
+			
+			myTextarea = textareaSource.value;
+
+			var position = textareaSource.selectionStart;
+
+			const myPunctuation = document.getElementById('textareaPunctuation').value;
+            
+			if (myTextarea.substring(position - 1, position) == "[")
+			{
+				stringKeyboard = "";
+				boolNotFound = true;
+				boolTryToFindToken = true;
+				intPreviousPosition = position;
+				intPreviousStringLength = myTextarea.length;
+			}
+
+			if (myTextarea.substring(position - 1, position) == "]")
+			{
+				stringKeyboard = "";
+				boolNotFound = true;
+				boolTryToFindToken = false;
+			}
+
+			let boolDigidIsProcessed = false;
+
+			// serially add a digid
+			if (intPreviousPosition + 1 == position && boolTryToFindToken)
+			{
+				if (myTextarea.substring(position - 1, position) != "\n" && 
+					myTextarea.substring(position - 1, position) != " " &&
+					!myPunctuation.includes(myTextarea.substring(position - 1, position)))
+				{
+					stringKeyboard += myTextarea.substring(position - 1, position);
+
+				}
+				else
+				{
+
+					// check whether adding 1, 2, 3 or 4 amounts to a valid keyboard combination
+					let stringHelpKeyboard = stringKeyboard + myTextarea.substring(position - 1, position);
+					if (listKeyboard.includes(stringHelpKeyboard))
+					{
+						stringKeyboard += myTextarea.substring(position - 1, position);
+					}
+					else
+					{
+						stringKeyboard = "";
+					}
+
+				}
+
+				intPreviousPosition ++;
+				intPreviousStringLength++;
+				boolDigidIsProcessed = true;
+
+			}
+
+			// deletion of a position
+			if(intPreviousPosition == position && intPreviousStringLength - 1 == myTextarea.length && boolTryToFindToken)
+			{
+				intPreviousStringLength--;
+				boolDigidIsProcessed = true;
+			}
+
+			// serial backspace
+			if (intPreviousPosition - 1 == position && intPreviousStringLength - 1 == myTextarea.length && boolTryToFindToken)
+			{
+				intPreviousPosition--;
+				intPreviousStringLength--;
+				if (stringKeyboard.length <= 1) {stringKeyboard = "";}
+				if (stringKeyboard.length > 1) {stringKeyboard = stringKeyboard.substring(0, stringKeyboard.length - 1);}
+				boolDigidIsProcessed = true;
+
+			}
+
+			if (!boolDigidIsProcessed)
+			{
+
+				// insertion at a different position
+				if(intPreviousStringLength + 1 == myTextarea.length && boolTryToFindToken)
+				{
+								
+					if (myTextarea.substring(position - 1, position) != "\n" && 
+						myTextarea.substring(position - 1, position) != " " &&
+						!myPunctuation.includes(myTextarea.substring(position - 1, position)))
+					{
+						stringKeyboard = myTextarea.substring(position - 1, position);
+					}
+					else
+					{
+						stringKeyboard = "";
+					}
+
+					intPreviousPosition = position;
+					intPreviousStringLength++;
+
+				}
+
+				// immediate deletion or backspace at a different position
+				if(intPreviousStringLength - 1 == myTextarea.length && boolTryToFindToken)
+				{
+
+					stringKeyboard = "";
+
+					intPreviousPosition = position;
+					intPreviousStringLength = myTextarea.length;
+
+				}
+
+			}
+
+			if (stringKeyboard.length > 4)
+			{
+				alert ("You try to enter '" + stringKeyboard + "'.\n" +
+				"This is a longer combination than the maximum.\n");
+			}
+			
+			if (boolTryToFindToken && myTextarea.substring(position - 1, position) != "[")
+			{
+										
+				i = 0;
+				var stringToken = "";
+				boolNotFound = true;
+				while (i < listKeyboard.length && boolNotFound)
+				{
+
+					if (stringKeyboard == listKeyboard[i])
+					{
+						stringToken = listToken[i];
+						
+						let intLengthKeyboard = stringKeyboard.length;
+						let intLengthToken = stringToken.length
+
+						myTextarea = myTextarea.substring(0, position - intLengthKeyboard) + stringToken + myTextarea.substring(position);
+
+						textareaSource.value = myTextarea;
+						textareaSource.focus();
+						textareaSource.setSelectionRange(position - intLengthKeyboard + intLengthToken, position - intLengthKeyboard + intLengthToken);
+						
+						boolNotFound = false;
+						intPreviousPosition = position - intLengthKeyboard + intLengthToken;
+						intPreviousStringLength = myTextarea.length;
+						stringKeyboard = "";
+						stringToken = "";
+											
+					}
+				
+					i++;
+				}
+
+			}
+			
+		}
+		
+		function Transliterate(stringAlphabetSelected, stringToTransliterate)
+		{
+
+			let stringTransliteratedString = "";
+
+    		if (stringAlphabetSelected == "Latin")
+	       	{
+    	   		stringTransliteratedString = stringToTransliterate;
+   			}
+	    	else
+	    	{
+        
+				if (stringAlphabetSelected == "Cyrillic")  { stringAlphabet = document.getElementById("textareaCyrillic").value; }
+				if (stringAlphabetSelected == "ModernGreek")  { stringAlphabet = document.getElementById("textareaModernGreek").value; }
+				if (stringAlphabetSelected == "Hebrew")  { stringAlphabet = document.getElementById("textareaHebrew").value; }
+				if (stringAlphabetSelected == "Arabic")  { stringAlphabet = document.getElementById("textareaArabic").value; }
+				if (stringAlphabetSelected == "AncientGreek")  { stringAlphabet = document.getElementById("textareaAncientGreek").value; }
+			
+	       		let arrayAlphabet = [];
+				arrayAlphabet = stringAlphabet.split("\n");
+	       		let listToken = [];
+	       		let listPronunciation = [];
+	       		i = 0;
+	       		while (i < arrayAlphabet.length)
+ 	      		{
+	           		stringCharacter = [];
+	           		stringCharacter = arrayAlphabet[i].split("\t");
+	           		listToken.push(stringCharacter[0]);
+					listPronunciation.push(stringCharacter[2]);
+ 	          		i++;
+ 	  	 		}
+
+	       		// initial dagesh
+ 	      		if (stringAlphabetSelected == "Hebrew" && stringToTransliterate.length > 1)
+ 	      		{
+ 	          		if (stringToTransliterate.substring(0, 2) == "בּ") { stringTransliteratedString = "b"; i = 2; }
+ 	          		if (stringToTransliterate.substring(0, 2) == "גּ") { stringTransliteratedString = "g"; i = 2; }
+  	         		if (stringToTransliterate.substring(0, 2) == "דּ") { stringTransliteratedString = "d"; i = 2; }
+  	         		if (stringToTransliterate.substring(0, 2) == "כּ") { stringTransliteratedString = "k"; i = 2; }
+  	         		if (stringToTransliterate.substring(0, 2) == "פּ") { stringTransliteratedString = "p"; i = 2; }
+  	         		if (stringToTransliterate.substring(0, 2) == "תּ") { stringTransliteratedString = "t"; i = 2; }
+  	     		}
+
+				let boolCharacterHasBeenFound = false;
+				i = 0;
+				let stringCharacterToFind = "";
+			
+			
+				while (i < stringToTransliterate.length)
+	       		{
+					stringCharacterToFind = stringToTransliterate.substring(i, i + 1);
+				
+					let j = 0;
+				
+	                while (j < listToken.length && !boolCharacterHasBeenFound)
+ 	               {
+ 	                 	if (stringCharacterToFind == listToken[j])
+ 	                  	{
+ 	                      	stringTransliteratedString += listPronunciation[j];
+
+							// remove isolated junctions in Arabic texts
+							if (stringAlphabetSelected == "Arabic")
+							{
+  		  						stringTransliteratedString = stringTransliteratedString.replace(/ـ/g, "");
+							}
+
+							// saddah in Arabic as a special case
+							if (stringAlphabetSelected == "Arabic" && stringTransliteratedString.slice(-1) == "+" && stringTransliteratedString.length > 2)
+							{
+
+								stringTransliteratedString = stringTransliteratedString.slice(0, -1);
+								var stringHelp = stringTransliteratedString;
+								stringTransliteratedString = stringHelp + stringHelp.slice(-1);
+
+							}
+
+ 	                      	boolCharacterHasBeenFound = true;
+						}
+	                   	j++;
+					
+	                }
+				
+					if (boolCharacterHasBeenFound == false)
+ 		           	{
+ 	              		stringTransliteratedString += stringCharacterToFind;
+	            	}
+              	           		
+	           		i++;
+	           		boolCharacterHasBeenFound = false;
+
+				}
+       			
+			}	
+	
+ 		   	// swa or sukuun
+			if (stringAlphabetSelected == "Hebrew" || stringAlphabetSelected == "Arabic")
+			{
+ 		   		stringTransliteratedString = stringTransliteratedString.replace(/:/g, "");
+			}
+			
+			return stringTransliteratedString;
+
+		}
+
+		function functionAddToFile() 
+		{
+
+			var stringForeign = document.getElementById("textareaForeign").value;
+			var stringNative = document.getElementById("textareaNative").value;
+
+			if (stringForeign != "" && stringNative != "")
+			{
+
+				stringForeign = stringForeign.replace(/\[/g, "");
+				stringForeign = stringForeign.replace(/\]/g, "");
+
+				stringNative = stringNative.replace(/\[/g, "");
+				stringNative = stringNative.replace(/\]/g, "");
+				
+				stringForeign = functionRemoveObsoleteDigids(stringForeign);
+				stringNative = functionRemoveObsoleteDigids(stringNative);
+
+				arrayForeign = stringForeign.split("\n\n");
+				arrayNative = stringNative.split("\n\n");
+
+				if (arrayForeign.length != arrayNative.length && (arrayForeign != "" || arrayNative != ""))
+				{
+					alert("The number of items in both textboxes do not correspond. \nAre all items separated by a blank line?");
+				}
+				else
+				{
+
+					const dropdown = document.getElementById("dropdownLessonNumber");
+					const selectedIndex = dropdown.selectedIndex;
+					const intLessonNumber = dropdown.options[selectedIndex].value;
+
+					i = 0;
+					while (i < arrayForeign.length)
+					{
+
+						categoryArray.push(intLessonNumber);
+						questionArray.push(arrayForeign[i]);
+						answerArray.push(arrayNative[i]);
+						i++;
+
+					}
+
+					document.getElementById("textareaForeign").value = "";
+					document.getElementById("textareaNative").value = "";
+
+					if (!document.getElementById("checkboxRetain").checked)
+					{
+						document.getElementById("dropdownLessonNumber").value = 1;
+					}
+
+					functionCloseAllTables();
+
+					document.getElementById("tableAdd").style.display = "block";
+					
+				}
+
+			}
+			else
+			{
+
+				alert("Enter valid files to add: \ntwo lists of words of equal length \nand all words separated by an empty line.");
+
+			}
+
+		}
+
+		function functionAddModify()
+		{
+
+			var stringForeign = document.getElementById("textareaForeign").value;
+			var stringNative = document.getElementById("textareaNative").value;
+
+			if (stringForeign != "" && stringNative != "")
+			{
+
+				stringForeign = stringForeign.replace(/\[/g, "");
+				stringForeign = stringForeign.replace(/\]/g, "");
+
+				stringNative = stringNative.replace(/\[/g, "");
+				stringNative = stringNative.replace(/\]/g, "");
+
+				stringForeign = functionRemoveObsoleteDigids(stringForeign);
+				stringNative = functionRemoveObsoleteDigids(stringNative);
+
+				arrayForeign = stringForeign.split("\n\n");
+				arrayNative = stringNative.split("\n\n");
+
+				if (arrayForeign.length != arrayNative.length && (arrayForeign != "" || arrayNative != ""))
+				{
+					alert("The number of items in both textboxes do not correspond. \nAre all items separated by a blank line?");
+				}
+				else
+				{
+
+					const dropdown = document.getElementById("dropdownLessonNumber");
+					const selectedIndex = dropdown.selectedIndex;
+					const intLessonNumber = dropdown.options[selectedIndex].value;
+
+					var stringToModify = "";
+					i = 0;
+					while (i < arrayForeign.length)
+					{
+
+						stringToModify += intLessonNumber + "\n\n" + arrayForeign[i] + "\n\n" + arrayNative[i] + "\n\n";
+						i++;
+
+					}
+
+					stringToModify = stringToModify.substring(0, stringToModify.length - 2);
+
+					document.getElementById("textareaModify").value = stringToModify;
+
+					document.getElementById("textareaModify").scrollTop = 0;
+
+					boolModificationsOriginateFromASelection = false;
+
+					document.getElementById("textareaForeign").value = "";
+					document.getElementById("textareaNative").value = "";
+
+					if (!document.getElementById("checkboxRetain").checked)
+					{
+						document.getElementById("dropdownLessonNumber").value = 1;
+					}
+
+					functionCloseAllTables();
+					
+					document.getElementById("tableModify").style.display = "block";
+					
+				}
+
+			}
+			else
+			{
+
+				alert("Enter valid files to add: \ntwo lists of words of equal length \nand all words separated by an empty line.");
+
+			}
+
+		}
+
+		function functionSaveModifications()
+		{
+
+			let stringToSave = document.getElementById("textareaModify").value;
+
+			stringToSave = stringToSave.replace(/\[/g, "");
+			stringToSave = stringToSave.replace(/\]/g, "");
+
+			stringToSave = functionRemoveObsoleteDigids(stringToSave);
+
+			let arrayToSave = stringToSave.split("\n\n");
+
+			if(arrayToSave != "" || (arrayToSave == "" && confirm("You are about to delete all items you selected.\nIs that what you want?")))
+			{
+
+				if (arrayToSave.length % 3 != 0 && arrayToSave != "")
+				{
+
+					alert("Not all the items you want to save are complete.\nDid you delete a lessonnumber?\nAre all items separated by a blank line?\nOr is there a foreign item without a native one or the other way around?");
+
+				}
+				else
+				{
+
+					let stringNumbers = "0123456789"
+					let boolEveryItemBeginsWithALessonNumber = true;
+					i = 0;
+					while (i < arrayToSave.length)
+					{
+						j = 0;
+						while (j < arrayToSave[i].length)
+						{
+							if (!stringNumbers.includes(arrayToSave[i].substring(j, j + 1)))
+							{
+								alert("Er is een item dat niet begint met een lesnummer.\nCorrigeer het en probeer opnieuw.");
+								boolEveryItemBeginsWithALessonNumber = false;
+							}
+							j++;
+						}
+
+						i = i + 3;
+
+					}
+
+					if (boolEveryItemBeginsWithALessonNumber)
+					{
+
+						if (boolModificationsOriginateFromASelection)
+						{
+
+							i = 0;
+							j = 0;
+							while (i < arrayLessonsToModify.length)
+							{
+								j = 0;
+								while (j < categoryArray.length)
+								{
+									if (categoryArray[j] == arrayLessonsToModify[i])
+									{
+										categoryArray.splice(j, 1);
+										questionArray.splice(j, 1);
+										answerArray.splice(j, 1);
+										j = -1;
+									}
+									j++;
+
+								}
+
+								i++;
+
+							}
+
+							boolModificationsOriginateFromASelection = false;
+
+							arrayLessonsToModify = [];
+
+						}
+
+						i = 0;
+						while (i < arrayToSave.length)
+						{
+							categoryArray.push(arrayToSave[i]);
+							questionArray.push(arrayToSave[i + 1]);
+							answerArray.push(arrayToSave[i + 2]);
+							i = i + 3;
+						}
+
+						// sort arrays by lesson
+						categoryArrayHelp = [];
+						questionArrayHelp = [];
+						answerArrayHelp = [];
+						i = 0;
+						while (i < 30)
+						{
+							var j = 0;
+							while (j < categoryArray.length)
+							{
+								if (categoryArray[j] == i)
+								{
+									categoryArrayHelp.push(categoryArray[j]);
+									questionArrayHelp.push(questionArray[j]);
+									answerArrayHelp.push(answerArray[j]);
+								}
+								j++;
+							}
+							i++;
+						}
+						categoryArray =[];
+						questionArray = [];
+						answerArray = [];
+						categoryArray = categoryArrayHelp;
+						questionArray = questionArrayHelp;
+						answerArray = answerArrayHelp;
+
+						document.getElementById("textareaModify").value = "";
+
+						functionCloseAllTables();
+
+						if (stringAlphabetSelected == "Latin")
+						{
+							document.getElementById("tableTransliterate").style.display = "none";
+						}
+						else
+						{
+							document.getElementById("tableTransliterate").style.display = "block";
+							document.getElementById("checkboxTransliterateActive").checked = false;
+							document.getElementById("checkboxTransliteratePassive").checked = false;
+						}
+
+						document.getElementById("selectionTable-Laptop").style.display = "block";
+
+						document.getElementById("checkboxSelectAll").checked = false;
+
+						resetButtonClick();
+
+					}
+
+				}
+
+			}
+
+		}
+
+		function functionDoNotSaveModifications()
+		{
+
+			if (confirm("Are you sure you do not want to save your modifications?"))
+			{
+
+				document.getElementById("textareaModify").value = "";
+
+				boolModificationsOriginateFromASelection = false;
+
+				arrayLessonsToModify = [];
+
+				functionCloseAllTables();
+
+				if (stringAlphabetSelected == "Latin")
+				{
+					document.getElementById("tableTransliterate").style.display = "none";
+				}
+				else
+				{
+					document.getElementById("tableTransliterate").style.display = "block";
+					document.getElementById("checkboxTransliterateActive").checked = false;
+					document.getElementById("checkboxTransliteratePassive").checked = false;
+				}
+
+				document.getElementById("selectionTable-Laptop").style.display = "block";
+
+				document.getElementById("checkboxSelectAll").checked = false;
+
+				resetButtonClick();
+
+			}
+
+		}
+
+		function functionRemoveObsoleteDigids(stringVarToModify)
+		{
+
+		stringVarToModify = stringVarToModify.replace("\r", "");
+
+    	var k;
+    	var l;
+
+    	// remove trailing sequence characters and blanks
+    	while (stringVarToModify.length > 0 &&
+			((stringVarToModify.substring(0, 1) == "\n") ||
+           	(stringVarToModify.substring(0, 1) == "\b") ||
+           	(stringVarToModify.substring(0, 1) == "\t") ||
+           	(stringVarToModify.substring(0, 1) == " ")))
+        {
+           	stringVarToModify = stringVarToModify.substring(1);
+        }
+        	
+
+    	var boolFinalDigidIsChar = false;
+    	i = stringVarToModify.length - 1;
+    	while (i > 0 && !boolFinalDigidIsChar)
+    	{
+        	if ((stringVarToModify.substring(i, i + 1) == "\n") ||
+            	(stringVarToModify.substring(i, i + 1) == "\b") ||
+            	(stringVarToModify.substring(i, i + 1) == "\t") ||
+            	(stringVarToModify.substring(i, i + 1) == " "))
+        	{
+            	stringVarToModify = stringVarToModify.substring(0, i);
+           		i--;
+        	}
+        	else
+        	{
+            	boolFinalDigidIsChar = true;
+        	}
+    	}
+
+		// remove mere backspaces, tabs and blanks between newline characters     
+    	k = stringVarToModify.indexOf("\n");
+    	l = stringVarToModify.indexOf("\n", k + 1);
+		
+    	while (l > -1 && l < stringVarToModify.length - 1)
+    	{
+
+        	var stringToVerify = stringVarToModify.substring(k + 1, l);
+			
+        	if (stringToVerify != "")
+        	{
+            	boolIsMereBlanksAndTabs = true;
+            	i = 0;
+            	while (i < stringToVerify.length && boolIsMereBlanksAndTabs)
+            	{
+                	if ((stringToVerify.substring(i, i + 1) == "\b") ||
+                    	(stringToVerify.substring(i, i + 1) == "\t") ||
+                    	(stringToVerify.substring(i, i + 1) == " "))
+                	{
+
+                	}
+                	else
+                	{
+                    	boolIsMereBlanksAndTabs = false;
+                	}
+                	i++;
+
+            	}
+            	if (boolIsMereBlanksAndTabs)
+            	{
+                	stringVarToModify = stringVarToModify.substring(0, k + 1) + stringVarToModify.substring(l);
+                }
+        	}
+
+        	k = l;
+        	l = stringVarToModify.indexOf("\n", k + 1);
+
+    	}
+
+		// reduce series of more than two newline characters to two newline characters                   
+    	var stringHelpString = "";
+    	i = 0;
+    	while (i < stringVarToModify.length)
+    	{
+        	stringHelpString += "\n";
+        	i++;
+    	}
+    	j = stringHelpString.length;
+    	while (j > 2)
+    	{
+        	while (stringVarToModify.indexOf(stringHelpString) > -1)
+        	{
+            	k = stringVarToModify.indexOf(stringHelpString);
+           	 	l = stringHelpString.length;
+            	stringVarToModify = stringVarToModify.substring(0, k) + stringVarToModify.substring(k + l - 2);
+        	}
+        	stringHelpString = stringHelpString.substring(2);
+        	j = stringHelpString.length;
+    	}
+
+    	var arrayVarToModify = [];
+		arrayVarToModify = stringVarToModify.split("\n\n");
+
+		i = 0;
+		while (i < arrayVarToModify.length)
+		{
+
+			// remove leading sequence characters before arrayVarToModify[i]
+			while (arrayVarToModify[i].length> 0 &&
+				(arrayVarToModify[i].substring(0, 1) == "\n") ||
+       			(arrayVarToModify[i].substring(0, 1) == "\b") ||
+       			(arrayVarToModify[i].substring(0, 1) == "\t") ||
+        		(arrayVarToModify[i].substring(0, 1) == " "))
+    		{
+        			arrayVarToModify[i] = arrayVarToModify[i].substring(1);
+        	}
+    		
+			// remove trailing sequence characters after arrayVarToModify[i]
+			while (arrayVarToModify[i].length - 1> 0 && 
+				(arrayVarToModify[i].substring(arrayVarToModify[i].length - 1, arrayVarToModify[i].length) == "\n") ||
+        		(arrayVarToModify[i].substring(arrayVarToModify[i].length - 1, arrayVarToModify[i].length) == "\b") ||
+        		(arrayVarToModify[i].substring(arrayVarToModify[i].length - 1, arrayVarToModify[i].length) == "\t") ||
+        		(arrayVarToModify[i].substring(arrayVarToModify[i].length - 1, arrayVarToModify[i].length) == " "))
+    		{
+        			arrayVarToModify[i] = arrayVarToModify[i].substring(0, arrayVarToModify[i].length - 1);
+			}
+			
+			i++;
+
+		}
+		
+		var stringHelp = "";
+		i = 0;
+		while (i < arrayVarToModify.length)
+		{
+			
+			stringHelp += arrayVarToModify[i] + "\n\n";
+			i++;
+			
+		}
+
+		return stringVarToModify = stringHelp.substring(0, stringHelp.length - 2);
+
+	}
+
+
+		function functionConfirmOpen() {
+
+        	var inputTextAreaValue = document.getElementById("textareaOpen").value;
+
+			if (inputTextAreaValue != "")
+			{
+
+	    		var tabsDeleted = inputTextAreaValue.replace(/\t/g, " -  ");
+	
+	    		var inputSplitted = tabsDeleted.split(']\n');
+				
+				var arrayIntermediate = [];
+	   			var rule, items;
+	   			i = 0;
+            	while (i < inputSplitted.length - 1) {
+               		categoryArray[i] = "default";
+					items = inputSplitted[i].split("[\n");
+					categoryArray[i] = items[0];
+					var helpVar1 = items[1].replace(/\n/g, "<br>");
+               		questionArray[i] = helpVar1;
+					var helpVar2 = items[2].replace(/\n/g, "<br>");
+                	answerArray[i] = helpVar2;
+                	
+					i++;
+            	}
+				
+				rule = inputSplitted[i];
+				items = rule.split("[");
+				stringAlphabetSelected = items[1];
+				typeOfFile = items[2];
+								
+				functionLoadAlphabet();
+			
+				if (typeOfFile == "Multiline")
+				{
+					document.getElementById("active").style.display = "none";
+				}
+
+				functionCloseAllTables();
+				
+				if (stringAlphabetSelected == "Latin")
+				{
+					document.getElementById("tableTransliterate").style.display = "none";
+				}
+				else
+				{
+					document.getElementById("tableTransliterate").style.display = "block";
+					document.getElementById("checkboxTransliterateActive").checked = false;
+					document.getElementById("checkboxTransliteratePassive").checked = false;
+				}
+
+				document.getElementById("selectionTable-Laptop").style.display = "block";
+
+				document.getElementById("checkboxSelectAll").checked = false;
+				
+				resetButtonClick();
+
+			}
+			else
+			{
+				alert("Enter a valid file to process.");
+			}
+		
+		}
+
+		function functionSave()
+		{
+			
+			if (categoryArray != "")
+			{
+
+				let stringToSave = "";
+				i = 0;
+            	while (i < questionArray.length) {
+               	
+               		stringToSave += categoryArray[i] + '[\n' + questionArray[i] + '[\n' + answerArray[i] + "]\n";
+                	i++;
+            	}
+				stringToSave += '-1' + '[' + stringAlphabetSelected + '[' + typeOfFile+ ']';
+
+				document.getElementById("textareaSave").value = stringToSave;
+
+				functionCloseAllTables();
+
+				document.getElementById("tableSave").style.display = "block";
+				
+			}
+			else
+			{
+
+				alert("Open an existing file first.\nOr start a new project.\nMake also sure you entered at least one item to your file.");
+
+			}
+
+		}
+
+		function functionSelect ()
+		{
+
+			if (categoryArray != "")
+			{
+
+				functionCloseAllTables();
+
+				if (stringAlphabetSelected == "Latin")
+				{
+					document.getElementById("tableTransliterate").style.display = "none";
+				}
+				else
+				{
+					document.getElementById("tableTransliterate").style.display = "block";
+					document.getElementById("checkboxTransliterateActive").checked = false;
+					document.getElementById("checkboxTransliteratePassive").checked = false;
+				}
+
+				document.getElementById("selectionTable-Laptop").style.display = "block";
+
+				document.getElementById("checkboxSelectAll").checked = false;
+				
+				resetButtonClick();
+
+			}
+			else
+			{
+
+				alert("Open an existing file first.\nOr start a new project.\nMake also sure you entered at least one item to your file.");
+
+			}
+
+		}
+
+		function functionRehearse() {
+
+       		putSelectionInquizArray();
+
+       		if (thereIsAtLeastOneCheckboxChecked) {
+
+				if (questionQuiz != "")
+				{
+
+					let questionQuizHelp = [];
+					m = 0;
+					while (m < questionQuiz.length)
+					{
+						questionQuizHelp[m] = questionQuiz[m];
+						m++;
+					}
+					if (document.getElementById("checkboxTransliterateActive").checked)
+					{
+						m = 0;
+						while (m < questionQuiz.length)
+						{
+							questionQuiz[m] = questionQuiz[m] + "<br>" + Transliterate(stringAlphabetSelected, questionQuizHelp[m]);
+							m++;
+						}
+					}
+					if (document.getElementById("checkboxTransliteratePassive").checked)
+					{
+						m = 0;
+						while (m < questionQuiz.length)
+						{
+							answerQuiz[m] = answerQuiz[m] + "<br>" + Transliterate(stringAlphabetSelected, questionQuizHelp[m]);
+							m++;
+						}
+					}
+
+           			var helpVariable;
+           			if (document.getElementById("activeLaptop").checked || document.getElementById("activeMobile").checked) {
+           				for (i = 0; i < questionQuiz.length; i++) {
+                   			helpVariable = questionQuiz[i];
+                   			questionQuiz[i] = answerQuiz[i];
+                   			answerQuiz[i] = helpVariable;
+           				}
+           			}
+
+           			var helpVariable1;
+           			var helpVariable2;
+           			var randomNumber;
+           			if (document.getElementById("randomLaptop").checked || document.getElementById("randomMobile").checked) {
+           				for (i = 0; i < questionQuiz.length; i++) {
+               				randomNumber = Math.floor(Math.random() * questionQuiz.length);
+               				helpVariable1 = questionQuiz[randomNumber];
+               				helpVariable2 = answerQuiz[randomNumber];
+               				questionQuiz[randomNumber] = questionQuiz[i];
+               				answerQuiz[randomNumber] = answerQuiz[i];
+               				questionQuiz[i] = helpVariable1;
+               				answerQuiz[i] = helpVariable2;
+           				}
+           			}
+
+           			if (isMobile) {
+  						document.getElementById("selectionTable-Mobile").style.display = "none";
+					}
+	 				else {
+						document.getElementById("selectionTable-Laptop").style.display = "none";
+	 				}
+					document.getElementById("tableTransliterate").style.display = "none";
+           			document.getElementById("randomLaptop").style.display = "none";
+					document.getElementById("activeLaptop").style.display = "none";
+					document.getElementById("randomMobile").style.display = "none";
+					document.getElementById("activeMobile").style.display = "none";
+
+					document.getElementById("quizTable").style.display = "block";
+
+           			document.getElementById("nextButton").style.visibility = "visible";
+           			document.getElementById("rightButton").style.visibility = "hidden";
+           			document.getElementById("wrongButton").style.visibility = "hidden";
+
+           			quizArrayCounter = 0;
+           			rightAnswerCounter = 0;
+           			wrongAnswerCounter = 0;
+           			document.getElementById("question").innerHTML = questionQuiz[quizArrayCounter];
+           			document.getElementById("answer").innerHTML = "&nbsp;";
+           			document.getElementById("note").innerHTML = "&nbsp;";
+           			document.getElementById("passed").innerHTML = "Item " + (quizArrayCounter + 1) + " of " + numberOfItemsInQuiz + ".";
+
+				}
+				else
+				{
+					alert("The lesson you selected is empty.");
+				}
+
+       		} else {
+
+           		alert("You forgot to select a lesson.");
+
+       		}
+       	}
+
+		function functionDisplay() {
+
+        	putSelectionInquizArray();
+
+			if (thereIsAtLeastOneCheckboxChecked) {
+
+				if (questionQuiz != "")
+				{
+					
+					let questionQuizHelp = [];
+					m = 0;
+					while (m < questionQuiz.length)
+					{
+						questionQuizHelp[m] = questionQuiz[m];
+						m++;
+					}
+					if (document.getElementById("checkboxTransliterateActive").checked)
+					{
+						m = 0;
+						while (m < questionQuiz.length)
+						{
+							questionQuiz[m] = questionQuiz[m] + "<br>" + Transliterate(stringAlphabetSelected, questionQuizHelp[m]);
+							m++;
+						}
+					}
+					if (document.getElementById("checkboxTransliteratePassive").checked)
+					{
+						m = 0;
+						while (m < questionQuiz.length)
+						{
+							answerQuiz[m] = answerQuiz[m] + "<br>" + Transliterate(stringAlphabetSelected, questionQuizHelp[m]);
+							m++;
+						}
+					}
+							
+					displaySelectionString = "<table><tr><td><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr>";
+					displaySelectionString += "<tr><td>You selected: </td></tr>";
+					displaySelectionString += "<tr><td style='padding: 0px; height: 6px;'></td></tr>";
+        			for (i = 0; i < numberOfItemsInQuiz; i++) {
+		 				displaySelectionString += "<tr><td style='padding-bottom: 0px;'>" + questionQuiz[i] + " - </td></tr>";
+		 				displaySelectionString += "<tr><td style='position: relative; left: 15px;'>" + answerQuiz[i] + "</td></tr>";
+		 				displaySelectionString += "<tr><td style='padding: 0px; height: 3px;'></td></tr>";
+        			}
+        			displaySelectionString += "<tr><td><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr></table>";
+
+        			if (isMobile) {
+  						document.getElementById("selectionTable-Mobile").style.display = "none";
+					}
+	 				else {
+						document.getElementById("selectionTable-Laptop").style.display = "none";
+	 				}
+					document.getElementById("tableTransliterate").style.display = "none";
+					document.getElementById("randomLaptop").style.display = "none";
+					document.getElementById("activeLaptop").style.display = "none";
+					document.getElementById("randomMobile").style.display = "none";
+					document.getElementById("activeMobile").style.display = "none";
+
+					document.getElementById("displayItemsTable").style.display = "block";
+					document.getElementById("displayItems").style.display = "block";
+
+                	document.getElementById("displayItems").innerHTML = displaySelectionString;
+
+				}
+				else
+				{
+					alert ("The lesson you selected is empty.");
+				}
+
+   			} else {
+
+       			alert("You forgot to select a lesson.");
+
+   			}
+
+   		}
+
+		function functionInputQuiz()
+		{
+
+			putSelectionInquizArray();
+
+			if (thereIsAtLeastOneCheckboxChecked) {
+
+				if (questionQuiz != "")
+				{
+					
+					let questionQuizHelp = [];
+					m = 0;
+					while (m < questionQuiz.length)
+					{
+						questionQuizHelp[m] = questionQuiz[m];
+						m++;
+					}
+					if (document.getElementById("checkboxTransliterateActive").checked)
+					{
+						m = 0;
+						while (m < questionQuiz.length)
+						{
+							questionQuiz[m] = questionQuiz[m] + "<br>" + Transliterate(stringAlphabetSelected, questionQuizHelp[m]);
+							m++;
+						}
+					}
+					if (document.getElementById("checkboxTransliteratePassive").checked)
+					{
+						m = 0;
+						while (m < questionQuiz.length)
+						{
+							answerQuiz[m] = answerQuiz[m] + "<br>" + Transliterate(stringAlphabetSelected, questionQuizHelp[m]);
+							m++;
+						}
+					}
+							
+					if (categoryQuiz != "")
+					{
+
+						// **************************************
+
+						let stringFirstPartQuiz = `<!DOCTYPE html>
+<html>
+<head>
+    	<meta charset=\"utf-8\" />
+    	<title>RehearsalApp</title>
+
+	<style>
+
+        	body {
+            	font-size: 70px;
+				font-family: Times New Roman;
+        	}
+
+        	table {
+            	
+        	}
+	
+		#respondTable {
+			
+		}
+
+	 	td {
+			vertical-align: text-top;
+			padding: 15px;
+	 	}
+
+	 	#active, #random {
+			width: 400px;
+			font-size: 70px;
+			padding: 10px;
+			margin: 5px;
+		}
+
+	 	button {
+				font-family: Times New Roman;
+        		font-size: 70px;
+	    		width: 800px;
+	    		padding: 15px;
+		}
+
+		#selectLessons {
+				font-size: 65px;
+	    		width: 175px;
+        	}
+
+        #inputTextarea {
+	    		
+		}
+
+		#buttonBackground {
+	    }
+
+        #nextButton {
+        	width: 240px;
+	    	height: 240px;
+		}
+
+        #rightButton {
+        	width: 240px;
+	    	height: 240px;
+		}
+
+        #wrongButton {
+        	width: 240px;
+	    	height: 240px;
+		}
+
+        	/* unvisited link */
+		a:link {
+  			
+		}
+
+		/* visited link */
+		a:visited {
+  		
+		}
+
+		/* mouse over link */
+		a:hover {
+  			
+		}
+
+		/* selected link */
+		a:active {
+  			
+		}
+
+    	</style>
+
+
+    	<script>
+
+        	var categoryArray = [];
+        	var questionArray = [];
+        	var answerArray = [];
+        	var categoryQuiz = [];
+        	var questionQuiz = [];
+        	var answerQuiz = [];
+			var helpSort1 = [];
+			var helpSort2 = [];
+        	var categoryMistakes = [];
+        	var questionMistakes = [];
+        	var answerMistakes = [];
+
+        	var totalNumberOfLessons;
+        	var numberOfItemsInQuiz;
+        	var quizArrayCounter;
+        	var rightAnswerCounter;
+        	var wrongAnswerCounter;
+        	var displaySelectionString;
+        	var completeQuizString;
+        	var displayMistakesString;
+			var firstItemToPresent;
+			var secondItemToPresent;
+
+			var typeOfFile;
+
+        	var i;
+        	var j;
+        	var k;
+
+		function loadFile() {
+
+			var inputTextAreaValue = document.getElementById(\"textareaOpen\").value;
+
+            if (inputTextAreaValue != \"\")
+			{
+
+	    		var tabsDeleted = inputTextAreaValue.replace(/\\t/g, \" -  \");
+	
+	    		var inputSplitted = tabsDeleted.split(\']\\n\');
+     
+	   			var rule, items;
+	   			totalNumberOfLessons = 0;
+           		i = 0;
+            	while (i < inputSplitted.length - 2) {
+               		categoryArray[i] = \"default\";
+					items = inputSplitted[i].split(\"[\\n");
+					categoryArray[i] = items[0];
+					var helpVar1 = items[1].replace(/\\n/g, \"<br>\");
+               		questionArray[i] = helpVar1;
+					var helpVar2 = items[2].replace(/\\n/g, \"<br>\");
+                	answerArray[i] = helpVar2;
+                	
+					if (categoryArray[i] > totalNumberOfLessons) {
+						totalNumberOfLessons = categoryArray[i];
+					}
+                	i++;
+            	}
+				
+				rule = inputSplitted[i];
+				items = rule.split(\"[\");
+				var stringAlphabetSelected = items[1];
+				var typeOfFile = items[2].slice(0, -1);
+												
+				if (typeOfFile == \"Multiline\")
+				{
+					document.getElementById(\"active\").style.display = \"none\";
+				}
+				
+				document.getElementById(\"selectionTable-Mobile\").style.display = \"none\";
+				document.getElementById(\"selectionTable-Laptop\").style.display = \"block\";
+
+			}
+			else
+			{
+				alert(\"Enter a valid file to process.\");
+			}
+		
+       	}
+
+		function startButtonClick() {
+
+        	putSelectionInquizArray();
+
+        	if (thereIsAtLeastOneCheckboxChecked) {
+
+				if (questionQuiz !=\"\")
+				{
+       		
+					var helpVariable;
+       				if (document.getElementById(\"activeCheckboxlaptop\").checked || document.getElementById(\"activeCheckboxmobile\").checked) {
+       					for (i = 0; i < questionQuiz.length; i++) {
+          	     			helpVariable = questionQuiz[i];
+          	     			questionQuiz[i] = answerQuiz[i];
+          	     			answerQuiz[i] = helpVariable;
+       					}
+       				}
+
+       				var helpVariable1;
+       				var helpVariable2;
+       				var randomNumber;
+      	 			if (document.getElementById(\"randomCheckboxlaptop\").checked || document.getElementById(\"randomCheckboxmobile\").checked) {
+     	  				for (i = 0; i < questionQuiz.length; i++) {
+     	      				randomNumber = Math.floor(Math.random() * questionQuiz.length);
+     	      				helpVariable1 = questionQuiz[randomNumber];
+     	      				helpVariable2 = answerQuiz[randomNumber];
+      	     				questionQuiz[randomNumber] = questionQuiz[i];
+      	    	 			answerQuiz[randomNumber] = answerQuiz[i];
+      		   	  			questionQuiz[i] = helpVariable1;
+      		   	  			answerQuiz[i] = helpVariable2;
+      	 				}
+      	 			}
+
+     	  			if (isMobile) {
+						document.getElementById(\"selectionTable-Mobile\").style.display = \"none\";
+					}
+					else {
+						document.getElementById(\"selectionTable-Laptop\").style.display = \"none\";
+					}
+       				document.getElementById(\"random\").style.display = \"none\";
+					document.getElementById(\"active\").style.display = \"none\";
+					document.getElementById(\"buttonStart\").style.display = \"none\";
+					document.getElementById(\"buttonDisplay\").style.display = \"none\";
+
+					document.getElementById(\"quizTable\").style.display = \"block\";
+
+     		  		document.getElementById(\"nextButton\").style.visibility = \"visible\";
+     		  		document.getElementById(\"rightButton\").style.visibility = \"hidden\";
+    		   		document.getElementById(\"wrongButton\").style.visibility = \"hidden\";
+
+    		   		quizArrayCounter = 0;
+   	   		 		rightAnswerCounter = 0;
+    		   		wrongAnswerCounter = 0;
+   	   		 		document.getElementById(\"question\").innerHTML = questionQuiz[quizArrayCounter];
+   	   		 		document.getElementById(\"answer\").innerHTML = \"&nbsp;\";
+    		   		document.getElementById(\"note\").innerHTML = \"&nbsp;\";
+    		   		document.getElementById(\"passed\").innerHTML = \"Item \" + (quizArrayCounter + 1) + \" of \" + numberOfItemsInQuiz + \".\";
+
+				}
+				else
+				{
+
+					alert(\"The lesson you selected is empty.\");
+
+				}
+
+			} 
+			else {
+
+				alert(\"You forgot to select a lesson.\");
+
+			}
+		}
+
+		function displaySelectionButtonClick() {
+
+   			putSelectionInquizArray();
+						
+  			if (thereIsAtLeastOneCheckboxChecked) {
+
+				if (questionQuiz !=\"\")
+				{
+						
+					displaySelectionString = \"<table><tr><td><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr>\";
+					displaySelectionString += \"<tr><td>You selected: </td></tr>\";
+					displaySelectionString += \"<tr<td></td></tr>\";
+	       			for (i = 0; i < numberOfItemsInQuiz; i++) {
+		 			displaySelectionString += \"<tr><td style=\'padding-bottom: 0px;\'>\" + questionQuiz[i] + \" - </td></tr>\";
+		 			displaySelectionString += \"<tr><td style=\'position: relative; left: 15px;\'>\" + answerQuiz[i] + \"</td></tr>\";
+		 			displaySelectionString += \"<tr><td style=\'padding: 0px; height: 3px;\'></td></tr>\";
+	       			}
+	       			displaySelectionString += \"<tr><td><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr></table>\";
+
+	       			if (isMobile) {
+						document.getElementById(\"selectionTable-Mobile\").style.display = \"none\";
+					}
+	 				else {
+						document.getElementById(\"selectionTable-Laptop\").style.display = \"none\";
+	 				}
+					document.getElementById(\"random\").style.display = \"none\";
+					document.getElementById(\"active\").style.display = \"none\";
+					document.getElementById(\"buttonStart\").style.display = \"none\";
+					document.getElementById(\"buttonDisplay\").style.display = \"none\";
+
+   	    			document.getElementById(\"displayItemsTable\").style.display = \"block\";
+
+   	    			document.getElementById(\"displayItems\").innerHTML = displaySelectionString;
+				
+				}
+				else
+				{
+
+					alert(\"The lesson you selected is empty.\");
+
+				}
+
+   			} 
+			else {
+
+       			alert(\"You forgot to select a lesson.\");
+
+   			}
+
+   		}
+
+		function putSelectionInquizArray() {
+
+   			questionQuiz = [];
+   			answerQuiz = [];
+	     
+   			var categoryCheckboxArray = [];
+					
+   			i = 0;
+   			while (i < totalNumberOfLessons + 1) {
+			categoryCheckboxArray[i] = 0;
+   			i++;
+   			}
+
+			if (document.getElementById(\"checkbox0laptop\").checked) {categoryCheckboxArray[0] = 1; }
+			if (document.getElementById(\"checkbox1laptop\").checked) {categoryCheckboxArray[1] = 1; }
+   			if (document.getElementById(\"checkbox2laptop\").checked) {categoryCheckboxArray[2] = 1; }
+   			if (document.getElementById(\"checkbox3laptop\").checked) {categoryCheckboxArray[3] = 1; }
+   			if (document.getElementById(\"checkbox4laptop\").checked) {categoryCheckboxArray[4] = 1; }
+   			if (document.getElementById(\"checkbox5laptop\").checked) {categoryCheckboxArray[5] = 1; }
+   			if (document.getElementById(\"checkbox6laptop\").checked) {categoryCheckboxArray[6] = 1; }
+   			if (document.getElementById(\"checkbox7laptop\").checked) {categoryCheckboxArray[7] = 1; }
+   			if (document.getElementById(\"checkbox8laptop\").checked) {categoryCheckboxArray[8] = 1; }
+   			if (document.getElementById(\"checkbox9laptop\").checked) {categoryCheckboxArray[9] = 1; }
+   			if (document.getElementById(\"checkbox10laptop\").checked) {categoryCheckboxArray[10] = 1; }
+   			if (document.getElementById(\"checkbox11laptop\").checked) {categoryCheckboxArray[11] = 1; }
+   			if (document.getElementById(\"checkbox12laptop\").checked) {categoryCheckboxArray[12] = 1; }
+   			if (document.getElementById(\"checkbox13laptop\").checked) {categoryCheckboxArray[13] = 1; }
+   			if (document.getElementById(\"checkbox14laptop\").checked) {categoryCheckboxArray[14] = 1; }
+   			if (document.getElementById(\"checkbox15laptop\").checked) {categoryCheckboxArray[15] = 1; }
+   			if (document.getElementById(\"checkbox16laptop\").checked) {categoryCheckboxArray[16] = 1; }
+   			if (document.getElementById(\"checkbox17laptop\").checked) {categoryCheckboxArray[17] = 1; }
+   			if (document.getElementById(\"checkbox18laptop\").checked) {categoryCheckboxArray[18] = 1; }
+   			if (document.getElementById(\"checkbox19laptop\").checked) {categoryCheckboxArray[19] = 1; }
+   			if (document.getElementById(\"checkbox20laptop\").checked) {categoryCheckboxArray[20] = 1; }
+   			if (document.getElementById(\"checkbox21laptop\").checked) {categoryCheckboxArray[21] = 1; }
+   			if (document.getElementById(\"checkbox22laptop\").checked) {categoryCheckboxArray[22] = 1; }
+   			if (document.getElementById(\"checkbox23laptop\").checked) {categoryCheckboxArray[23] = 1; }
+   			if (document.getElementById(\"checkbox24laptop\").checked) {categoryCheckboxArray[24] = 1; }
+   			if (document.getElementById(\"checkbox25laptop\").checked) {categoryCheckboxArray[25] = 1; }
+   			if (document.getElementById(\"checkbox26laptop\").checked) {categoryCheckboxArray[26] = 1; }
+   			if (document.getElementById(\"checkbox27laptop\").checked) {categoryCheckboxArray[27] = 1; }
+   			if (document.getElementById(\"checkbox28laptop\").checked) {categoryCheckboxArray[28] = 1; }
+   			if (document.getElementById(\"checkbox29laptop\").checked) {categoryCheckboxArray[29] = 1; }
+   			if (document.getElementById(\"checkbox30laptop\").checked) {categoryCheckboxArray[30] = 1; }
+
+			if (document.getElementById(\"checkbox0mobile\").checked) {categoryCheckboxArray[0] = 1; }
+			if (document.getElementById(\"checkbox1mobile\").checked) {categoryCheckboxArray[1] = 1; }
+			if (document.getElementById(\"checkbox2mobile\").checked) {categoryCheckboxArray[2] = 1; }
+			if (document.getElementById(\"checkbox3mobile\").checked) {categoryCheckboxArray[3] = 1; }
+			if (document.getElementById(\"checkbox4mobile\").checked) {categoryCheckboxArray[4] = 1; }
+			if (document.getElementById(\"checkbox5mobile\").checked) {categoryCheckboxArray[5] = 1; }
+			if (document.getElementById(\"checkbox6mobile\").checked) {categoryCheckboxArray[6] = 1; }
+			if (document.getElementById(\"checkbox7mobile\").checked) {categoryCheckboxArray[7] = 1; }
+			if (document.getElementById(\"checkbox8mobile\").checked) {categoryCheckboxArray[8] = 1; }
+			if (document.getElementById(\"checkbox9mobile\").checked) {categoryCheckboxArray[9] = 1; }
+			if (document.getElementById(\"checkbox10mobile\").checked) {categoryCheckboxArray[10] = 1; }
+			if (document.getElementById(\"checkbox11mobile\").checked) {categoryCheckboxArray[11] = 1; }
+			if (document.getElementById(\"checkbox12mobile\").checked) {categoryCheckboxArray[12] = 1; }
+			if (document.getElementById(\"checkbox13mobile\").checked) {categoryCheckboxArray[13] = 1; }
+			if (document.getElementById(\"checkbox14mobile\").checked) {categoryCheckboxArray[14] = 1; }
+			if (document.getElementById(\"checkbox15mobile\").checked) {categoryCheckboxArray[15] = 1; }
+			if (document.getElementById(\"checkbox16mobile\").checked) {categoryCheckboxArray[16] = 1; }
+			if (document.getElementById(\"checkbox17mobile\").checked) {categoryCheckboxArray[17] = 1; }
+			if (document.getElementById(\"checkbox18mobile\").checked) {categoryCheckboxArray[18] = 1; }
+			if (document.getElementById(\"checkbox19mobile\").checked) {categoryCheckboxArray[19] = 1; }
+			if (document.getElementById(\"checkbox20mobile\").checked) {categoryCheckboxArray[20] = 1; }
+			if (document.getElementById(\"checkbox21mobile\").checked) {categoryCheckboxArray[21] = 1; }
+			if (document.getElementById(\"checkbox22mobile\").checked) {categoryCheckboxArray[22] = 1; }
+			if (document.getElementById(\"checkbox23mobile\").checked) {categoryCheckboxArray[23] = 1; }
+			if (document.getElementById(\"checkbox24mobile\").checked) {categoryCheckboxArray[24] = 1; }
+			if (document.getElementById(\"checkbox25mobile\").checked) {categoryCheckboxArray[25] = 1; }
+			if (document.getElementById(\"checkbox26mobile\").checked) {categoryCheckboxArray[26] = 1; }
+			if (document.getElementById(\"checkbox27mobile\").checked) {categoryCheckboxArray[27] = 1; }
+			if (document.getElementById(\"checkbox28mobile\").checked) {categoryCheckboxArray[28] = 1; }
+			if (document.getElementById(\"checkbox29mobile\").checked) {categoryCheckboxArray[29] = 1; }
+			if (document.getElementById(\"checkbox30mobile\").checked) {categoryCheckboxArray[30] = 1; }
+				
+    		thereIsAtLeastOneCheckboxChecked = false;
+    		j = 0;
+    		for (i = 0; i < totalNumberOfLessons + 1; i++) {
+       			if (categoryCheckboxArray[i] == 1) {
+       				thereIsAtLeastOneCheckboxChecked = true;
+       				for (k = 0; k < categoryArray.length; k++) {
+           				if (categoryArray[k] == i) {
+							questionQuiz[j] = questionArray[k];
+               				answerQuiz[j] = answerArray[k];
+               				j++;
+           				}
+       				}
+       			}
+    		}
+    		numberOfItemsInQuiz = j;
+			
+        }
+
+        function nextButtonClick() {
+
+        	document.getElementById(\"answer\").innerHTML = answerQuiz[quizArrayCounter];
+
+        	document.getElementById(\"rightButton\").style.visibility = \"visible\";
+        	document.getElementById(\"wrongButton\").style.visibility = \"visible\";
+        	document.getElementById(\"nextButton\").style.visibility = \"hidden\";
+
+        }
+
+        function rightButtonClick() {
+
+        	processAnswer(true);
+
+        }
+
+        function wrongButtonClick() {
+
+        	processAnswer(false);
+
+        }
+
+		function processAnswer(answerIsRight) {
+
+    		if (answerIsRight) {
+            	rightAnswerCounter++;
+             		document.getElementById(\"note\").innerHTML = \"Note: \" + (Math.round(100 * (rightAnswerCounter / (quizArrayCounter + 1))) / 10) + \".\";
+            } else {
+            	questionMistakes[wrongAnswerCounter] = questionQuiz[quizArrayCounter];
+            	answerMistakes[wrongAnswerCounter] = answerQuiz[quizArrayCounter];
+            	wrongAnswerCounter++;
+            	document.getElementById(\"note\").innerHTML = \"Note: \" + (Math.round(100 * (rightAnswerCounter / (quizArrayCounter + 1))) / 10) + \".\";
+            }
+            quizArrayCounter++;
+            if (quizArrayCounter < numberOfItemsInQuiz) 
+			{
+            	document.getElementById(\"rightButton\").style.visibility = \"hidden\";
+            	document.getElementById(\"wrongButton\").style.visibility = \"hidden\";
+            	document.getElementById(\"nextButton\").style.visibility = \"visible\";
+
+            	document.getElementById(\"question\").innerHTML = questionQuiz[quizArrayCounter];
+            	document.getElementById(\"answer\").innerHTML = \"&nbsp;\";
+            	document.getElementById(\"passed\").innerHTML = \"Item \" + (quizArrayCounter + 1) + \" of \" + numberOfItemsInQuiz + \".\";
+			} else 
+			{
+            	document.getElementById(\"quizTable\").style.display = \"none\";
+            	document.getElementById(\"completeQuizTable\").style.display = \"inline\";
+
+            	completeQuizString = \"\";
+            	switch (wrongAnswerCounter) {
+            		case 0:
+               		 	completeQuizString = \"<table><tr><td>Congratulations: all answers were correct.</td></tr>\";
+               			completeQuizString += \"<tr><td><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr></table>\";
+               			break;
+            		case 1:
+               			completeQuizString = \"<table><tr><td>Well done! You made only one mistake. </td></tr>\";
+               			completeQuizString += \"<tr><td>Your mistake was: </td></tr>\";
+			   			firstItemToPresent = questionMistakes[0];
+			   			secondItemToPresent = answerMistakes[0];
+			  		 	if (document.getElementById(\"activeCheckboxlaptop\").checked || document.getElementById(\"activeCheckboxmobile\").checked) {
+			   				firstItemToPresent = answerMistakes[0];
+							secondItemToPresent = questionMistakes[0];
+			   			}	
+			
+						completeQuizString += \"<tr><td style=\'padding: 0px; height: 6px;\'></td></tr>\";
+               			completeQuizString += \"<tr><td style=\'padding-bottom: 0px;\'>\" + firstItemToPresent + \";</td></tr><tr><td style=\'position: relative; left: 15px;\'>\" + secondItemToPresent + \"</td></tr>\";
+               			completeQuizString += \"<tr><td style=\'padding: 0px; height: 3px;\'></td></tr>\";
+						completeQuizString += \"<tr><td><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr></table>\";
+               			break;
+            		case 2:
+						var copyQuestionMistakes = [];
+	      				var copyAnswerMistakes = [];		
+            			if (document.getElementById(\"activeCheckboxlaptop\").checked || document.getElementById(\"activeCheckboxmobile\").checked) {
+			   				for (i = 0; i < questionMistakes.length; i++) {
+								copyQuestionMistakes[i] = answerMistakes[i];
+								copyAnswerMistakes[i] = questionMistakes[i];
+							}
+						}
+	      				else {
+							for (i = 0; i < questionMistakes.length; i++) {
+								copyQuestionMistakes[i] = questionMistakes[i];
+								copyAnswerMistakes[i] = answerMistakes[i];
+							}
+	      				}
+
+	      				helpSort1 = [];
+	      				for (i = 0; i < questionMistakes.length; i++) {
+							helpSort1[i] = copyQuestionMistakes[i];
+	      				}
+		  
+	     				helpSort1.sort();
+
+	     				helpSort2 = [];
+	     				for (i = 0; i < questionMistakes.length; i++) {
+		 					j = 0;
+							k = 0;
+							while (j < questionMistakes.length)
+							{
+								if (helpSort1[i] == copyQuestionMistakes[j] && k == 0)
+								{
+									helpSort2[i] = copyAnswerMistakes[j];
+									k = 1;
+								}
+								j++;
+							}
+						}
+	      		   				
+						completeQuizString = \"<table><tr><td>Well done! You made only two mistakes.</td></tr>\";
+                		completeQuizString += \"<tr><td>Your mistakes were:</td></tr>\";
+						completeQuizString += \"<tr><td style=\'padding: 0px; height: 6px;\'></td></tr>\";
+						completeQuizString += \"<tr><td style=\'padding-bottom: 0px;\'>\" + helpSort1[0] + \" - </td></tr><tr><td style=\'position: relative; left: 15px;\'>\" + helpSort2[0] + \"</td></tr>\";
+						completeQuizString += \"<tr><td style=\'padding: 0px; height: 3px;\'></td></tr>\";
+               			completeQuizString += \"<tr><td style=\'padding-bottom: 0px;\'>\" + helpSort1[1] + \" - </td></tr><tr><td style=\'position: relative; left: 15px;\'>\" + helpSort2[1] + \"</td></tr>\";
+						completeQuizString += \"<tr><td style=\'padding: 0px; height: 3px; \'></td></tr>\";
+               			completeQuizString += \"<tr><td><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr></table>\";
+               			break;
+           			default:
+               			completeQuizString = \"<table><tr><td>You made \" + wrongAnswerCounter + \" mistakes.</td></tr><tr><td>Your note is: \" + (Math.round(100 * (rightAnswerCounter / quizArrayCounter)) / 10) + \".</td></tr>\";
+               			completeQuizString += \"<tr><td>Do you want to take a next round on the mistakes?</td></tr>\";
+               			completeQuizString += \"<tr><td><button id=\'nextRoundButton\' type=\'button\' onclick=\'nextRoundButtonClick()\'>Ok</button></td></tr>\";
+     				completeQuizString += \"<tr><td><button id=\'displayMistakesButton\' type=\'button\' onclick=\'displayMistakesButtonClick()\'>Display mistakes</button></td></tr>\";
+           					completeQuizString += \"<tr><td><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr></table>\";
+ 				}
+                document.getElementById(\"completeQuiz\").innerHTML = completeQuizString;
+            }
+		}
+
+        function nextRoundButtonClick() {
+
+        	numberOfItemsInQuiz = wrongAnswerCounter;
+
+        	questionQuiz = [];
+         	answerQuiz = [];
+
+         	questionQuiz = questionMistakes;
+         	answerQuiz = answerMistakes;
+
+         	questionMistakes = [];
+         	answerMistakes = [];
+
+         	document.getElementById(\"completeQuizTable\").style.display = \"none\";
+         	document.getElementById(\"quizTable\").style.display = \"inline\";
+
+			document.getElementById(\"nextButton\").style.visibility = \"visible\";
+   			document.getElementById(\"rightButton\").style.visibility = \"hidden\";
+   			document.getElementById(\"wrongButton\").style.visibility = \"hidden\";
+
+   			quizArrayCounter = 0;
+   			rightAnswerCounter = 0;
+   			wrongAnswerCounter = 0;
+   			document.getElementById(\"question\").innerHTML = questionQuiz[quizArrayCounter];
+   			document.getElementById(\"answer\").innerHTML = \"&nbsp;\";
+   			document.getElementById(\"note\").innerHTML = \"&nbsp;\";
+   			document.getElementById(\"passed\").innerHTML = \"Item \" + (quizArrayCounter + 1) + \" of \" + numberOfItemsInQuiz + \".\";
+
+   		}
+
+		function displayMistakesButtonClick() {
+	      
+      			var copyQuestionMistakes = [];
+      			var copyAnswerMistakes = [];		
+       			if (document.getElementById(\"activeCheckboxlaptop\").checked || document.getElementById(\"activeCheckboxmobile\").checked) {
+			   		for (i = 0; i < questionMistakes.length; i++) {
+						copyQuestionMistakes[i] = answerMistakes[i];
+						copyAnswerMistakes[i] = questionMistakes[i];
+					}
+				}
+      			else {
+					for (i = 0; i < questionMistakes.length; i++) {
+						copyQuestionMistakes[i] = questionMistakes[i];
+						copyAnswerMistakes[i] = answerMistakes[i];
+					}
+      			}
+
+      			helpSort1 = [];
+      			for (i = 0; i < questionMistakes.length; i++) {
+					helpSort1[i] = copyQuestionMistakes[i];
+      			}
+		  
+     			helpSort1.sort();
+
+     			helpSort2 = [];
+     			for (i = 0; i < questionMistakes.length; i++) {
+		 			j = 0;
+					k = 0;
+					while (j < questionMistakes.length)
+						{
+						if (helpSort1[i] == copyQuestionMistakes[j] && k == 0)
+						{
+							helpSort2[i] = copyAnswerMistakes[j];
+							k = 1;
+						}
+						j++;
+					}
+      			}
+	      
+    			displayMistakesString = \"<table><tr><td><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr>\";
+      			displayMistakesString += \"<tr><td>Your mistakes were: </td></tr>\";
+    			displayMistakesString += \"<tr><td style=\'padding: 0px; height: 6px;\'></td></tr>\";
+       			for (i = 0; i < wrongAnswerCounter; i++) {
+		 			displayMistakesString += \"<tr><td style=\'padding-bottom: 0px;\'>\" + helpSort1[i] + \" - </td></tr><tr><td style=\'position: relative; left: 15px;\'>\" + helpSort2[i] + \"</td></tr>\";
+	  				displayMistakesString += \"<tr><td style=\'padding: 0px; height: 3px;\'></td></tr>\";
+            	}
+	    		displayMistakesString += \"<tr><td><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr></table>\";
+
+	    		copyQuestionMistakes = [];
+	    		copyAnswerMistakes = [];
+	    		helpSort1 = [];
+	    		helpSort2 = [];
+
+            	document.getElementById(\"completeQuizTable\").style.display = \"none\";
+            	document.getElementById(\"displayItemsTable\").style.display = \"inline\";
+            	document.getElementById(\"displayItems\").innerHTML = displayMistakesString;
+
+		}
+
+        function resetButtonClick() {
+
+			document.getElementById(\"checkbox0laptop\").checked = false;
+ 			document.getElementById(\"checkbox1laptop\").checked = false;
+	    	document.getElementById(\"checkbox2laptop\").checked = false;
+	    	document.getElementById(\"checkbox3laptop\").checked = false;
+	    	document.getElementById(\"checkbox4laptop\").checked = false;
+	    	document.getElementById(\"checkbox5laptop\").checked = false;
+	   		document.getElementById(\"checkbox6laptop\").checked = false;
+	    	document.getElementById(\"checkbox7laptop\").checked = false;
+	    	document.getElementById(\"checkbox8laptop\").checked = false;
+	    	document.getElementById(\"checkbox9laptop\").checked = false;
+	    	document.getElementById(\"checkbox10laptop\").checked = false;
+	    	document.getElementById(\"checkbox11laptop\").checked = false;
+	    	document.getElementById(\"checkbox12laptop\").checked = false;
+	    	document.getElementById(\"checkbox13laptop\").checked = false;
+	    	document.getElementById(\"checkbox14laptop\").checked = false;
+	    	document.getElementById(\"checkbox15laptop\").checked = false;
+			document.getElementById(\"checkbox16laptop\").checked = false;
+	    	document.getElementById(\"checkbox17laptop\").checked = false;
+	    	document.getElementById(\"checkbox18laptop\").checked = false;
+	    	document.getElementById(\"checkbox19laptop\").checked = false;
+	    	document.getElementById(\"checkbox20laptop\").checked = false;
+	    	document.getElementById(\"checkbox21laptop\").checked = false;
+	    	document.getElementById(\"checkbox22laptop\").checked = false;
+	    	document.getElementById(\"checkbox23laptop\").checked = false;
+	    	document.getElementById(\"checkbox24laptop\").checked = false;
+	    	document.getElementById(\"checkbox25laptop\").checked = false;
+	    	document.getElementById(\"checkbox26laptop\").checked = false;
+	    	document.getElementById(\"checkbox27laptop\").checked = false;
+	    	document.getElementById(\"checkbox28laptop\").checked = false;
+	    	document.getElementById(\"checkbox29laptop\").checked = false;
+	    	document.getElementById(\"checkbox30laptop\").checked = false;
+
+			document.getElementById(\"checkbox0mobile\").checked = false;
+			document.getElementById(\"checkbox1mobile\").checked = false;
+	    	document.getElementById(\"checkbox2mobile\").checked = false;
+	    	document.getElementById(\"checkbox3mobile\").checked = false;
+	    	document.getElementById(\"checkbox4mobile\").checked = false;
+	    	document.getElementById(\"checkbox5mobile\").checked = false;
+	   		document.getElementById(\"checkbox6mobile\").checked = false;
+	    	document.getElementById(\"checkbox7mobile\").checked = false;
+	    	document.getElementById(\"checkbox8mobile\").checked = false;
+	    	document.getElementById(\"checkbox9mobile\").checked = false;
+	    	document.getElementById(\"checkbox10mobile\").checked = false;
+	    	document.getElementById(\"checkbox11mobile\").checked = false;
+	    	document.getElementById(\"checkbox12mobile\").checked = false;
+	    	document.getElementById(\"checkbox13mobile\").checked = false;
+	    	document.getElementById(\"checkbox14mobile\").checked = false;
+	    	document.getElementById(\"checkbox15mobile\").checked = false;
+			document.getElementById(\"checkbox16mobile\").checked = false;
+	    	document.getElementById(\"checkbox17mobile\").checked = false;
+	    	document.getElementById(\"checkbox18mobile\").checked = false;
+	    	document.getElementById(\"checkbox19mobile\").checked = false;
+	    	document.getElementById(\"checkbox20mobile\").checked = false;
+	    	document.getElementById(\"checkbox21mobile\").checked = false;
+	    	document.getElementById(\"checkbox22mobile\").checked = false;
+	    	document.getElementById(\"checkbox23mobile\").checked = false;
+	    	document.getElementById(\"checkbox24mobile\").checked = false;
+	    	document.getElementById(\"checkbox25mobile\").checked = false;
+	    	document.getElementById(\"checkbox26mobile\").checked = false;
+	    	document.getElementById(\"checkbox27mobile\").checked = false;
+	    	document.getElementById(\"checkbox28mobile\").checked = false;
+	    	document.getElementById(\"checkbox29mobile\").checked = false;
+	    	document.getElementById(\"checkbox30mobile\").checked = false;
+
+            document.getElementById(\"activeCheckboxlaptop\").checked = false;
+            document.getElementById(\"randomCheckboxlaptop\").checked = false;
+			document.getElementById(\"activeCheckboxmobile\").checked = false;
+            document.getElementById(\"randomCheckboxmobile\").checked = false;
+
+            questionMistakes = [];
+            answerMistakes = [];
+
+            document.getElementById(\"displayItemsTable\").style.display = \"none\";
+            document.getElementById(\"quizTable\").style.display = \"none\";
+            document.getElementById(\"completeQuizTable\").style.display = \"none\";
+            if (isMobile) {
+  				document.getElementById(\"selectionTable-Mobile\").style.display = \"inline\";
+				document.getElementById(\"selectionTable-Laptop\").style.display = \"none\";
+	 		}
+	 		else {
+				document.getElementById(\"selectionTable-Mobile\").style.display = \"none\";
+				document.getElementById(\"selectionTable-Laptop\").style.display = \"inline\";
+	 		}
+			             
+			document.getElementById(\"random\").style.display = \"block\";
+			document.getElementById(\"active\").style.display = \"block\";
+			document.getElementById(\"buttonStart\").style.display = \"block\";
+			document.getElementById(\"buttonDisplay\").style.display = \"block\";
+
+			if (typeOfFile == \"Multiline\")
+			{
+				document.getElementById(\"active\").style.display = \"none\";
+			}
+
+		}
+
+    <\/script>
+
+</head>
+
+<body onload=\"loadFile()\">
+
+<div id=\"inputTable\">
+	<textarea id=\"textareaOpen\">
+`;
+
+						// **************************************
+
+						let stringLastPartQuiz = `
+</textarea>
+     </div>
+
+<div id=\"selectionTable-Laptop\">
+	<table>
+	<tr><td>
+	
+	<table id=\"respondTable\">
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox0laptop\'>&nbsp;&nbsp;0</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox1laptop\'>&nbsp;&nbsp;1</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox7laptop\'>&nbsp;&nbsp;7</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox13laptop\'>&nbsp;&nbsp;13</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox19laptop\'>&nbsp;&nbsp;19</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox25laptop\'>&nbsp;&nbsp;25</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox2laptop\'>&nbsp;&nbsp;2</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox8laptop\'>&nbsp;&nbsp;8</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox14laptop\'>&nbsp;&nbsp;14</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox20laptop\'>&nbsp;&nbsp;20</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox26laptop\'>&nbsp;&nbsp;26</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox3laptop\'>&nbsp;&nbsp;3</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox9laptop\'>&nbsp;&nbsp;9</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox15laptop\'>&nbsp;&nbsp;15</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox21laptop\'>&nbsp;&nbsp;21</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox27laptop\'>&nbsp;&nbsp;27</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox4laptop\'>&nbsp;&nbsp;4</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox10laptop\'>&nbsp;&nbsp;10</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox16laptop\'>&nbsp;&nbsp;16</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox22laptop\'>&nbsp;&nbsp;22</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox28laptop\'>&nbsp;&nbsp;28</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox5laptop\'>&nbsp;&nbsp;5</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox11laptop\'>&nbsp;&nbsp;11</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox17laptop\'>&nbsp;&nbsp;17</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox23laptop\'>&nbsp;&nbsp;23</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox29laptop\'>&nbsp;&nbsp;29</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox6laptop\'>&nbsp;&nbsp;6</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox12laptop\'>&nbsp;&nbsp;12</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox18laptop\'>&nbsp;&nbsp;18</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox24laptop\'>&nbsp;&nbsp;24</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox30laptop\'>&nbsp;&nbsp;30</td>
+		</tr>
+		</table>
+	
+		</td><td>
+
+		<div id=\"buttonDisplay\">
+			<button id=\"displaySelectionButton\" type=\"button\" onclick=\"displaySelectionButtonClick()\">Display selection</button>
+		</div>
+		<div id=\"buttonStart\">
+			<button id=\"startButton\" type=\"button\" onclick=\"startButtonClick()\">Start rehearsing</button>
+		</div>
+		<div id=\"active\">
+			<input type=\'checkbox\' id=\'activeCheckboxlaptop\'>&nbsp;&nbsp;Active
+		</div>
+		<div id=\"random\">
+			<input type=\'checkbox\' id=\'randomCheckboxlaptop\'>&nbsp;&nbsp;Random
+		</div>
+	
+		</td></tr>
+	</table>
+
+</div>
+
+<div id=\"selectionTable-Mobile\">
+	<table>
+		<tr><td>
+	
+		<table id=\"respondTable\">
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox0mobile\'>&nbsp;&nbsp;0</td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox1mobile\'>&nbsp;&nbsp;1</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox7mobile\'>&nbsp;&nbsp;7</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox13mobile\'>&nbsp;&nbsp;13</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox19mobile\'>&nbsp;&nbsp;19</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox25mobile\'>&nbsp;&nbsp;25</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox2mobile\'>&nbsp;&nbsp;2</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox8mobile\'>&nbsp;&nbsp;8</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox14mobile\'>&nbsp;&nbsp;14</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox20mobile\'>&nbsp;&nbsp;20</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox26mobile\'>&nbsp;&nbsp;26</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox3mobile\'>&nbsp;&nbsp;3</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox9mobile\'>&nbsp;&nbsp;9</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox15mobile\'>&nbsp;&nbsp;15</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox21mobile\'>&nbsp;&nbsp;21</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox27mobile\'>&nbsp;&nbsp;27</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox4mobile\'>&nbsp;&nbsp;4</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox10mobile\'>&nbsp;&nbsp;10</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox16mobile\'>&nbsp;&nbsp;16</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox22mobile\'>&nbsp;&nbsp;22</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox28mobile\'>&nbsp;&nbsp;28</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox5mobile\'>&nbsp;&nbsp;5</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox11mobile\'>&nbsp;&nbsp;11</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox17mobile\'>&nbsp;&nbsp;17</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox23mobile\'>&nbsp;&nbsp;23</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox29mobile\'>&nbsp;&nbsp;29</td>
+		</tr>
+		<tr>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox6mobile\'>&nbsp;&nbsp;6</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox12mobile\'>&nbsp;&nbsp;12</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox18mobile\'>&nbsp;&nbsp;18</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox24mobile\'>&nbsp;&nbsp;24</td>
+		<td id=\'selectLessons\'><input type=\'checkbox\' id=\'checkbox30mobile\'>&nbsp;&nbsp;30</td>
+		</tr>
+		</table>
+	
+		</td></tr>
+		<tr><td>
+
+		<div id=\"buttonDisplay\">
+			<button id=\"displaySelectionButton\" type=\"button\" onclick=\"displaySelectionButtonClick()\">Display selection</button>
+		</div>
+		<div id=\"buttonStart\">
+			<button id=\"startButton\" type=\"button\" onclick=\"startButtonClick()\">Start rehearsing</button>
+		</div>
+		<div id=\"active\">
+			<input type=\'checkbox\' id=\'activeCheckboxmobile\'>&nbsp;&nbsp;Active
+		</div>
+		<div id=\"random\">
+			<input type=\'checkbox\' id=\'randomCheckboxmobile\'>&nbsp;&nbsp;Random
+		</div>
+	
+		</td></tr>
+	</table>
+
+</div>
+	
+<div id=\"quizTable\">
+        
+<table id=\"respondTable\">
+	<tr><td id=\"buttonBackground\" colspan=\'3\'><button id=\'resetButton\' type=\'button\' onclick=\'resetButtonClick()\'>Reset</button></td></tr>
+	<tr><td colspan=\'3\' id=\"question\">&nbsp;</td></tr>
+       	<tr><td colspan=\'3\' id=\"answer\">&nbsp;</td></tr>
+		<tr><td colspan=\'3\' id=\"note\"></td></tr>
+       	<tr><td colspan=\'3\' id=\"passed\"></td></tr>
+	<tr>
+		<table id=\"respondTable\">
+			<tr>
+				<td id=\"buttonBackground\"><button id=\"wrongButton\" type=\"button\" onclick=\"wrongButtonClick()\">I was<br> wrong</button></td>
+				<td id=\"buttonBackground\"><button id=\"nextButton\" type=\"button\" onclick=\"nextButtonClick()\">Go on</button></td>
+				<td id=\"buttonBackground\"><button id=\"rightButton\" type=\"button\" onclick=\"rightButtonClick()\">I was<br> right</button></td>
+			</tr>
+		</table>
+	</tr>	
+</table>
+
+</div>
+
+<div id=\"completeQuizTable\">
+        
+    <table><tr><td id=\"completeQuiz\"></td></tr></table>
+
+</div>
+
+<div id=\"displayItemsTable\">
+       
+    <table><tr><td id=\"displayItems\"></td></tr></table>
+
+</div>
+
+<script>
+
+    document.getElementById(\"inputTable\").style.display = \"none\";
+
+	 const isMobile = (\'ontouchstart\' in document.documentElement && navigator.userAgent.match(/Mobi/));
+	
+	if (isMobile) {
+  		document.getElementById(\"selectionTable-Mobile\").style.display = \"inline\";
+		document.getElementById(\"selectionTable-Laptop\").style.display = \"none\";
+	}
+	else {
+		document.getElementById(\"selectionTable-Mobile\").style.display = \"none\";
+		document.getElementById(\"selectionTable-Laptop\").style.display = \"inline\";
+	}
+        
+  	document.getElementById(\"quizTable\").style.display = \"none\";
+    document.getElementById(\"completeQuizTable\").style.display = \"none\";
+    document.getElementById(\"displayItemsTable\").style.display = \"none\";
+				
+<\/script>
+
+</body>
+
+</html> `;
+
+						// **************************************
+
+						let stringInputQuiz = "";
+						i = 0;
+            			while (i < questionQuiz.length) {
+               	
+               				stringInputQuiz += categoryQuiz[i] + '[\n' + questionQuiz[i] + '[\n' + answerQuiz[i] + "]\n";
+                			i++;
+            			}
+						stringInputQuiz += '-1[' + stringAlphabetSelected + '[' + typeOfFile + ']';
+
+						let stringQuizToPresent = stringFirstPartQuiz + stringInputQuiz + stringLastPartQuiz;
+
+						document.getElementById("textareaInputQuiz").value = stringQuizToPresent;
+
+						functionCloseAllTables();
+
+						document.getElementById("tableInputQuiz").style.display = "block";
+				
+					}
+
+				}
+				else
+				{
+					alert ("The lesson you selected is empty.");
+				}
+
+   			} else {
+
+       			alert("You forgot to select a lesson.");
+
+   			}
+
+		}
+
+		function functionSelectModify()
+		{
+				
+			putSelectionInquizArray();
+
+			if (thereIsAtLeastOneCheckboxChecked) 
+			{
+
+				if (questionQuiz !="")
+				{
+
+					let stringToModify = "";
+					i = 0;
+					while (i < numberOfItemsInQuiz)
+					{
+
+						stringToModify += categoryQuiz[i] + "\n\n" + questionQuiz[i] + "\n\n" + answerQuiz[i] + "\n\n";
+						if (!arrayLessonsToModify.includes(categoryQuiz[i]))
+						{
+							arrayLessonsToModify.push(categoryQuiz[i]);
+						}
+						i++;
+
+					}
+
+					stringToModify = stringToModify.substring(0, stringToModify.length - 2);
+
+					document.getElementById("textareaModify").value = stringToModify;
+
+					document.getElementById("textareaModify").scrollTop = 0;
+
+					boolModificationsOriginateFromASelection = true;
+
+					functionCloseAllTables();
+
+					document.getElementById("tableModify").style.display = "block";
+
+				}
+				else
+				{
+					alert("The lesson you selected is empty.");
+				}
+				
+			}
+			else 
+			{
+
+				alert("You forgot to select a lesson.");
+
+			}
+
+		}
+
+		function putSelectionInquizArray() {
+
+   			questionQuiz = [];
+   			answerQuiz = [];
+			categoryQuiz = [];
+
+   			var categoryCheckboxArray = [];
+
+   			i = 0;
+   			while (i < 31) {
+				categoryCheckboxArray[i] = 0;
+      			i++;
+    			}
+			
+			if (document.getElementById("checkbox0laptop").checked) {categoryCheckboxArray[0] = 1; }
+   			if (document.getElementById("checkbox1laptop").checked) {categoryCheckboxArray[1] = 1; }
+   			if (document.getElementById("checkbox2laptop").checked) {categoryCheckboxArray[2] = 1; }
+   			if (document.getElementById("checkbox3laptop").checked) {categoryCheckboxArray[3] = 1; }
+   			if (document.getElementById("checkbox4laptop").checked) {categoryCheckboxArray[4] = 1; }
+   			if (document.getElementById("checkbox5laptop").checked) {categoryCheckboxArray[5] = 1; }
+   			if (document.getElementById("checkbox6laptop").checked) {categoryCheckboxArray[6] = 1; }
+   			if (document.getElementById("checkbox7laptop").checked) {categoryCheckboxArray[7] = 1; }
+   			if (document.getElementById("checkbox8laptop").checked) {categoryCheckboxArray[8] = 1; }
+   			if (document.getElementById("checkbox9laptop").checked) {categoryCheckboxArray[9] = 1; }
+   			if (document.getElementById("checkbox10laptop").checked) {categoryCheckboxArray[10] = 1; }
+   			if (document.getElementById("checkbox11laptop").checked) {categoryCheckboxArray[11] = 1; }
+   			if (document.getElementById("checkbox12laptop").checked) {categoryCheckboxArray[12] = 1; }
+   			if (document.getElementById("checkbox13laptop").checked) {categoryCheckboxArray[13] = 1; }
+   			if (document.getElementById("checkbox14laptop").checked) {categoryCheckboxArray[14] = 1; }
+   			if (document.getElementById("checkbox15laptop").checked) {categoryCheckboxArray[15] = 1; }
+   			if (document.getElementById("checkbox16laptop").checked) {categoryCheckboxArray[16] = 1; }
+   			if (document.getElementById("checkbox17laptop").checked) {categoryCheckboxArray[17] = 1; }
+   			if (document.getElementById("checkbox18laptop").checked) {categoryCheckboxArray[18] = 1; }
+   			if (document.getElementById("checkbox19laptop").checked) {categoryCheckboxArray[19] = 1; }
+   			if (document.getElementById("checkbox20laptop").checked) {categoryCheckboxArray[20] = 1; }
+   			if (document.getElementById("checkbox21laptop").checked) {categoryCheckboxArray[21] = 1; }
+   			if (document.getElementById("checkbox22laptop").checked) {categoryCheckboxArray[22] = 1; }
+   			if (document.getElementById("checkbox23laptop").checked) {categoryCheckboxArray[23] = 1; }
+   			if (document.getElementById("checkbox24laptop").checked) {categoryCheckboxArray[24] = 1; }
+   			if (document.getElementById("checkbox25laptop").checked) {categoryCheckboxArray[25] = 1; }
+   			if (document.getElementById("checkbox26laptop").checked) {categoryCheckboxArray[26] = 1; }
+   			if (document.getElementById("checkbox27laptop").checked) {categoryCheckboxArray[27] = 1; }
+   			if (document.getElementById("checkbox28laptop").checked) {categoryCheckboxArray[28] = 1; }
+   			if (document.getElementById("checkbox29laptop").checked) {categoryCheckboxArray[29] = 1; }
+   			if (document.getElementById("checkbox30laptop").checked) {categoryCheckboxArray[30] = 1; }
+
+			if (document.getElementById("checkbox0mobile").checked) {categoryCheckboxArray[0] = 1; }
+			if (document.getElementById("checkbox1mobile").checked) {categoryCheckboxArray[1] = 1; }
+   			if (document.getElementById("checkbox2mobile").checked) {categoryCheckboxArray[2] = 1; }
+   			if (document.getElementById("checkbox3mobile").checked) {categoryCheckboxArray[3] = 1; }
+   			if (document.getElementById("checkbox4mobile").checked) {categoryCheckboxArray[4] = 1; }
+   			if (document.getElementById("checkbox5mobile").checked) {categoryCheckboxArray[5] = 1; }
+   			if (document.getElementById("checkbox6mobile").checked) {categoryCheckboxArray[6] = 1; }
+   			if (document.getElementById("checkbox7mobile").checked) {categoryCheckboxArray[7] = 1; }
+   			if (document.getElementById("checkbox8mobile").checked) {categoryCheckboxArray[8] = 1; }
+   			if (document.getElementById("checkbox9mobile").checked) {categoryCheckboxArray[9] = 1; }
+   			if (document.getElementById("checkbox10mobile").checked) {categoryCheckboxArray[10] = 1; }
+   			if (document.getElementById("checkbox11mobile").checked) {categoryCheckboxArray[11] = 1; }
+   			if (document.getElementById("checkbox12mobile").checked) {categoryCheckboxArray[12] = 1; }
+   			if (document.getElementById("checkbox13mobile").checked) {categoryCheckboxArray[13] = 1; }
+   			if (document.getElementById("checkbox14mobile").checked) {categoryCheckboxArray[14] = 1; }
+   			if (document.getElementById("checkbox15mobile").checked) {categoryCheckboxArray[15] = 1; }
+   			if (document.getElementById("checkbox16mobile").checked) {categoryCheckboxArray[16] = 1; }
+   			if (document.getElementById("checkbox17mobile").checked) {categoryCheckboxArray[17] = 1; }
+   			if (document.getElementById("checkbox18mobile").checked) {categoryCheckboxArray[18] = 1; }
+   			if (document.getElementById("checkbox19mobile").checked) {categoryCheckboxArray[19] = 1; }
+   			if (document.getElementById("checkbox20mobile").checked) {categoryCheckboxArray[20] = 1; }
+   			if (document.getElementById("checkbox21mobile").checked) {categoryCheckboxArray[21] = 1; }
+   			if (document.getElementById("checkbox22mobile").checked) {categoryCheckboxArray[22] = 1; }
+   			if (document.getElementById("checkbox23mobile").checked) {categoryCheckboxArray[23] = 1; }
+   			if (document.getElementById("checkbox24mobile").checked) {categoryCheckboxArray[24] = 1; }
+   			if (document.getElementById("checkbox25mobile").checked) {categoryCheckboxArray[25] = 1; }
+   			if (document.getElementById("checkbox26mobile").checked) {categoryCheckboxArray[26] = 1; }
+   			if (document.getElementById("checkbox27mobile").checked) {categoryCheckboxArray[27] = 1; }
+   			if (document.getElementById("checkbox28mobile").checked) {categoryCheckboxArray[28] = 1; }
+   			if (document.getElementById("checkbox29mobile").checked) {categoryCheckboxArray[29] = 1; }
+   			if (document.getElementById("checkbox30mobile").checked) {categoryCheckboxArray[30] = 1; }
+				
+   			thereIsAtLeastOneCheckboxChecked = false;
+   			j = 0;
+   			for (i = 0; i < 31; i++) {
+       			if (categoryCheckboxArray[i] == 1) {
+       				thereIsAtLeastOneCheckboxChecked = true;
+       				for (k = 0; k < categoryArray.length; k++) {
+           				if (categoryArray[k] == i) {
+							categoryQuiz[j] = categoryArray[k];
+               				questionQuiz[j] = questionArray[k];
+               				answerQuiz[j] = answerArray[k];
+               				j++;
+           				}
+       				}
+       			}
+   			}
+   			numberOfItemsInQuiz = j;
+
+        }
+
+        function nextButtonClick() {
+
+        	document.getElementById("answer").innerHTML = answerQuiz[quizArrayCounter];
+
+			document.getElementById("rightButton").style.visibility = "visible";
+   			document.getElementById("wrongButton").style.visibility = "visible";
+   			document.getElementById("nextButton").style.visibility = "hidden";
+
+   		}
+
+   		function rightButtonClick() {
+
+   			processAnswer(true);
+
+   		}
+
+   		function wrongButtonClick() {
+
+   			processAnswer(false);
+
+   		}
+
+		function processAnswer(answerIsRight) {
+
+	   		if (answerIsRight) {
+            	rightAnswerCounter++;
+            	document.getElementById("note").innerHTML = "Note: " + (Math.round(100 * (rightAnswerCounter / (quizArrayCounter + 1))) / 10) + ".";
+            } else {
+            	questionMistakes[wrongAnswerCounter] = questionQuiz[quizArrayCounter];
+            	answerMistakes[wrongAnswerCounter] = answerQuiz[quizArrayCounter];
+            	wrongAnswerCounter++;
+            	document.getElementById("note").innerHTML = "Note: " + (Math.round(100 * (rightAnswerCounter / (quizArrayCounter + 1))) / 10) + ".";
+            }
+            quizArrayCounter++;
+            if (quizArrayCounter < numberOfItemsInQuiz) 
+			{
+            	document.getElementById("rightButton").style.visibility = "hidden";
+            	document.getElementById("wrongButton").style.visibility = "hidden";
+            	document.getElementById("nextButton").style.visibility = "visible";
+
+            	document.getElementById("question").innerHTML = questionQuiz[quizArrayCounter];
+            	document.getElementById("answer").innerHTML = "&nbsp;";
+            	document.getElementById("passed").innerHTML = "Item " + (quizArrayCounter + 1) + " of " + numberOfItemsInQuiz + ".";
+			} else 
+			{
+            	document.getElementById("quizTable").style.display = "none";
+            	document.getElementById("completeQuizTable").style.display = "inline";
+
+            	completeQuizString = "";
+            	switch (wrongAnswerCounter) {
+            		case 0:
+               		 	completeQuizString = "<table><tr><td>Congratulations: all answers were correct.</td></tr>";
+               			completeQuizString += "<tr><td><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr></table>";
+               			break;
+            		case 1:
+               			completeQuizString = "<table><tr><td>Well done! You made only one mistake. </td></tr>";
+               			completeQuizString += "<tr><td>Your mistake was: </td></tr>";
+			   			firstItemToPresent = questionMistakes[0];
+			   			secondItemToPresent = answerMistakes[0];
+			  		 	if (document.getElementById("activeLaptop").checked || document.getElementById("activeMobile").checked) {
+			   				firstItemToPresent = answerMistakes[0];
+							secondItemToPresent = questionMistakes[0];
+			   			}	
+			
+						completeQuizString += "<tr><td style='padding: 0px; height: 6px;'></td></tr>";
+               			completeQuizString += "<tr><td style='padding-bottom: 0px;'>" + firstItemToPresent + ";</td></tr><tr><td style='position: relative; left: 15px;'>" + secondItemToPresent + "</td></tr>";
+               			completeQuizString += "<tr><td style='padding: 0px; height: 3px;'></td></tr>";
+						completeQuizString += "<tr><td><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr></table>";
+               			break;
+            		case 2:
+						var copyQuestionMistakes = [];
+	      				var copyAnswerMistakes = [];		
+            			if (document.getElementById("activeLaptop").checked || document.getElementById("activeMobile").checked) {
+			 				for (i = 0; i < questionMistakes.length; i++) {
+								copyQuestionMistakes[i] = answerMistakes[i];
+								copyAnswerMistakes[i] = questionMistakes[i];
+							}
+						}
+	      				else {
+							for (i = 0; i < questionMistakes.length; i++) {
+								copyQuestionMistakes[i] = questionMistakes[i];
+								copyAnswerMistakes[i] = answerMistakes[i];
+							}
+	      				}
+
+	      				helpSort1 = [];
+	      				for (i = 0; i < questionMistakes.length; i++) {
+							helpSort1[i] = copyQuestionMistakes[i];
+	      				}
+		  
+	     				helpSort1.sort();
+
+	     				helpSort2 = [];
+	     				for (i = 0; i < questionMistakes.length; i++) {
+		 					j = 0;
+							k = 0;
+							while (j < questionMistakes.length)
+							{
+								if (helpSort1[i] == copyQuestionMistakes[j] && k == 0)
+								{
+									helpSort2[i] = copyAnswerMistakes[j];
+									k = 1;
+								}
+								j++;
+							}
+						}
+	      		   				
+						completeQuizString = "<table><tr><td>Well done! You made only two mistakes.</td></tr>";
+                    	completeQuizString += "<tr><td>Your mistakes were:</td></tr>";
+						completeQuizString += "<tr><td style='padding: 0px; height: 6px;'></td></tr>";
+						completeQuizString += "<tr><td style='padding-bottom: 0px;'>" + helpSort1[0] + " - </td></tr><tr><td style='position: relative; left: 15px;'>" + helpSort2[0] + "</td></tr>";
+						completeQuizString += "<tr><td style='padding: 0px; height: 3px;'></td></tr>";
+                    	completeQuizString += "<tr><td style='padding-bottom: 0px;'>" + helpSort1[1] + " - </td></tr><tr><td style='position: relative; left: 15px;'>" + helpSort2[1] + "</td></tr>";
+						completeQuizString += "<tr><td style='padding: 0px; height: 3px;'></td></tr>";
+                    	completeQuizString += "<tr><td><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr></table>";
+                    	break;
+                    default:
+                    	completeQuizString = "<table><tr><td>You made " + wrongAnswerCounter + " mistakes.</td></tr><tr><td>Your note is: " + (Math.round(100 * (rightAnswerCounter / quizArrayCounter)) / 10) + ".</td></tr>";
+                    	completeQuizString += "<tr><td>Do you want to take a next round on the mistakes?</td></tr>";
+                    	completeQuizString += "<tr><td><button id='nextRoundButton' type='button' onclick='nextRoundButtonClick()'>Ok</button></td></tr>";
+     					completeQuizString += "<tr><td><button id='displayMistakesButton' type='button' onclick='displayMistakesButtonClick()'>Display mistakes</button></td></tr>";
+           				completeQuizString += "<tr><td><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr></table>";
+ 				}
+
+				 document.getElementById("completeQuiz").style.display = "block";
+           		document.getElementById("completeQuiz").innerHTML = completeQuizString;
+        	}
+		}
+
+   		function nextRoundButtonClick() {
+
+   			numberOfItemsInQuiz = wrongAnswerCounter;
+
+   			questionQuiz = [];
+   			answerQuiz = [];
+
+   			questionQuiz = questionMistakes;
+   			answerQuiz = answerMistakes;
+
+   			questionMistakes = [];
+   			answerMistakes = [];
+
+   			document.getElementById("completeQuizTable").style.display = "none";
+   			document.getElementById("quizTable").style.display = "inline";
+
+   			document.getElementById("nextButton").style.visibility = "visible";
+   			document.getElementById("rightButton").style.visibility = "hidden";
+   			document.getElementById("wrongButton").style.visibility = "hidden";
+
+   			quizArrayCounter = 0;
+  			rightAnswerCounter = 0;
+   			wrongAnswerCounter = 0;
+   			document.getElementById("question").innerHTML = questionQuiz[quizArrayCounter];
+   			document.getElementById("answer").innerHTML = "&nbsp;";
+   			document.getElementById("note").innerHTML = "&nbsp;";
+   			document.getElementById("passed").innerHTML = "Item " + (quizArrayCounter + 1) + " of " + numberOfItemsInQuiz + ".";
+
+   		}
+
+		function displayMistakesButtonClick() {
+	      
+   			var copyQuestionMistakes = [];
+   			var copyAnswerMistakes = [];		
+   			if (document.getElementById("activeLaptop").checked || document.getElementById("activeMobile").checked) {
+		   		for (i = 0; i < questionMistakes.length; i++) {
+					copyQuestionMistakes[i] = answerMistakes[i];
+					copyAnswerMistakes[i] = questionMistakes[i];
+				}
+			}
+   			else {
+				for (i = 0; i < questionMistakes.length; i++) {
+					copyQuestionMistakes[i] = questionMistakes[i];
+					copyAnswerMistakes[i] = answerMistakes[i];
+				}
+			}
+
+			helpSort1 = [];
+			for (i = 0; i < questionMistakes.length; i++) {
+				helpSort1[i] = copyQuestionMistakes[i];
+			}
+		  
+			helpSort1.sort();
+
+			helpSort2 = [];
+			for (i = 0; i < questionMistakes.length; i++) {
+	 			j = 0;
+				k = 0;
+				while (j < questionMistakes.length)
+				{
+					if (helpSort1[i] == copyQuestionMistakes[j] && k == 0)
+					{
+						helpSort2[i] = copyAnswerMistakes[j];
+						k = 1;
+					}
+					j++;
+				}
+			}
+	      
+			displayMistakesString = "<table><tr><td><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr>";
+    		displayMistakesString += "<tr><td>Your mistakes were: </td></tr>";
+			displayMistakesString += "<tr><td style='padding: 0px; height: 6px;'></td></tr>";
+    		for (i = 0; i < wrongAnswerCounter; i++) {
+	 			displayMistakesString += "<tr><td style='padding-bottom: 0px;'>" + helpSort1[i] + " - </td></tr><tr><td style='position: relative; left: 15px;'>" + helpSort2[i] + "</td></tr>";
+	  			displayMistakesString += "<tr><td style='padding: 0px; height: 3px;'></td></tr>";
+    		}
+			displayMistakesString += "<tr><td><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr></table>";
+
+			copyQuestionMistakes = [];
+			copyAnswerMistakes = [];
+			helpSort1 = [];
+			helpSort2 = [];
+
+    		document.getElementById("completeQuizTable").style.display = "none";
+    		document.getElementById("displayItemsTable").style.display = "inline";
+    		document.getElementById("displayItems").innerHTML = displayMistakesString;
+
+		}
+
+		function functionSelectAll()
+		{
+
+			if (document.getElementById("checkboxSelectAll").checked)
+			{
+
+				document.getElementById("checkbox0laptop").checked = true;
+				document.getElementById("checkbox1laptop").checked = true;
+				document.getElementById("checkbox2laptop").checked = true;
+				document.getElementById("checkbox3laptop").checked = true;
+				document.getElementById("checkbox4laptop").checked = true;
+				document.getElementById("checkbox5laptop").checked = true;
+				document.getElementById("checkbox6laptop").checked = true;
+	    		document.getElementById("checkbox7laptop").checked = true;
+	    		document.getElementById("checkbox8laptop").checked = true;
+	    		document.getElementById("checkbox9laptop").checked = true;
+	    		document.getElementById("checkbox10laptop").checked = true;
+	    		document.getElementById("checkbox11laptop").checked = true;
+	    		document.getElementById("checkbox12laptop").checked = true;
+				document.getElementById("checkbox13laptop").checked = true;
+	    		document.getElementById("checkbox14laptop").checked = true;
+	    		document.getElementById("checkbox15laptop").checked = true;
+				document.getElementById("checkbox16laptop").checked = true;
+	    		document.getElementById("checkbox17laptop").checked = true;
+	    		document.getElementById("checkbox18laptop").checked = true;
+	    		document.getElementById("checkbox19laptop").checked = true;
+	    		document.getElementById("checkbox20laptop").checked = true;
+	    		document.getElementById("checkbox21laptop").checked = true;
+	    		document.getElementById("checkbox22laptop").checked = true;
+	    		document.getElementById("checkbox23laptop").checked = true;
+	    		document.getElementById("checkbox24laptop").checked = true;
+	    		document.getElementById("checkbox25laptop").checked = true;
+	    		document.getElementById("checkbox26laptop").checked = true;
+	    		document.getElementById("checkbox27laptop").checked = true;
+	    		document.getElementById("checkbox28laptop").checked = true;
+	    		document.getElementById("checkbox29laptop").checked = true;
+	    		document.getElementById("checkbox30laptop").checked = true;
+
+			}
+			else
+			{
+
+				resetButtonClick();
+
+			}
+
+		}
+
+    	function resetButtonClick() {
+	    	
+			document.getElementById("checkbox0laptop").checked = false;
+			document.getElementById("checkbox1laptop").checked = false;
+			document.getElementById("checkbox2laptop").checked = false;
+			document.getElementById("checkbox3laptop").checked = false;
+			document.getElementById("checkbox4laptop").checked = false;
+			document.getElementById("checkbox5laptop").checked = false;
+			document.getElementById("checkbox6laptop").checked = false;
+	    	document.getElementById("checkbox7laptop").checked = false;
+	    	document.getElementById("checkbox8laptop").checked = false;
+	    	document.getElementById("checkbox9laptop").checked = false;
+	    	document.getElementById("checkbox10laptop").checked = false;
+	    	document.getElementById("checkbox11laptop").checked = false;
+	    	document.getElementById("checkbox12laptop").checked = false;
+	    	document.getElementById("checkbox13laptop").checked = false;
+	    	document.getElementById("checkbox14laptop").checked = false;
+	    	document.getElementById("checkbox15laptop").checked = false;
+			document.getElementById("checkbox16laptop").checked = false;
+	    	document.getElementById("checkbox17laptop").checked = false;
+	    	document.getElementById("checkbox18laptop").checked = false;
+	    	document.getElementById("checkbox19laptop").checked = false;
+	    	document.getElementById("checkbox20laptop").checked = false;
+	    	document.getElementById("checkbox21laptop").checked = false;
+	    	document.getElementById("checkbox22laptop").checked = false;
+	    	document.getElementById("checkbox23laptop").checked = false;
+	    	document.getElementById("checkbox24laptop").checked = false;
+	    	document.getElementById("checkbox25laptop").checked = false;
+	    	document.getElementById("checkbox26laptop").checked = false;
+	    	document.getElementById("checkbox27laptop").checked = false;
+	    	document.getElementById("checkbox28laptop").checked = false;
+	    	document.getElementById("checkbox29laptop").checked = false;
+	    	document.getElementById("checkbox30laptop").checked = false;
+
+			document.getElementById("checkbox0mobile").checked = false;
+			document.getElementById("checkbox1mobile").checked = false;
+	    	document.getElementById("checkbox2mobile").checked = false;
+	    	document.getElementById("checkbox3mobile").checked = false;
+	    	document.getElementById("checkbox4mobile").checked = false;
+	    	document.getElementById("checkbox5mobile").checked = false;
+	   		document.getElementById("checkbox6mobile").checked = false;
+	    	document.getElementById("checkbox7mobile").checked = false;
+	    	document.getElementById("checkbox8mobile").checked = false;
+	    	document.getElementById("checkbox9mobile").checked = false;
+	    	document.getElementById("checkbox10mobile").checked = false;
+	    	document.getElementById("checkbox11mobile").checked = false;
+	    	document.getElementById("checkbox12mobile").checked = false;
+	    	document.getElementById("checkbox13mobile").checked = false;
+	    	document.getElementById("checkbox14mobile").checked = false;
+	    	document.getElementById("checkbox15mobile").checked = false;
+			document.getElementById("checkbox16mobile").checked = false;
+	    	document.getElementById("checkbox17mobile").checked = false;
+	    	document.getElementById("checkbox18mobile").checked = false;
+	    	document.getElementById("checkbox19mobile").checked = false;
+	    	document.getElementById("checkbox20mobile").checked = false;
+	    	document.getElementById("checkbox21mobile").checked = false;
+	    	document.getElementById("checkbox22mobile").checked = false;
+	    	document.getElementById("checkbox23mobile").checked = false;
+	    	document.getElementById("checkbox24mobile").checked = false;
+	    	document.getElementById("checkbox25mobile").checked = false;
+	    	document.getElementById("checkbox26mobile").checked = false;
+	    	document.getElementById("checkbox27mobile").checked = false;
+	    	document.getElementById("checkbox28mobile").checked = false;
+	    	document.getElementById("checkbox29mobile").checked = false;
+	    	document.getElementById("checkbox30mobile").checked = false;
+
+        	document.getElementById("activeLaptop").checked = false;
+        	document.getElementById("randomLaptop").checked = false;
+			document.getElementById("activeMobile").checked = false;
+        	document.getElementById("randomMobile").checked = false;
+
+        	questionMistakes = [];
+        	answerMistakes = [];
+
+			if (stringAlphabetSelected == "Latin")
+			{
+				document.getElementById("tableTransliterate").style.display = "none";
+			}
+			else
+			{
+				document.getElementById("tableTransliterate").style.display = "block";
+				document.getElementById("checkboxTransliterateActive").checked = false;
+				document.getElementById("checkboxTransliteratePassive").checked = false;
+			}
+
+        	document.getElementById("displayItemsTable").style.display = "none";
+        	document.getElementById("quizTable").style.display = "none";
+        	document.getElementById("completeQuizTable").style.display = "none";
+        	if (isMobile) {
+  				document.getElementById("selectionTable-Mobile").style.display = "inline";
+				document.getElementById("selectionTable-Laptop").style.display = "none";
+	 		}
+	 		else {
+				document.getElementById("selectionTable-Mobile").style.display = "none";
+				document.getElementById("selectionTable-Laptop").style.display = "inline";
+	 		}
+			             
+			document.getElementById("randomLaptop").style.display = "block";
+			document.getElementById("activeLaptop").style.display = "block";
+			document.getElementById("randomMobile").style.display = "block";
+			document.getElementById("activeMobile").style.display = "block";
+			document.getElementById("buttonRehearse").style.display = "block";
+			document.getElementById("buttonDisplay").style.display = "block";
+
+			if (typeOfFile == "Multiline")
+			{
+				document.getElementById("active").style.display = "none";
+			}
+
+		}
+
+    </script>
+
+</head>
+
+<body onload="functionOnLoad();">
+
+	<table id="tableMain">
+		<tr>
+			<td><button onclick="functionNew();">New</button>&nbsp;&nbsp;
+			<button onclick="functionOpen();">Open</button>&nbsp;&nbsp;
+			<button onclick="functionSave();">Save</button>&nbsp;&nbsp;
+			<button onclick="functionAdd();">Add</button>&nbsp;&nbsp;
+			<button onclick="functionSelect();">Select</button></td>
+			<td style="text-align: right;"><button id="buttonAlphabet" onmouseenter="document.getElementById('tooltip').style.display='block';" onmouseleave="document.getElementById('tooltip').style.display='none';">Alphabet</button></td>
+		</tr>
+		</table>
+
+		<table id="tableNew">
+			<tr><td>
+			<table>
+				<tr><td>Choose the alphabet you want to address:</td></tr>
+				<tr><td><input type="radio" id="radioButtonLatin" value="" name="radiobuttonsAlphabet" checked>Latin</td></tr>
+				<tr><td><input type="radio" id="radioButtonModernGreek" value="" name="radiobuttonsAlphabet">Modern Greek</td></tr>
+				<tr><td><input type="radio" id="radioButtonCyrillic" value="" name="radiobuttonsAlphabet">Cyrillic</td></tr>
+				<tr><td><input type="radio" id="radioButtonHebrew" value="" name="radiobuttonsAlphabet" >Hebrew</td></tr>
+				<tr><td><input type="radio" id="radioButtonArabic" value="" name="radiobuttonsAlphabet">Arabic</td></tr>
+				<tr><td><input type="radio" id="radioButtonAncientGreek" value="" name="radiobuttonsAlphabet">Ancient Greek</td></tr>
+			</table>
+			</td><td>
+			<table>
+				<tr><td>What kind of file will you process:</td></tr>
+				<tr><td><input type="radio" id="radioButtontypeOfFileVocabulary" value="" name="radiobuttonstypeOfFile" checked>Vocabulary</td></tr>
+				<tr><td><input type="radio" id="radioButtontypeOfFileGrammar" value="" name="radiobuttonstypeOfFile">Grammar</td></tr>
+			</table>
+			</td></tr>
+			<tr>
+				<td><button	onclick="functionConfirmNew();">Confirm</button></td>
+			</tr>
+		</table>	
+
+		<table id="tableOpen">
+			<tr><td>Paste the file you saved last time in the textbox below.</td></tr>
+			<tr><td><textarea id="textareaOpen" cols="50" rows="10" spellcheck="false"></textarea></td></tr>
+			<tr><td><button	onclick="functionConfirmOpen();">Confirm</button></td></tr>
+		</table>
+		
+		<table id="tableSave">
+			<tr><td>Rightclick 'Select all' and copy the content of the textbox below in a textfile to use next time.</td></tr>
+			<tr><td><textarea id="textareaSave" cols="50" rows="10" spellcheck="false"></textarea></td></tr>
+		</table>
+
+		<table id="tableAdd">
+			<tr><td>Lesson number:&nbsp;&nbsp;
+				<select name="" id="dropdownLessonNumber" style="font-size: 30px;">
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+					<option value="13">13</option>
+					<option value="14">14</option>
+					<option value="15">15</option>
+					<option value="16">16</option>
+					<option value="17">17</option>
+					<option value="18">18</option>
+					<option value="19">19</option>
+					<option value="20">20</option>
+					<option value="21">21</option>
+					<option value="22">22</option>
+					<option value="23">23</option>
+					<option value="24">24</option>
+					<option value="25">25</option>
+					<option value="26">26</option>
+					<option value="27">27</option>
+					<option value="28">28</option>
+					<option value="29">29</option>
+					<option value="30">30</option>
+				  </select>
+			&nbsp;&nbsp;<input type="checkbox" id="checkboxRetain">&nbsp;Retain lessonnumber</td></tr>
+			<tr><td>Foreign language:</td><td>Native language:</td></tr>
+			<td><textarea id="textareaForeign" cols="40" rows="10" spellcheck="false" oninput="functionTextChanged(document.getElementById('textareaForeign'))"></textarea></td>
+			<td><textarea id="textareaNative" cols="40" rows="10" spellcheck="false" oninput="functionTextChanged(document.getElementById('textareaNative'))"></textarea></td>
+			<tr><td>
+				<button	onclick="functionAddToFile();">Add to file</button>&nbsp;
+				<button	onclick="functionAddModify();">Modify</button>&nbsp;&nbsp;
+				<button	onclick="window.open('https://www.bing.com/translator/?from=en&to=en&text=')">Bing translate</button>
+			</td></tr>
+		</table>
+
+		<table id="tableModify">
+			<tr><td><textarea id="textareaModify" cols="60" rows="15" spellcheck="false" oninput="functionTextChanged(document.getElementById('textareaModify'))"></textarea></td></tr>
+			<tr><td><button	onclick="functionSaveModifications();">Save modifications</button>&nbsp;&nbsp;<button onclick="functionDoNotSaveModifications();">Do not save modifications</button></td></tr>
+		</table>
+
+		<table id="tableTransliterate">
+			<tr>
+				<td style="font-size: 20px;">
+					<input type="checkbox" id="checkboxTransliterateActive"> Transliterate active side
+					<input type="checkbox" id="checkboxTransliteratePassive"> Transliterate passive side
+				</td>
+			</tr>
+		</table>
+
+		<table id="tableInputQuiz">
+			<tr><td>Rightclick 'Select all' and copy the content of the textbox below in a textfile.<br>
+				Select 'File>Save as' and name it 'Your file.html' (with extension '.html' instead of '.txt').<br>
+				and save it as 'All files'.<br>
+				Thus you will have the HTML-version of the quiz you processed so far.</td></tr>
+			<tr><td><textarea id="textareaInputQuiz" cols="50" rows="10" spellcheck="false"></textarea></td></tr>
+		</table>
+     
+		<table id="selectionTable-Laptop">
+			<tr>
+				<td colspan="5" style="font-size: 20px;">
+					<input type="checkbox" id="checkboxSelectAll" onclick="functionSelectAll();"> Select all
+				</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox0laptop'>&nbsp;&nbsp;0</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox1laptop'>&nbsp;&nbsp;1</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox7laptop'>&nbsp;&nbsp;7</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox13laptop'>&nbsp;&nbsp;13</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox19laptop'>&nbsp;&nbsp;19</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox25laptop'>&nbsp;&nbsp;25</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox2laptop'>&nbsp;&nbsp;2</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox8laptop'>&nbsp;&nbsp;8</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox14laptop'>&nbsp;&nbsp;14</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox20laptop'>&nbsp;&nbsp;20</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox26laptop'>&nbsp;&nbsp;26</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox3laptop'>&nbsp;&nbsp;3</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox9laptop'>&nbsp;&nbsp;9</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox15laptop'>&nbsp;&nbsp;15</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox21laptop'>&nbsp;&nbsp;21</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox27laptop'>&nbsp;&nbsp;27</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox4laptop'>&nbsp;&nbsp;4</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox10laptop'>&nbsp;&nbsp;10</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox16laptop'>&nbsp;&nbsp;16</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox22laptop'>&nbsp;&nbsp;22</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox28laptop'>&nbsp;&nbsp;28</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox5laptop'>&nbsp;&nbsp;5</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox11laptop'>&nbsp;&nbsp;11</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox17laptop'>&nbsp;&nbsp;17</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox23laptop'>&nbsp;&nbsp;23</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox29laptop'>&nbsp;&nbsp;29</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox6laptop'>&nbsp;&nbsp;6</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox12laptop'>&nbsp;&nbsp;12</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox18laptop'>&nbsp;&nbsp;18</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox24laptop'>&nbsp;&nbsp;24</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox30laptop'>&nbsp;&nbsp;30</td>
+			</tr>
+			<tr>
+				<td><input type='checkbox' id='activeLaptop'>&nbsp;&nbsp;Active</td>
+				<td><input type='checkbox' id='randomLaptop'>&nbsp;&nbsp;Random</td>
+			</tr>
+			<tr>
+				<td><button type='button' id="buttonRehearse" onclick='functionRehearse()'>Rehearse</button></td>
+				<td><button type='button' id="buttonDisplay" onclick='functionDisplay()'>Display</button></td>
+				<td><button type='button' id="buttonModify" onclick='functionSelectModify()'>Modify</button></td>
+				<td><button type='button' id="buttonInputQuiz" onclick='functionInputQuiz()'>HTML</button></td>
+			</tr>
+		</table>
+	
+		<table id="selectionTable-Mobile">
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox0mobile'>&nbsp;&nbsp;0</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox1mobile'>&nbsp;&nbsp;1</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox7mobile'>&nbsp;&nbsp;7</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox13mobile'>&nbsp;&nbsp;13</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox19mobile'>&nbsp;&nbsp;19</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox25mobile'>&nbsp;&nbsp;25</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox2mobile'>&nbsp;&nbsp;2</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox8mobile'>&nbsp;&nbsp;8</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox14mobile'>&nbsp;&nbsp;14</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox20mobile'>&nbsp;&nbsp;20</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox26mobile'>&nbsp;&nbsp;26</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox3mobile'>&nbsp;&nbsp;3</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox9mobile'>&nbsp;&nbsp;9</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox15mobile'>&nbsp;&nbsp;15</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox21mobile'>&nbsp;&nbsp;21</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox27mobile'>&nbsp;&nbsp;27</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox4mobile'>&nbsp;&nbsp;4</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox10mobile'>&nbsp;&nbsp;10</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox16mobile'>&nbsp;&nbsp;16</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox22mobile'>&nbsp;&nbsp;22</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox28mobile'>&nbsp;&nbsp;28</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox5mobile'>&nbsp;&nbsp;5</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox11mobile'>&nbsp;&nbsp;11</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox17mobile'>&nbsp;&nbsp;17</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox23mobile'>&nbsp;&nbsp;23</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox29mobile'>&nbsp;&nbsp;29</td>
+			</tr>
+			<tr>
+			<td id='selectLessons'><input type='checkbox' id='checkbox6mobile'>&nbsp;&nbsp;6</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox12mobile'>&nbsp;&nbsp;12</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox18mobile'>&nbsp;&nbsp;18</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox24mobile'>&nbsp;&nbsp;24</td>
+			<td id='selectLessons'><input type='checkbox' id='checkbox30mobile'>&nbsp;&nbsp;30</td>
+			</tr>
+			<tr>
+					<td><input type='checkbox' id='activeMobile'>&nbsp;&nbsp;Active</td>
+					<td><input type='checkbox' id='randomMobile'>&nbsp;&nbsp;Random</td>
+			</td></tr>
+			<tr>
+				<td><button type='button' onclick='functionRehearse()'>Rehearse</button></td>
+				<td><button type='button' onclick='functionDisplay()'>Display</button></td>
+			</tr>
+		</table>
+
+	
+	
+	<div id="quizTable">
+        
+	<table id="respondTable">
+		<tr><td id="buttonBackground" colspan='3'><button id='resetButton' type='button' onclick='resetButtonClick()'>Reset</button></td></tr>
+		<tr><td colspan='3' id="question">&nbsp;</td></tr>
+        	<tr><td colspan='3' id="answer">&nbsp;</td></tr>
+		<tr><td colspan='3' id="note"></td></tr>
+        	<tr><td colspan='3' id="passed"></td></tr>
+		<tr>
+			<table id="respondTable">
+				<tr>
+					<td id="buttonBackground"><button id="wrongButton" type="button" onclick="wrongButtonClick()">I was<br> wrong</button></td>
+					<td id="buttonBackground"><button id="nextButton" type="button" onclick="nextButtonClick()">Go on</button></td>
+					<td id="buttonBackground"><button id="rightButton" type="button" onclick="rightButtonClick()">I was<br> right</button></td>
+				</tr>
+			</table>
+		</tr>	
+	</table>
+
+    </div>
+
+    <div id="completeQuizTable">
+        
+        <table><tr><td id="completeQuiz"></td></tr></table>
+
+    </div>
+
+    <div id="displayItemsTable">
+        
+        <table><tr><td id="displayItems"></td></tr></table>
+
+    </div>
+
+    <script>
+
+    //    document.getElementById("inputTable").style.display = "none";
+
+	 	const isMobile = ('ontouchstart' in document.documentElement && navigator.userAgent.match(/Mobi/));
+	
+	 	if (isMobile) {
+  			document.getElementById("selectionTable-Mobile").style.display = "inline";
+			document.getElementById("selectionTable-Laptop").style.display = "none";
+	 	}
+	 	else {
+			document.getElementById("selectionTable-Mobile").style.display = "none";
+			document.getElementById("selectionTable-Laptop").style.display = "inline";
+	 	}
+        
+        document.getElementById("quizTable").style.display = "none";
+        document.getElementById("completeQuizTable").style.display = "none";
+        document.getElementById("displayItemsTable").style.display = "none";
+				
+    </script>
+
+<table>
+	<tr><td>
+<textarea id="textareaCyrillic" rows="30" spellcheck="false">
+А	A	A	1040	0410	 	CYRILLIC CAPITAL LETTER A
+Б	B	B	1041	0411	 	CYRILLIC CAPITAL LETTER BE
+В	V	V	1042	0412	 	CYRILLIC CAPITAL LETTER VE
+Г	G	G	1043	0413	 	CYRILLIC CAPITAL LETTER GHE
+Д	D	D	1044	0414	 	CYRILLIC CAPITAL LETTER DE
+Е	Je	Je	1045	0415	 	CYRILLIC CAPITAL LETTER IE
+Ë	Jo	Jo	dummy
+Ж	Z1	Zh	1046	0416	 	CYRILLIC CAPITAL LETTER ZHE
+З	Z2	Z	1047	0417	 	CYRILLIC CAPITAL LETTER ZE
+И	Ji	Ji	1048	0418	 	CYRILLIC CAPITAL LETTER I
+Й	JJ	JJ	1049	0419	 	CYRILLIC CAPITAL LETTER SHORT I
+К	K	K	1050	041A	 	CYRILLIC CAPITAL LETTER KA
+Л	L	L	1051	041B	 	CYRILLIC CAPITAL LETTER EL
+М	M	M	1052	041C	 	CYRILLIC CAPITAL LETTER EM
+Н	N	N	1053	041D	 	CYRILLIC CAPITAL LETTER EN
+О	O	O	1054	041E	 	CYRILLIC CAPITAL LETTER O
+П	P	P	1055	041F	 	CYRILLIC CAPITAL LETTER PE
+Р	R	R	1056	0420	 	CYRILLIC CAPITAL LETTER ER
+С	S1	S	1057	0421	 	CYRILLIC CAPITAL LETTER ES
+Т	T1	T	1058	0422	 	CYRILLIC CAPITAL LETTER TE
+У	U	U	1059	0423	 	CYRILLIC CAPITAL LETTER U
+Ф	F	F	1060	0424	 	CYRILLIC CAPITAL LETTER EF
+Х	X	Kh	1061	0425	 	CYRILLIC CAPITAL LETTER HA
+Ц	T2	Ts	1062	0426	 	CYRILLIC CAPITAL LETTER TSE
+Ч	T3	Ch	1063	0427	 	CYRILLIC CAPITAL LETTER CHE
+Ш	S2	Sh	1064	0428	 	CYRILLIC CAPITAL LETTER SHA
+Щ	S3	Shch	1065	0429	 	CYRILLIC CAPITAL LETTER SHCHA
+Ъ	>"	"	1066	042A	 	CYRILLIC CAPITAL LETTER HARD SIGN
+Ы	I	I	1067	042B	 	CYRILLIC CAPITAL LETTER YERU
+Ь	>'	'	1068	042C	 	CYRILLIC CAPITAL LETTER SOFT SIGN
+Э	E	E	1069	042D	 	CYRILLIC CAPITAL LETTER E
+Ю	Ju	Ju	1070	042E	 	CYRILLIC CAPITAL LETTER YU
+Я	Ja	Ja	1071	042F	 	CYRILLIC CAPITAL LETTER YA
+а	a	a	1072	0430	 	CYRILLIC SMALL LETTER A
+б	b	b	1073	0431	 	CYRILLIC SMALL LETTER BE
+в	v	v	1074	0432	 	CYRILLIC SMALL LETTER VE
+г	g	g	1075	0433	 	CYRILLIC SMALL LETTER GHE
+д	d	d	1076	0434	 	CYRILLIC SMALL LETTER DE
+е	je	je	1077	0435	 	CYRILLIC SMALL LETTER IE
+ё	jo	jo	dummy
+ж	z1	zh	1078	0436	 	CYRILLIC SMALL LETTER ZHE
+з	z2	z	1079	0437	 	CYRILLIC SMALL LETTER ZE
+и	ji	ji	1080	0438	 	CYRILLIC SMALL LETTER I
+й	jj	jj	1081	0439	 	CYRILLIC SMALL LETTER SHORT I
+к	k	k	1082	043A	 	CYRILLIC SMALL LETTER KA
+л	l	l	1083	043B	 	CYRILLIC SMALL LETTER EL
+м	m	m	1084	043C	 	CYRILLIC SMALL LETTER EM
+н	n	n	1085	043D	 	CYRILLIC SMALL LETTER EN
+о	o	o	1086	043E	 	CYRILLIC SMALL LETTER O
+п	p	p	1087	043F	 	CYRILLIC SMALL LETTER PE
+р	r	r	1088	0440	 	CYRILLIC SMALL LETTER ER
+с	s1	s	1089	0441	 	CYRILLIC SMALL LETTER ES
+т	t1	t	1090	0442	 	CYRILLIC SMALL LETTER TE
+у	u	u	1091	0443	 	CYRILLIC SMALL LETTER U
+ф	f	f	1092	0444	 	CYRILLIC SMALL LETTER EF
+х	x	kh	1093	0445	 	CYRILLIC SMALL LETTER HA
+ц	t2	ts	1094	0446	 	CYRILLIC SMALL LETTER TSE
+ч	t3	tsj	1095	0447	 	CYRILLIC SMALL LETTER CHE
+ш	s2	sj	1096	0448	 	CYRILLIC SMALL LETTER SHA
+щ	s3	shch	1097	0449	 	CYRILLIC SMALL LETTER SHCHA
+ъ	"	"	1098	044A	 	CYRILLIC SMALL LETTER HARD SIGN
+ы	i	i	1099	044B	 	CYRILLIC SMALL LETTER YERU
+ь	'	'	1100	044C	 	CYRILLIC SMALL LETTER SOFT SIGN
+э	e	é	1101	044D	 	CYRILLIC SMALL LETTER E
+ю	ju	ju	1102	044E	 	CYRILLIC SMALL LETTER YU
+я	ja	ja	1103	044F	 	CYRILLIC SMALL LETTER YA
+А́	Á	Á	dummy
+О́	Ó	Ó	dummy
+Э́	É	É	dummy
+Ы́	Í	Í	dummy
+У́	Ú	Ú	dummy
+Я́	Já	Já	dummy
+Ë́	Jó	Jó	dummy
+Е́	Jé	Jé	dummy
+И́	Jí	Jí	dummy
+Ю́	Jú	Jú	dummy
+а́	á	á	dummy
+о́	ó	ó	dummy
+э́	é	é	dummy
+ы́	í	í	dummy
+у́	ú	ú	dummy
+я́	já	já	dummy
+ё́	jó	jó	dummy
+е́	jé	jé	dummy
+и́	jí	jí	dummy
+ю́	jú	jú	dummy
+«	<<	«	dummy
+»	>>	»	dummy
+—	--	—	dummy
+**	**	**	dummy
+ą	>a	o	don
+ć	>c	ch	cheese
+ę	>e	è	ten
+ł	>l	ll	full/w
+ń	>n	n	onion
+ó	>o	oe	cool
+ś	>s	sh	sheet
+ź	>z1	s	Rhodesia
+ż	>z2	s	pleasure
+́	~	'	dummy
+</textarea></td></tr>
+	</table>
+	
+	<table>
+		<tr><td>
+<textarea id="textareaModernGreek" rows="30" spellcheck="false">
+Α	A	A	913	0391	&Alpha;	GREEK CAPITAL LETTER ALPHA
+Β	B	B	914	0392	&Beta;	GREEK CAPITAL LETTER BETA
+Γ	G	G	915	0393	&Gamma;	GREEK CAPITAL LETTER GAMMA
+Δ	D	D	916	0394	&Delta;	GREEK CAPITAL LETTER DELTA
+Ε	E	E	917	0395	&Epsilon;	GREEK CAPITAL LETTER EPSILON
+Ζ	Z	Z	918	0396	&Zeta;	GREEK CAPITAL LETTER ZETA
+Η	H	H	919	0397	&Eta;	GREEK CAPITAL LETTER ETA
+Θ	Q	Th	920	0398	&Theta;	GREEK CAPITAL LETTER THETA
+Ι	I	I	921	0399	&Iota;	GREEK CAPITAL LETTER IOTA
+Κ	K	K	922	039A	&Kappa;	GREEK CAPITAL LETTER KAPPA
+Λ	L	L	923	039B	&Lambda;	GREEK CAPITAL LETTER LAMBDA
+Μ	M	M	924	039C	&Mu;	GREEK CAPITAL LETTER MU
+Ν	N	N	925	039D	&Nu;	GREEK CAPITAL LETTER NU
+Ξ	J	Ks	926	039E	&Xi;	GREEK CAPITAL LETTER XI
+Ο	O	O	927	039F	&Omicron;	GREEK CAPITAL LETTER OMICRON
+Π	P	P	928	03A0	&Pi;	GREEK CAPITAL LETTER PI
+Ρ	R	R	929	03A1	&Rho;	GREEK CAPITAL LETTER RHO
+Σ	S	S	931	03A3	&Sigma;	GREEK CAPITAL LETTER SIGMA
+Τ	T	T	932	03A4	&Tau;	GREEK CAPITAL LETTER TAU
+Υ	U	U	933	03A5	&Upsilon;	GREEK CAPITAL LETTER UPSILON
+Φ	F	Ph	934	03A6	&Phi;	GREEK CAPITAL LETTER PHI
+Χ	X	Ch	935	03A7	&Chi;	GREEK CAPITAL LETTER CHI
+Ψ	Y	Ps	936	03A8	&Psi;	GREEK CAPITAL LETTER PSI
+Ω	W	Oo	937	03A9	&Omega;	GREEK CAPITAL LETTER OMEGA
+α	a	a	945	03B1	&alpha;	GREEK SMALL LETTER ALPHA
+β	b	b	946	03B2	&beta;	GREEK SMALL LETTER BETA
+γ	g	g	947	03B3	&gamma;	GREEK SMALL LETTER GAMMA
+δ	d	d	948	03B4	&delta;	GREEK SMALL LETTER DELTA
+ε	e	e	949	03B5	&epsilon;	GREEK SMALL LETTER EPSILON
+ζ	z	z	950	03B6	&zeta;	GREEK SMALL LETTER ZETA
+η	h	è	951	03B7	&eta;	GREEK SMALL LETTER ETA
+θ	q	th	952	03B8	&theta;	GREEK SMALL LETTER THETA
+ι	i	i	953	03B9	&iota;	GREEK SMALL LETTER IOTA
+κ	k	k	954	03BA	&kappa;	GREEK SMALL LETTER KAPPA
+λ	l	l	955	03BB	&lambda;	GREEK SMALL LETTER LAMBDA
+μ	m	m	956	03BC	&mu;	GREEK SMALL LETTER MU
+ν	n	n	957	03BD	&nu;	GREEK SMALL LETTER NU
+ξ	j	ks	958	03BE	&xi;	GREEK SMALL LETTER XI
+ο	o	o	959	03BF	&omicron;	GREEK SMALL LETTER OMICRON
+π	p	p	960	03C0	&pi;	GREEK SMALL LETTER PI
+ρ	r	r	961	03C1	&rho;	GREEK SMALL LETTER RHO
+σ	s	s	963	03C3	&sigma;	GREEK SMALL LETTER SIGMA
+τ	t	t	964	03C4	&tau;	GREEK SMALL LETTER TAU
+υ	u	u	965	03C5	&upsilon;	GREEK SMALL LETTER UPSILON
+φ	f	ph	966	03C6	&phi;	GREEK SMALL LETTER PHI
+χ	x	ch	967	03C7	&chi;	GREEK SMALL LETTER CHI
+ψ	y	ps	968	03C8	&psi;	GREEK SMALL LETTER PSI
+ω	w	oo	969	03C9	&omega;	GREEK SMALL LETTER OMEGA
+ς	c	c	962	03C2	&sigmaf;	GREEK SMALL LETTER FINAL SIGMA
+А́	Á	Á	a
+Έ	É	É	e/
+Ή	È'	È'	h/
+Ί	Í	Í	i/
+Ό	Ó	Ó	o/
+Ύ	Ú	Ú	u/
+Ώ	Óo	Óo	w/
+ά	á	á	a/
+έ	é	é	e/
+ή	è'	è'	h/
+ί	í	í	i/
+ό	ó	ó	o/
+ύ	ú	ú	u/
+ώ	óo	óo	w/
+</textarea></td></tr>
+	</table>
+	
+	<table>
+		<tr><td>
+<textarea id="textareaHebrew" rows="30" spellcheck="false">
+א	'	'	dummy
+ב	b	v	dummy
+ג	g	w	dummy
+ד	d	th	dummy
+ה	he	h	dummy
+ו	w	w	dummy
+ז	z	z	dummy
+ח	ht	h	dummy
+ט	tt	t	dummy
+י	j	y	dummy
+כ	k	ch	dummy
+ך	fk	ch	dummy
+ל	l	l	dummy
+מ	m	m	dummy
+ם	fm	m	dummy
+נ	n	n	dummy
+ן	fn	n	dummy
+ס	sa	sa	dummy
+ע	"	"	dummy
+פ	p	f	dummy
+ף	fp	f	dummy
+צ	y	ts	dummy
+ץ	fy	ts	dummy
+ק	q	q	dummy
+ר	r	r	dummy
+שׁ	ss	s	dummy
+שׂ	sj	sj	dummy
+ת	ta	th	dummy
+אּ	>''	''	dummy
+בּ	>b	bb	dummy
+גּ	>g	gg	dummy
+דּ	>d	dd	dummy
+הּ	>he	hh	dummy
+וּ	>w	ww	dummy
+זּ	>z	zz	dummy
+טּ	>tt	tt	dummy
+יּ	>j	jj	dummy
+כּ	>k	kk	dummy
+ךּ	>fk	kk	dummy
+לּ	>l	ll	dummy
+מּ	>m	mm	dummy
+נּ	>n	nn	dummy
+סּ	>s	ss	dummy
+פּ	>p	pp	dummy
+ףּ	>fp	pp	dummy
+ץּ	>fy	tsts	dummy
+קּ	>q	qq	dummy
+רּ	>r	rr	dummy
+שּׁ	>ss	ss	dummy
+שּׂ	>sj	sjsj	dummy
+תּ	>ta	tt	dummy
+ֹ	o	oo	holem
+ְ	sw	:	swa
+ַ	a	a	patah
+ָ	ä	ao	qamès
+ֵ	e	ee	sere
+ֶ	è	è	sgol
+ֻ	u	oe	qibbus
+ֳ	ó	ó	dummy
+ֲ	á	á	dummy
+ֱ	â	â	dummy
+ִ	i	ie	hirèq
+ּ	*	*	dagesh
+ בּ	>>b	 b	dagesh lene b
+ גּ	>>g	 g	dagesh lene g
+ דּ	>>d	 d	dagesh lene d
+ כּ	>>k	 k	dagesh lene k
+ פּ	>>p	 p	dagesh lene p
+ תּ	>>t	 t	dagesh lene t
+</textarea></td></tr>
+	</table>
+	
+	<table>
+		<tr><td>
+<textarea id="textareaArabic" rows="30" spellcheck="false">
+ا	a1	'	a
+ـا	a2	'	a
+ـا	a3	'	a
+ا	a4	'	a
+بـ	b1	b	b	habit
+ـبـ	b2	b	b
+ـب	b3	b	b
+ب	b4	b	b
+تـ	t1	t	t	stop (ts = t-short)
+ـتـ	t2	t	t
+ـت	t3	t	t
+ت	t4	t	t
+ثـ	th1	th	th	thick
+ـثـ	th2	th	th
+ـث	th3	th	th
+ث	th4	th	th
+جـ	j1	j	j	judge, great, jour
+ـجـ	j2	j	j
+ـج	j3	j	j
+ج	j4	j	j
+حـ	H1	H	H	whispering of the throat
+ـحـ	H2	H	H
+ـح	H3	H	H
+ح	H4	H	H
+خـ	kh1	kh	kh	loch, mujer
+ـخـ	kh2	kh	kh
+ـخ	kh3	kh	kh
+خ	kh4	kh	kh
+د	d1	d	d	leader
+ـد	d2	d	d
+ـد	d3	d	d
+د	d4	d	d
+ذ	dh1	dh	dh	either
+ـذ	dh2	dh	dh
+ـذ	dh3	dh	dh
+ذ	dh4	dh	dh
+ر	r1	r	r	parlare (rs = r-short)
+ـر	r2	r	r
+ـر	r3	r	r
+ر	r4	r	r
+ز	z1	z	z	gazelle (zs = z-short)
+ـز	z2	z	z
+ـز	z3	z	z
+ز	z4	z	z
+سـ	s1	s	s	state (ss = s-short)
+ـسـ	s2	s	s
+ـس	s3	s	s
+س	s4	s	s
+شـ	sh1	sh	sh	shave, push
+ـشـ	sh2	sh	sh
+ـش	sh3	sh	sh
+ش	sh4	sh	sh
+صـ	S1	S	S	emphatic, son		state, shave
+ـصـ	S2	S	S
+ـص	S3	S	S
+ص	S4	S	S
+ضـ	D1	D	D	emphatic, thus		leader, either
+ـضـ	D2	D	D
+ـض	D3	D	D
+ض	D4	D	D
+طـ	T1	T	T	emphatic, tall		stop
+ـطـ	T2	T	T
+ـط	T3	T	T
+ط	T4	T	T
+ظـ	DH1	DH	DH	d	emphatic, either/thus	either
+ـظـ	DH2	DH	DH
+ـظ	DH3	DH	DH
+ظ	DH4	DH	DH
+عـ	c1	ʕ	c	ʕ	root of the tongue, c
+ـعـ	c2	ʕ	c
+ـع	c3	ʕ	c
+ع	c4	ʕ	c
+غـ	gh1	gh	r 	Paris, rouge (rr = r-rolling)
+ـغـ	gh2	gh	r
+ـغ	gh3	gh	r
+غ	gh4	gh	r
+فـ	f1	f	f	fast
+ـفـ	f2	f	f
+ـف	f3	f	f
+ف	f4	f	f
+قـ	q1	q	q	back of the tongue
+ـقـ	q2	q	q
+ـق	q3	q	q
+ق	q4	q	q
+كـ	k1	k	k	skate
+ـكـ	k2	k	k
+ـك	k3	k	k
+ك	k4	k	k
+لـ	l1	l	l	let
+ـلـ	l2	l	l
+ـل	l3	l	l
+ل	l4	l	l
+مـ	m1	m	m	moon
+ـمـ	m2	m	m
+ـم	m3	m	m
+م	m4	m	m
+نـ	n1	n	n	nine
+ـنـ	n2	n	n
+ـن	n3	n	n
+ن	n4	n	n
+هـ	h1	h	h	head
+ـهـ	h2	h	h
+ـه	h3	h	h
+ه	h4	h	h
+و	w1	w	w	well
+ـو	w2	w	w
+ـو	w3	w	w
+و	w4	w	w
+يـ	y1	y	y	yes
+ـيـ	y2	y	y
+ـي	y3	y	y
+ي	y4	y	y
+ى	amo	a	alif maqsuura, aa, at the end of a word, ya without dots	
+ﻰ	amf	a	alif maqsuura, final form
+ُ	uu	u	dammah 	u	waw 	hamza above alif, comma above consonant (o = ordinary)
+ِ	ii	i	kasrah 	i 	ya 	hamza under alif, below consonant
+َ	aa	a	fathah  	a 	alif 	hamza above alif, above consonant
+ٌ	un	un	nunnation un double dammah
+ٍ	in	in	nunnation in double kasrah
+ً	an	an	nunnation an double fathah + alif
+ُـو	uf	uu	uu final form
+ِـي	if	ii	ii final form
+َـا	af	aa	aa final form
+ْ	sk	:	sukuun	circle absence of vowel
+ّ	sd	+	saddah = doubling of consonant
+ٰ	ad	aa	dagger 'alif, aa, vertical stroke above the consonant
+آ	ah	'aa	maddah, aa, superscript line, alif + hamza + alif lengthening a to aa
+ٱ	aw	-	alif waslah
+لا	lab	l'	lam alif begin
+لاَ	lao	l'	lam alif general (o = ordinary)
+أ	haa	"	hamza above alif
+إ	hua	"	hamza under alif
+ء	hal	"	hamza alone (al = alone)
+ٴ	had	"	hamza diacritic
+ؤ	hw	"	waw hamza
+ئ	hy	"	ya hamza
+ة	tm1	at	ta marbuutah t haa + two dots above it
+ـة	tm2	at	at
+ـة	tm3	at	at
+ة	tm4	at	at
+،	>c	,	Arabic comma
+؟	>q	?	Arabic question mark
+!	>e	!	Arabic exclamation mark
+</textarea></td></tr>
+	</table>
+	
+	<table>
+		<tr><td>
+<textarea id="textareaAncientGreek" rows="30" spellcheck="false">
+Α	A	A	913	0391	&Alpha;	GREEK CAPITAL LETTER ALPHA
+Β	B	B	914	0392	&Beta;	GREEK CAPITAL LETTER BETA
+Γ	G	G	915	0393	&Gamma;	GREEK CAPITAL LETTER GAMMA
+Δ	D	D	916	0394	&Delta;	GREEK CAPITAL LETTER DELTA
+Ε	E	E	917	0395	&Epsilon;	GREEK CAPITAL LETTER EPSILON
+Ζ	Z	Z	918	0396	&Zeta;	GREEK CAPITAL LETTER ZETA
+Η	H	H	919	0397	&Eta;	GREEK CAPITAL LETTER ETA
+Θ	Q	Th	920	0398	&Theta;	GREEK CAPITAL LETTER THETA
+Ι	I	I	921	0399	&Iota;	GREEK CAPITAL LETTER IOTA
+Κ	K	K	922	039A	&Kappa;	GREEK CAPITAL LETTER KAPPA
+Λ	L	L	923	039B	&Lambda;	GREEK CAPITAL LETTER LAMBDA
+Μ	M	M	924	039C	&Mu;	GREEK CAPITAL LETTER MU
+Ν	N	N	925	039D	&Nu;	GREEK CAPITAL LETTER NU
+Ξ	J	Ks	926	039E	&Xi;	GREEK CAPITAL LETTER XI
+Ο	O	O	927	039F	&Omicron;	GREEK CAPITAL LETTER OMICRON
+Π	P	P	928	03A0	&Pi;	GREEK CAPITAL LETTER PI
+Ρ	R	R	929	03A1	&Rho;	GREEK CAPITAL LETTER RHO
+Σ	S	S	931	03A3	&Sigma;	GREEK CAPITAL LETTER SIGMA
+Τ	T	T	932	03A4	&Tau;	GREEK CAPITAL LETTER TAU
+Υ	U	U	933	03A5	&Upsilon;	GREEK CAPITAL LETTER UPSILON
+Φ	F	Ph	934	03A6	&Phi;	GREEK CAPITAL LETTER PHI
+Χ	X	Ch	935	03A7	&Chi;	GREEK CAPITAL LETTER CHI
+Ψ	Y	Ps	936	03A8	&Psi;	GREEK CAPITAL LETTER PSI
+Ω	W	Oo	937	03A9	&Omega;	GREEK CAPITAL LETTER OMEGA
+α	a	a	945	03B1	&alpha;	GREEK SMALL LETTER ALPHA
+β	b	b	946	03B2	&beta;	GREEK SMALL LETTER BETA
+γ	g	g	947	03B3	&gamma;	GREEK SMALL LETTER GAMMA
+δ	d	d	948	03B4	&delta;	GREEK SMALL LETTER DELTA
+ε	e	e	949	03B5	&epsilon;	GREEK SMALL LETTER EPSILON
+ζ	z	z	950	03B6	&zeta;	GREEK SMALL LETTER ZETA
+η	h	è	951	03B7	&eta;	GREEK SMALL LETTER ETA
+θ	q	th	952	03B8	&theta;	GREEK SMALL LETTER THETA
+ι	i	i	953	03B9	&iota;	GREEK SMALL LETTER IOTA
+κ	k	k	954	03BA	&kappa;	GREEK SMALL LETTER KAPPA
+λ	l	l	955	03BB	&lambda;	GREEK SMALL LETTER LAMBDA
+μ	m	m	956	03BC	&mu;	GREEK SMALL LETTER MU
+ν	n	n	957	03BD	&nu;	GREEK SMALL LETTER NU
+ξ	j	ks	958	03BE	&xi;	GREEK SMALL LETTER XI
+ο	o	o	959	03BF	&omicron;	GREEK SMALL LETTER OMICRON
+π	p	p	960	03C0	&pi;	GREEK SMALL LETTER PI
+ρ	r	r	961	03C1	&rho;	GREEK SMALL LETTER RHO
+σ	s	s	963	03C3	&sigma;	GREEK SMALL LETTER SIGMA
+τ	t	t	964	03C4	&tau;	GREEK SMALL LETTER TAU
+υ	u	u	965	03C5	&upsilon;	GREEK SMALL LETTER UPSILON
+φ	f	ph	966	03C6	&phi;	GREEK SMALL LETTER PHI
+χ	x	ch	967	03C7	&chi;	GREEK SMALL LETTER CHI
+ψ	y	ps	968	03C8	&psi;	GREEK SMALL LETTER PSI
+ω	w	oo	969	03C9	&omega;	GREEK SMALL LETTER OMEGA
+ς	c	c	962	03C2	&sigmaf;	GREEK SMALL LETTER FINAL SIGMA1a	á	á	a/	
+1a	>à	à	a\
+1a	>â	â	a=
+1a	>sa	a	a(
+1a	>ha	ha	a)
+1a	>sá	á	a)/
+1a	>há	há	a(/
+1a	>sà	à	a)\
+1a	>hà	hà	a(\
+1a	>sâ	â	a)=
+1a	>hâ	hâ	a(=
+1a	>ai	ai	a|
+1a	>ái	ái	a)/|
+1a	>ài	ài	a)=|
+1a	>âi	âi	âi
+2a	>é	é	e/
+2a	>è	è	e\
+2a	>ê	ê	e=
+2a	>se	e	e(
+2a	>he	he	e)
+2a	>sé	é	e)/
+2a	>hé	hé	e(/
+2a	>sè	è	e)\
+2a	>hè	hè	e(\
+2a	>sê	ê	e)=
+2a	>hê	hê	e(=
+3a	>è'	è'	h/
+3a	>è`	è`	h\
+3a	>è^	è^	h=
+3a	>sè	è	h(
+3a	>hè	hè	h)
+3a	>sè'	è'	h)/
+3a	>hè'	hè'	h(/
+3a	>sè`	è`	h)\
+3a	>hè`	hè`	h(\
+3a	>sè^	è^	h)=
+3a	>hè^	hè^	h(=
+3a	>èi	èi	h|
+3a	>è'i	è'i	h)/|
+3a	>è`i	è`i	h)=|
+3a	>è^i	è^i	dummy
+4a	>í	í	i/
+4a	>ì	ì	i\
+4a	>î	î	i=
+4a	>si	i	i(
+4a	>hi	hi	i)
+4a	>sí	í	i)/
+4a	>hí	hí	i(/
+4a	>sì	ì	i)\
+4a	>hì	hì	i(\
+4a	>sî	î	i)=
+4a	>hî	hî	i(=
+5a	>ó	ó	o/
+5a	>ò	ò	o\
+5a	>ô	ô	o=
+5a	>so	o	o(
+5a	>ho	ho	o)
+5a	>só	ó	o)/
+5a	>hó	hó	o(/
+5a	>sò	ò	o)\
+5a	>hò	hò	o(\
+5a	>sô	ô	o)=
+5a	>hô	hô	o(=
+6a	>ú	ú	u/
+6a	>ù	ù	u\
+6a	>û	û	u=
+6a	>su	u	u(
+6a	>hu	hu	u)
+6a	>sú	ú	u)/
+6a	>hú	hú	u(/
+6a	>sù	ù	u)\
+6a	>hù	hù	u(\
+6a	>sû	û	u)=
+6a	>hû	hû	u(=
+7a	>óo	óo	w/
+7a	>òo	òo	w\
+7a	>ôo	ôo	w=
+7a	>soo	oo	w(
+7a	>hoo	hoo	w)
+7a	>sóo	óo	w)/
+7a	>hóo	hóo	w(/
+7a	>sòo	òo	w)\
+7a	>hòo	hòo	w(\
+7a	>sôo	ôo	w)=
+7a	>hôo	hôo	w(=
+7a	>ooi	ooi	w|
+7a	>óoi	óoi	w)/|
+7a	>òoi	òoi	w)=|
+7a	>ôoi	ôoi	dummy
+1a	>Á	Á	a/	
+1a	>À	À	a\
+1a	>Â	Â	a=
+1a	>sA	A	a(
+1a	>hA	Ha	a)
+1a	>sÁ	Á	a)/
+1a	>hÁ	Há	a(/
+1a	>sÀ	À	a)\
+1a	>hÀ	Hà	a(\
+1a	>sÂ	Â	a)=
+1a	>hÂ	Hâ	a(=
+1a	>Ai	Ai	a|
+1a	>Ái	Ái	a)/|
+1a	>Ài	Ài	a)=|
+1a	>Âi	Âi	Âi
+2a	>É	É	e/
+2a	>È	È	e\
+2a	>Ê	Ê	e=
+2a	>sE	E	e(
+2a	>hE	He	e)
+2a	>sÉ	É	e)/
+2a	>hÉ	Hé	e(/
+2a	>sÈ	È	e)\
+2a	>hÈ	Hè	e(\
+2a	>sÊ	Ê	e)=
+2a	>hÊ	Hê	e(=
+3a	>È'	È'	h/
+3a	>È`	È`	h\
+3a	>È^	È^	h=
+3a	>sÈ	È	h(
+3a	>hÈ	Hè	h)
+3a	>sÈ'	È'	h)/
+3a	>hÈ'	Hè'	h(/
+3a	>sÈ`	È`	h)\
+3a	>hÈ`	Hè`	h(\
+3a	>sÈ^	È^	h)=
+3a	>hÈ^	Hè^	h(=
+3a	>Èi	Èi	h|
+3a	>È'i	È'i	h)/|
+3a	>È`i	È`i	h)=|
+3a	>È^i	È^i	È^i
+4a	>Í	Í	i/
+4a	>Ì	Ì	i\
+4a	>Î	Î	i=
+4a	>sI	I	i(
+4a	>hI	Hi	i)
+4a	>sÍ	Í	i)/
+4a	>hÍ	Hí	i(/
+4a	>sÌ	Ì	i)\
+4a	>hÌ	Hì	i(\
+4a	>sÎ	Î	i)=
+4a	>hÎ	Hî	i(=
+5a	>Ó	Ó	o/
+5a	>Ò	Ò	o\
+5a	>Ô	Ô	o=
+5a	>sO	O	o(
+5a	>hO	Ho	o)
+5a	>sÓ	Ó	o)/
+5a	>hÓ	Hó	o(/
+5a	>sÒ	Ò	o)\
+5a	>hÒ	Hò	o(\
+5a	>sÔ	Ô	o)=
+5a	>hÔ	Hô	o(=
+6a	>Ú	Ú	u/
+6a	>Ù	Ù	u\
+6a	>Û	Û	u=
+6a	>sU	U	u(
+6a	>hU	Hu	u)
+6a	>sÚ	Ú	u)/
+6a	>hÚ	Hú	u(/
+6a	>sÙ	Ù	u)\
+6a	>hÙ	Hù	u(\
+6a	>sÛ	Û	u)=
+6a	>hÛ	Hû	u(=
+7a	>Óo	Óo	w/
+7a	>Òo	Òo	w\
+7a	>Ôo	Ôo	w=
+7a	>sOo	Oo	w(
+7a	>hOo	Hoo	w)
+7a	>sÓo	Óo	w)/
+7a	>hÓo	Hóo	w(/
+7a	>sÒo	Òo	w)\
+7a	>hÒo	Hòo	w(\
+7a	>sÔo	Ôo	w)=
+7a	>hÔo	Hôo	w(=
+7a	>Ooi	Ooi	W|
+7a	>Óoi	Ôoi	w)/|
+7a	>Òoi	Òoi	w)=|
+7a	>Ôoi	Ôoi	Ôoi
+hai	>hai	hai	dummy
+hei	>heî	heî	dummy
+is	>is	is iota subscriptum
+hoi	>hoi	hoi	dummy
+hoi	>hoî	hoî	dummy
+hou	>hou'	hou'	dummy
+hou	>hoû	hoû	dummy
+heu	>hèú	hèú	dummy
+hui	>hui	hui	dummy
+d	>d	d'	dummy
+r	>r	r'	dummy
+t	>t'	t'	dummy
+~	^	^	circumflex
+ʼ	"		smooth breathing
+̔	>"	h	rough breating
+</textarea></td></tr>
+</table>
+
+<table>
+<tr><td><textarea id="textareaPunctuation" rows="30" spellcheck="false">
+.
+1
+2
+3
+4
+5	
+6	
+7	
+8	
+9	
+0	
+$	
+%	
+&	
+(	
+)	
+{	
+}	
+/	
+;
+:	
+,	
+«	
+»	
+“	
+·	
+'	
+"	
+۔	
+،	
+؛	
+؟	
+!	
+“	
+”	
+¿	
+¡	
+</textarea></td></tr>
+</table>
+
+</body>
+
+</htm
